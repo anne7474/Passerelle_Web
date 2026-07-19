@@ -1,0 +1,887 @@
+% ============================================================
+%  Plan de cours — Développement Web — Classe passerelle
+%  cfpt·i  |  Anne Terrier
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+% --- Encodage & langue ---
+\usepackage{iftex}
+\usepackage{hyphenat}
+
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \setmainfont{Latin Modern Roman}
+\fi
+
+\usepackage[french]{babel}
+
+% --- Mise en page ---
+\usepackage[
+  top=2.5cm, bottom=2.5cm,
+  left=2.5cm, right=2.5cm,
+  headheight=40pt
+]{geometry}
+
+% --- Typographie ---
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+
+% --- Couleurs ---
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{weekBg}{HTML}{FAFAFA}
+\definecolor{filrougeYellow}{HTML}{FFF8DC}
+\definecolor{filrougeBorder}{HTML}{F5C400}
+
+% --- Graphiques & images ---
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta}
+
+% --- En-tête & pied de page ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\usepackage{lastpage}
+
+% En-tête : logo gauche | titre centre | rien droite
+\fancyhead[C]{%
+  \color{cfptDarkGrey}\small\textit{Programme d'enseignement — Développement Web — Classe passerelle}%
+}
+
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize PlanCours\_Pass\_Web.pdf}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize\thepage{} sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% --- Titres de section personnalisés ---
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries
+      \hspace{4pt}\arabic{section}\qquad #1%
+    }%
+  }%
+}
+
+\titleformat{\section}
+  {\normalfont}
+  {}
+  {0pt}
+  {\sectionbox}
+  
+\titleformat{\subsection}
+  {\color{accentBlue}\normalsize\bfseries}
+  {\rule[-.3ex]{3pt}{1.3em}} % On place le rectangle ici
+  {6pt}                      % C'est l'espace entre le rectangle et le texte
+  {}                         % On laisse vide, LaTeX gère le texte tout seul
+
+\titleformat{\subsubsection}
+  {\color{cfptDarkGrey}\normalsize\bfseries}
+  {}
+  {0em}
+  {}
+
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% --- Listes ---
+\usepackage{enumitem}
+\setlist[itemize]{
+  itemsep=2pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em,
+  label={\color{cfptYellow}\textbullet}
+}
+\setlist[itemize,2]{
+  label={\color{cfptDarkGrey}--},
+  leftmargin=1.8em
+}
+
+% --- Tableaux ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{colortbl}
+\renewcommand{\arraystretch}{1.35}
+
+% --- Boîtes colorées ---
+\usepackage[most]{tcolorbox}
+
+% Boîte fil rouge
+\tcbset{
+  filrouge/.style={
+    colback=filrougeYellow,
+    colframe=filrougeBorder,
+    fonttitle=\bfseries\small,
+    title={\textcolor{cfptBlack}{Fil rouge --- MiniForum : #1}},
+    boxrule=1pt,
+    arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt,
+  }
+}
+
+% Boîte objectifs
+\tcbset{
+  objectifs/.style={
+    colback=lightBlue!40,
+    colframe=accentBlue,
+    fonttitle=\bfseries\small\color{accentBlue},
+    title={Objectifs pédagogiques},
+    boxrule=0.8pt,
+    arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt,
+  }
+}
+
+% Boîte semaine
+\tcbset{
+  semaine/.style={
+    colback=weekBg,
+    colframe=accentBlue!30,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+  }
+}
+
+% --- Liens ---
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={Programme d'enseignement — Développement Web — Classe passerelle},
+  pdfauthor={Anne Terrier},
+  pdfsubject={Plan de cours de développement web},
+  pdfcreator={LaTeX}
+}
+\usepackage{bookmark}
+
+% --- Commandes utilitaires ---
+\newcommand{\module}[2]{%
+  \subsection*{\colorbox{accentBlue!10}{\color{accentBlue}\textbf{Module #1}~—~#2}}%
+}
+
+\newcommand{\semainetitre}[3]{%
+  % #1 numéro, #2 titre, #3 heures
+  \vspace{6pt}
+  \noindent
+  \begin{tikzpicture}
+    \node[fill=cfptBlack, text=white, rounded corners=3pt,
+          inner xsep=8pt, inner ysep=4pt, font=\bfseries\small]
+      (s) {Semaine~#1~—~#2};
+    \node[fill=cfptYellow, text=cfptBlack, rounded corners=3pt,
+          inner xsep=6pt, inner ysep=4pt, font=\small,
+          right=4pt of s]
+      {#3};
+  \end{tikzpicture}
+  \vspace{4pt}
+}
+
+\newcommand{\contenutitre}[1]{%
+  \vspace{4pt}
+  \noindent{\small\color{accentBlue}\textbf{#1}}\vspace{2pt}
+}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% ---- PAGE DE TITRE ----
+\thispagestyle{empty}
+
+\vspace*{0.8cm}
+\begin{center}
+  \IfFileExists{cfpti.png}{%
+    \includegraphics[height=128pt]{cfpti.png}%
+  }{%
+    \fbox{\parbox[c][48pt][c]{120pt}{\centering\small Logo cfpt·i}}%
+  }
+\end{center}
+
+\vspace{1.2cm}
+
+\begin{center}
+  \colorbox{accentBlue}{%
+    \parbox{0.88\linewidth}{%
+      \centering
+      \vspace{10pt}
+      {\color{white}\fontsize{26}{32}\bfseries Programme d'enseignement}\\[6pt]
+      {\color{cfptYellow}\fontsize{22}{28}\bfseries Développement Web}\\[4pt]
+      {\color{white}\large Classe passerelle --- hepia}
+      \vspace{10pt}
+    }%
+  }
+\end{center}
+
+\vspace{2.8cm}
+
+\begin{center}
+\begin{tabular}{ll}
+  \color{cfptDarkGrey}\textbf{Enseignante}    & Anne Terrier \\[4pt]
+  \color{cfptDarkGrey}\textbf{Volume horaire} & 60h cours + 60h travaux pratiques (120h) \\[4pt]
+  \color{cfptDarkGrey}\textbf{Public}         & Etudiants souhaitant intégrer la 1\textsuperscript{re} année hepia \\[4pt]
+  \color{cfptDarkGrey}\textbf{Prérequis}      & Aucun prérequis en informatique \\[4pt]
+  \color{cfptDarkGrey}\textbf{Stack}          & HTML5 · CSS · JavaScript · Node.js / Express · MySQL \\[4pt]
+  \color{cfptDarkGrey}\textbf{Fil rouge}      & Projet MiniForum (forum simplifié) \\
+\end{tabular}
+\end{center}
+
+\vspace{1.5cm}
+\begin{center}
+  \color{cfptDarkGrey}\small Cours donné en parallèle d'un module de POO (C\#) et d'un module Linux/Bash
+\end{center}
+
+\newpage
+
+% ---- SOMMAIRE ----
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Présentation générale}
+% ============================================================
+
+Ce cours constitue le volet \textbf{développement web} du programme de la classe passerelle. Il a pour objectif de faire acquérir aux étudiant·e·s les compétences nécessaires à la réalisation d'une application web dynamique complète, de la mise en forme d'une page HTML jusqu'à la persistance des données en base de données relationnelle.
+
+Le public visé est composé de titulaires d'un baccalauréat général français, pour la grande majorité sans expérience préalable en informatique. La progression est construite en conséquence : les concepts fondamentaux (variables, conditions, boucles, fonctions) sont introduits progressivement, le retour visuel immédiat dans le navigateur servant de moteur de motivation en début de parcours.
+
+\medskip
+\noindent\textbf{Cours parallèles à prendre en compte :}
+\begin{itemize}
+  \item \textbf{Programmation orientée objet (C\#)} — les concepts de variable, boucle, fonction et structure de contrôle y sont couverts ; ce cours peut donc s'appuyer sur ces acquis pour accélérer la partie algorithmique en JavaScript.
+  \item \textbf{Linux / programmation Bash} — les étudiant·e·s sont à l'aise dans un terminal ; cela rend l'environnement Node.js naturel et cohérent.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Choix de stack :} JavaScript est utilisé à la fois côté client (navigateur) et côté serveur (Node.js / Express), ce qui réduit la charge cognitive liée à l'apprentissage simultané de deux langages. MySQL/MariaDB est utilisé comme SGBDR. Aucun framework front-end n'est introduit : HTML, CSS et JavaScript vanilla uniquement, afin de garantir la compréhension des mécanismes fondamentaux.
+
+% ============================================================
+\section{Compétences visées}
+% ============================================================
+
+À l'issue de ce cours, les étudiant·e·s seront capables de :
+
+\begin{itemize}
+  \item Structurer une page web sémantique en HTML5 et la mettre en forme avec CSS (Flexbox, responsive design)
+  \item Écrire des scripts JavaScript (ES6+) pour manipuler le DOM et réagir aux événements utilisateur
+  \item Consommer une API REST depuis le navigateur avec \texttt{fetch} et le format JSON
+  \item Concevoir un modèle de données relationnel (MCD → MLD) à partir d'un besoin métier
+  \item Écrire des requêtes SQL incluant jointures, agrégations et sous-requêtes
+  \item Construire un serveur web avec Node.js / Express exposant des routes REST
+  \item Connecter un serveur Node.js à une base MySQL via des requêtes paramétrées
+  \item Implémenter un CRUD complet (Create, Read, Update, Delete) côté serveur
+  \item Mettre en œuvre une authentification sécurisée (hashage de mots de passe, sessions)
+  \item Protéger une application contre les injections SQL et le XSS de base
+  \item Présenter oralement un projet technique avec démonstration fonctionnelle
+\end{itemize}
+
+% ============================================================
+\section{Répartition horaire}
+% ============================================================
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lXcc>{\bfseries}c}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Mod.} &
+  \color{white}\textbf{Thème} &
+  \color{white}\textbf{Cours} &
+  \color{white}\textbf{TP} &
+  \color{white}\textbf{Total} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  A & Fondamentaux du web \& environnement & 6h & 2h & 8h \\
+  B & HTML5 & 4h & 6h & 10h \\
+  \rowcolor{cfptGrey}
+  C & CSS moderne & 6h & 8h & 14h \\
+  D & JavaScript — logique \& DOM & 10h & 10h & 20h \\
+  \rowcolor{cfptGrey}
+  E & Bases de données \& SQL & 8h & 8h & 16h \\
+  F & Node.js / Express — logique \& routes & 8h & 8h & 16h \\
+  \rowcolor{cfptGrey}
+  G & Node.js / Express — CRUD \& BD & 8h & 10h & 18h \\
+  H & Sécurité \& authentification & 6h & 6h & 12h \\
+  \rowcolor{cfptGrey}
+  I & Projet fil rouge — finalisation \& soutenance & 4h & 2h & 6h \\
+  \midrule
+  \rowcolor{accentBlue!15}
+  & \textbf{Total} & \textbf{60h} & \textbf{60h} & \textbf{120h} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Le projet fil rouge : MiniForum}
+% ============================================================
+
+Plutôt que des exercices isolés par technologie, l'ensemble du cours est structuré autour d'un projet unique qui évolue de semaine en semaine : \textbf{MiniForum}, un forum simplifié comportant des utilisateurs, des sujets de discussion (\textit{topics}), des messages (\textit{posts}) et des réactions (\textit{likes}).
+
+Ce périmètre fonctionnel est volontairement restreint, mais suffisamment riche pour illustrer les relations \textit{one-to-many} (un utilisateur a plusieurs messages) et \textit{many-to-many} (un message peut être aimé par plusieurs utilisateurs).
+
+\subsection{Progression en quatre phases}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{clXc}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Phase} &
+  \color{white}\textbf{Semaines} &
+  \color{white}\textbf{Thème} &
+  \color{white}\textbf{Volume} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  1 & 1–5  & HTML/CSS/JS — affichage statique, données en mémoire & 40h \\
+  2 & 6–8  & SQL — modélisation et requêtes sur base pré-remplie & 24h \\
+  \rowcolor{cfptGrey}
+  3 & 9–13 & Node.js/Express — API REST branchée sur MySQL & 40h \\
+  4 & 14–15 & Authentification, sécurité, soutenance & 16h \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+La \textbf{frustration volontaire} de la phase 1 — les données disparaissent au rafraîchissement — est le principal levier de motivation pour l'introduction de la persistance en base de données.
+
+\newpage
+
+% ============================================================
+\section{Détail semaine par semaine}
+% ============================================================
+
+% ---- PHASE 1 ----
+\subsection{Phase 1 — HTML, CSS \& JavaScript front-end (semaines 1 à 5)}
+
+\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
+\small Les modules A, B, C et D couvrent les fondamentaux du web côté client. Le fil rouge progresse d'une page HTML statique vers un forum interactif en JavaScript pur, avant de butter sur la limite de la mémoire volatile.
+\end{tcolorbox}
+\vspace{6pt}
+
+% S1
+\semainetitre{1}{Fondamentaux du web \& environnement}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Comprendre le modèle client/serveur et le rôle des technologies web
+  \item Installer et configurer un environnement de développement fonctionnel
+  \item Distinguer HTML, CSS et JavaScript dans leurs rôles respectifs
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Fonctionnement du web : navigateurs, serveurs, requêtes HTTP/HTTPS
+  \item Vocabulaire fondamental : URL, DNS, protocole, statique vs dynamique
+  \item Tour d'horizon de la stack : HTML, CSS, JavaScript, Node.js, SQL
+  \item Installation : VS Code, extensions utiles, Node.js, terminal
+  \item Git : init, add, commit, push — mise en place du dépôt du projet fil rouge
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Configuration complète de l'environnement de développement
+  \item Création du dépôt Git du projet MiniForum, première structure de fichiers
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Mise en place du projet}]
+\small Création de la structure \texttt{miniforum/} (index.html, style.css, app.js) et premier commit Git. Les étudiant·e·s ouvrent leur projet dans le navigateur pour la première fois.
+\end{tcolorbox}
+
+\vspace{8pt}
+\clearpage
+% S2
+\semainetitre{2}{HTML5 — Structure \& sémantique}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Écrire une page HTML5 valide et sémantique
+  \item Structurer le contenu avec les éléments appropriés
+  \item Créer des formulaires fonctionnels avec les types d'input HTML5
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Structure d'un document HTML5 : \texttt{doctype}, \texttt{head}, \texttt{body}
+  \item Éléments sémantiques : \texttt{header}, \texttt{nav}, \texttt{main}, \texttt{section}, \texttt{article}, \texttt{footer}
+  \item Texte, liens, images, listes, tableaux
+  \item Formulaires : \texttt{input} (text, email, password, number), \texttt{textarea}, \texttt{select}, \texttt{button}
+  \item Notions d'accessibilité : attribut \texttt{alt}, labels, hiérarchie des titres
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Squelette HTML du MiniForum : en-tête, liste de sujets (statique), formulaire d'ajout de message
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Structure HTML du forum}]
+\small La page d'accueil du MiniForum prend forme en HTML pur : une liste de sujets codée en dur, un formulaire de création de sujet, un pied de page. Aucun style encore — c'est voulu.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S3
+\semainetitre{3}{CSS — Mise en forme \& Flexbox}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Appliquer des styles CSS en comprenant la cascade et la spécificité
+  \item Construire des mises en page avec Flexbox
+  \item Utiliser les variables CSS pour un code maintenable
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Sélecteurs, cascade, spécificité, héritage
+  \item Modèle de boîte : \texttt{margin}, \texttt{padding}, \texttt{border}, \texttt{box-sizing}
+  \item Flexbox : \texttt{display:flex}, axes, alignement, \texttt{flex-wrap}, \texttt{gap}
+  \item Variables CSS (\texttt{--custom-property}) et thèmes de couleur
+  \item Pseudo-classes (\texttt{:hover}, \texttt{:focus}, \texttt{:nth-child})
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Mise en forme complète du MiniForum : palette de couleurs, typographie, layout Flexbox
+  \item Stylisation du formulaire et des cartes de sujet
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Le forum prend forme visuellement}]
+\small Le MiniForum adopte une identité visuelle cohérente. Les étudiant·e·s définissent leurs variables CSS (\texttt{--color-primary}, etc.) qui seront conservées jusqu'à la fin du projet.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S4
+\semainetitre{4}{CSS — Responsive design \& Grid}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Adapter une mise en page à différentes tailles d'écran
+  \item Utiliser CSS Grid pour des mises en page bidimensionnelles
+  \item Appliquer une approche mobile-first
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Media queries et approche mobile-first
+  \item CSS Grid : \texttt{grid-template-columns}, \texttt{grid-template-rows}, \texttt{gap}, \texttt{grid-area}
+  \item Unités relatives : \texttt{rem}, \texttt{em}, \texttt{\%}, \texttt{vw}/\texttt{vh}
+  \item Images responsive (\texttt{max-width: 100\%}, \texttt{object-fit})
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Adaptation responsive du MiniForum (mobile, tablette, desktop)
+  \item Exercices de mise en page Grid sur cas variés
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={MiniForum responsive}]
+\small Le forum s'affiche correctement sur mobile. Un layout Grid est introduit pour la page de détail d'un sujet (liste de messages à gauche, infos du sujet à droite sur desktop).
+\end{tcolorbox}
+
+\vspace{8pt}
+\newpage
+
+% S5
+\semainetitre{5}{JavaScript — Logique, DOM \& événements}{6h cours / 6h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Écrire des scripts JavaScript ES6+ (variables, fonctions, tableaux, objets)
+  \item Manipuler dynamiquement le DOM depuis JavaScript
+  \item Réagir aux événements utilisateur et valider un formulaire côté client
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Variables (\texttt{let}, \texttt{const}), types, opérateurs, conditions, boucles — rapide (déjà vu en C\#)
+  \item Fonctions classiques et fléchées ; portée et closures (introduction)
+  \item Tableaux d'objets : \texttt{map}, \texttt{filter}, \texttt{find}, \texttt{sort}
+  \item DOM : \texttt{querySelector}, \texttt{createElement}, \texttt{innerHTML}, \texttt{addEventListener}
+  \item Validation de formulaire côté client
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Affichage dynamique de la liste de sujets depuis un tableau JS en dur
+  \item Formulaire d'ajout de sujet : ajout en mémoire + mise à jour du DOM
+  \item Validation des champs avec affichage de messages d'erreur
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Forum interactif… mais volatile}]
+\small Les sujets s'ajoutent dynamiquement. Constat collectif en fin de séance : tout disparaît au rafraîchissement. Cette frustration est le déclencheur naturel de l'introduction aux bases de données.
+\end{tcolorbox}
+
+\newpage
+
+% ---- PHASE 2 ----
+\subsection{Phase 2 — Bases de données \& SQL (semaines 6 à 8)}
+
+\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
+\small Avant d'introduire le serveur, les étudiant·e·s acquièrent les bases du modèle relationnel et de SQL sur une base pré-remplie fournie par l'enseignante. L'objectif est de maîtriser les requêtes avant de les écrire dans du code.
+\end{tcolorbox}
+\vspace{6pt}
+
+% S6
+\semainetitre{6}{Modélisation relationnelle (MCD / MLD)}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Identifier entités, attributs et relations d'un système d'information
+  \item Construire un diagramme de classes UML et le transformer en MLD
+  \item Distinguer relations one-to-many et many-to-many afin de comprendre la table de liaison
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Notions de SGBDR, table, ligne, colonne, clé primaire, clé étrangère
+  \item Notation UML : multiplicités \texttt{1}, \texttt{0..1}, \texttt{1..*}, \texttt{0..*}
+  \item Relation one-to-many (\texttt{1..*}) : un utilisateur a plusieurs messages
+  \item Relation many-to-many (\texttt{0..*} / \texttt{0..*}) : un message peut être aimé par plusieurs utilisateurs
+  \item Du diagramme UML au MLD : règles de transformation, tables de liaison
+  \item Introduction à MySQL/MariaDB : installation, phpMyAdmin ou client terminal
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Construction collective du diagramme de classes UML du MiniForum
+  \item Transformation en MLD : identification des tables de liaison
+  \item Création des tables dans MySQL à partir du MLD
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Schéma officiel du forum}]
+\small Le diagramme de classes UML du MiniForum est construit collectivement, puis transformé en MLD avec sa table de liaison \texttt{likes}. Ce schéma \texttt{users / topics / posts / likes} sera
+la référence jusqu'à la fin du cours. Les étudiant·e·s créent eux-mêmes
+les tables dans MySQL.
+\end{tcolorbox}
+\vspace{8pt}
+
+\newpage
+
+% S7
+\semainetitre{7}{SQL — Interrogation \& jointures}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Écrire des requêtes SQL de lecture avec filtres, tris et agrégations
+  \item Utiliser \texttt{INNER JOIN} et \texttt{LEFT JOIN} pour croiser plusieurs tables
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item \texttt{SELECT}, \texttt{WHERE}, \texttt{ORDER BY}, \texttt{LIMIT}
+  \item Fonctions d'agrégation : \texttt{COUNT}, \texttt{SUM}, \texttt{AVG}, \texttt{GROUP BY}, \texttt{HAVING}
+  \item \texttt{INNER JOIN} et \texttt{LEFT JOIN} avec alias de table
+  \item Bonnes pratiques de lisibilité SQL
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Requêtes progressives sur la base MiniForum pré-remplie (phpMyAdmin ou terminal)
+  \item Lister les sujets les plus récents, compter les messages par utilisateur, retrouver les messages d'un sujet avec l'auteur
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Interroger les vraies données du forum}]
+\small La base MiniForum contient 10 utilisateurs, 20 sujets et 80 messages fictifs. Les étudiant·e·s écrivent des requêtes qui retourneraient exactement ce qu'afficherait leur page d'accueil — la passerelle vers la phase suivante est évidente.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S8
+\semainetitre{8}{SQL — CRUD \& requêtes avancées}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Écrire des requêtes d'écriture (\texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE})
+  \item Utiliser des sous-requêtes et des agrégations combinées
+  \item Comprendre les injections SQL et les requêtes paramétrées (concept)
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item \texttt{INSERT INTO}, \texttt{UPDATE … SET … WHERE}, \texttt{DELETE FROM … WHERE}
+  \item Sous-requêtes simples dans le \texttt{WHERE} et le \texttt{FROM}
+  \item Agrégations avancées : top contributeurs, sujets les plus actifs
+  \item Introduction aux injections SQL : démonstration et principe de prévention
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Exercices CRUD complets sur la base MiniForum
+  \item Requêtes d'analyse : utilisateurs les plus actifs, sujets sans réponse, etc.
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Le forum a une vraie mémoire}]
+\small Les étudiant·e·s peuvent désormais ajouter, modifier et supprimer des données directement en SQL. Ils comprennent que leur front-end JavaScript a besoin d'un intermédiaire pour faire ces mêmes opérations — introduction naturelle à Node.js.
+\end{tcolorbox}
+
+\newpage
+% ---- PHASE 3 ----
+\subsection{Phase 3 — Node.js / Express \& API REST (semaines 9 à 13)}
+
+\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
+\small C'est la phase la plus dense techniquement. Les étudiant·e·s construisent le serveur qui manquait depuis la phase 1, et branchent progressivement leur front-end dessus. Le JavaScript appris en semaine 5 est immédiatement réutilisable côté serveur.
+\end{tcolorbox}
+\vspace{6pt}
+
+% S9
+\semainetitre{9}{JavaScript asynchrone \& Node.js}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Comprendre la nature asynchrone de JavaScript et son modèle d'exécution
+  \item Écrire du code asynchrone lisible avec \texttt{async}/\texttt{await}
+  \item Exécuter JavaScript hors navigateur avec Node.js
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Synchrone vs asynchrone : pourquoi JavaScript a besoin de Promises
+  \item Promises : états (\textit{pending}, \textit{fulfilled}, \textit{rejected}), \texttt{then}/\texttt{catch}
+  \item Syntaxe \texttt{async}/\texttt{await} et équivalence avec les Promises
+  \item Gestion des erreurs : \texttt{try}/\texttt{catch} en contexte asynchrone
+  \item Node.js : installation, \texttt{npm init}, \texttt{npm install}, scripts \texttt{package.json}
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Simulation de délai avec \texttt{setTimeout} encapsulé dans une Promise
+  \item Réécriture du même traitement en \texttt{then/catch} puis \texttt{async/await}
+  \item Premier script Node.js exécuté dans le terminal
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Simuler l'appel serveur}]
+\small Une fonction asynchrone fictive retourne les données du forum après un délai simulé. Le front-end est adapté pour attendre cette réponse avec \texttt{await} — syntaxe identique à ce qu'il utilisera avec \texttt{fetch} la semaine suivante.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+\newpage
+
+% S10
+\semainetitre{10}{Express — Premiers pas \& routes GET}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Mettre en place un serveur HTTP minimal avec Express
+  \item Définir des routes GET renvoyant des données JSON
+  \item Comprendre les principes d'une API REST
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Express : installation, structure d'une application, \texttt{app.listen}
+  \item Routes et paramètres d'URL (\texttt{:id}), \texttt{req} et \texttt{res}
+  \item Principes REST : ressources, verbes HTTP, codes de statut (200, 201, 400, 404, 500)
+  \item Middleware : \texttt{express.json()}, \texttt{express.static()}, \texttt{cors}
+  \item Organisation du code : séparation routes / logique métier
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Serveur Express renvoyant des données statiques JSON sur \texttt{GET /topics}
+  \item Routes \texttt{GET /topics} et \texttt{GET /topics/:id} avec données en dur
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Le serveur du MiniForum démarre}]
+\small Le front-end est modifié pour appeler \texttt{fetch('/api/topics')} au lieu de lire le tableau en dur. Les données arrivent du serveur — même si elles sont encore codées en dur côté Express.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S11
+\semainetitre{11}{Node.js — Connexion MySQL \& requêtes paramétrées}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Connecter un serveur Node.js à une base MySQL avec \texttt{mysql2}
+  \item Écrire des requêtes SQL paramétrées pour prévenir les injections
+  \item Exposer les résultats de requêtes SQL dans des réponses JSON
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Pilote \texttt{mysql2} : installation, configuration du pool de connexions
+  \item Requêtes paramétrées avec \texttt{?} — comparaison avec et sans paramètre
+  \item Transformation des résultats SQL en objets JSON cohérents
+  \item Variables d'environnement (\texttt{.env}, \texttt{dotenv}) pour les identifiants de BD
+  \item Gestion des erreurs de connexion et de requête côté serveur
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Connexion du serveur Express à la base MySQL MiniForum
+  \item Routes \texttt{GET /api/topics} et \texttt{GET /api/topics/:id/posts} avec vraies requêtes SQL et jointure sur \texttt{users}
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Les vraies données arrivent dans le navigateur}]
+\small Le front-end affiche désormais les données réelles de la base de données MySQL. Les modifications faites directement en SQL (via phpMyAdmin) apparaissent dans l'interface — le circuit complet est visible pour la première fois.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S12
+\semainetitre{12}{Express — Routes POST, PUT, DELETE (CRUD complet)}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Implémenter les routes d'écriture (\texttt{POST}, \texttt{PUT}, \texttt{DELETE}) dans Express
+  \item Valider les données entrantes côté serveur
+  \item Renvoyer les codes de statut HTTP appropriés
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Récupération du corps de requête : \texttt{req.body} avec \texttt{express.json()}
+  \item \texttt{POST} (création), \texttt{PUT}/\texttt{PATCH} (mise à jour), \texttt{DELETE} (suppression)
+  \item Validation basique : champs requis, types, longueur maximale
+  \item Codes de statut HTTP et messages d'erreur cohérents
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Routes \texttt{POST /api/topics} et \texttt{POST /api/topics/:id/posts}
+  \item Route \texttt{DELETE /api/posts/:id} avec gestion des cas 404
+  \item Branchement du formulaire front-end sur ces nouvelles routes
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Le forum est fonctionnel de bout en bout}]
+\small Un visiteur peut créer un sujet, y répondre, et supprimer son message — tout persiste en base de données. Le circuit complet HTML → JS → fetch → Express → MySQL → JSON → DOM est opérationnel.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+\newpage
+
+% S13
+\semainetitre{13}{Fetch côté client \& gestion des erreurs}{4h cours / 4h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Effectuer des requêtes \texttt{fetch} POST, PUT, DELETE depuis le navigateur
+  \item Gérer les erreurs réseau et les réponses d'erreur du serveur
+  \item Synchroniser l'interface avec l'état réel de la base de données
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item \texttt{fetch} avec options : méthode, en-têtes, corps JSON
+  \item Distinction erreur réseau / erreur HTTP (\texttt{response.ok})
+  \item Affichage de retours utilisateur : chargement, succès, erreur
+  \item Mise à jour optimiste vs mise à jour après confirmation serveur
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Complétion du front-end MiniForum : tous les formulaires branchés sur l'API
+  \item Affichage de messages d'erreur cohérents en cas d'échec serveur
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Interface robuste et réactive}]
+\small L'interface du MiniForum gère les cas d'erreur : message de chargement, alerte si le serveur ne répond pas, rechargement de la liste après ajout. L'UX correspond à ce qu'un utilisateur attendrait d'un vrai forum.
+\end{tcolorbox}
+
+% ---- PHASE 4 ----
+\subsection{Phase 4 — Authentification, sécurité \& soutenance (semaines 14 à 15)}
+
+\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
+\small Phase courte et intense : les concepts de sécurité sont introduits et immédiatement appliqués sur le MiniForum. La dernière séance est dédiée à la finalisation et à la soutenance orale.
+\end{tcolorbox}
+\vspace{6pt}
+
+\newpage
+
+% S14
+\semainetitre{14}{Authentification — Inscription, connexion \& sessions}{6h cours / 6h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Implémenter l'inscription avec hashage de mot de passe (\texttt{bcrypt})
+  \item Mettre en œuvre une authentification par session côté serveur
+  \item Protéger des routes aux seuls utilisateurs connectés
+  \item Comprendre les risques XSS et injections SQL et comment les prévenir
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Risques liés au stockage de mots de passe en clair — exemples réels
+  \item Hashage avec salage : principe de \texttt{bcrypt} et mise en œuvre
+  \item Sessions côté serveur : \texttt{express-session}, cookies, durée de vie
+  \item Middleware d'authentification pour protéger des routes
+  \item XSS : principe, démonstration, prévention (\texttt{textContent} vs \texttt{innerHTML})
+  \item Rappel injections SQL : requêtes paramétrées (déjà vu en semaine 11)
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Routes \texttt{POST /register} (hashage bcrypt) et \texttt{POST /login} (vérification + session)
+  \item Route \texttt{POST /logout} et middleware de protection
+  \item Protection des routes POST du forum aux seuls utilisateurs connectés
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Seuls les membres peuvent poster}]
+\small Le MiniForum dispose d'une vraie inscription et d'une vraie connexion. Seuls les utilisateurs authentifiés peuvent créer un sujet ou répondre. Chaque message affiche le nom de son auteur récupéré depuis la session.
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% S15
+\semainetitre{15}{Finalisation \& soutenance}{4h cours / 2h TP}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Consolider et déboguer le projet MiniForum
+  \item Préparer et réaliser une présentation orale technique avec démonstration
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Retour collectif sur les difficultés rencontrées et bonnes pratiques
+  \item Méthodologie de soutenance technique : structure, démonstration live, anticipation des questions
+  \item Bilan de la stack apprise et perspectives (frameworks, déploiement, tests)
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Finalisation individuelle du projet (corrections de bugs, améliorations mineures)
+  \item Soutenances individuelles : 8 à 10 minutes par étudiant·e, démonstration + questions
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Soutenance du MiniForum complet}]
+\small Chaque étudiant·e présente et fait fonctionner en direct son MiniForum : interface HTML/CSS responsive, JavaScript front-end, API Express, base MySQL, authentification. Questions sur les choix de conception et les points de difficulté rencontrés.
+\end{tcolorbox}
+
+% ============================================================
+\section{Environnement technique}
+% ============================================================
+
+\begin{itemize}
+  \item \textbf{Éditeur} : Visual Studio Code avec extensions ESLint, Prettier, REST Client
+  \item \textbf{Navigateur} : Chrome ou Firefox avec outils de développement (DevTools)
+  \item \textbf{Runtime serveur} : Node.js LTS (v20+)
+  \item \textbf{Gestionnaire de paquets} : npm
+  \item \textbf{Framework serveur} : Express.js
+  \item \textbf{Base de données} : MySQL ou MariaDB (installation locale)
+  \item \textbf{Client SQL} : phpMyAdmin ou terminal mysql
+  \item \textbf{Gestion de version} : Git + GitHub
+  \item \textbf{Paquets npm clés} : \texttt{express}, \texttt{mysql2}, \texttt{bcrypt}, \texttt{express-session}, \texttt{dotenv}, \texttt{cors}
+\end{itemize}
+
+\vspace{1cm}
+\noindent\rule{\linewidth}{0.4pt}
+\begin{center}
+  \small\color{cfptDarkGrey}
+  Document rédigé par Anne Terrier — cfpt·i Informatique, Genève\\
+  Cours Développement Web — Classe passerelle hepia
+\end{center}
+
+\end{document}
