@@ -123,6 +123,9 @@
   numbersep=8pt,
 }
 
+% --- supprime les retraits de paragraphe ---
+\setlength{\parindent}{0pt}
+
 \renewcommand{\arraystretch}{1.3}
 
 % ============================================================
@@ -390,6 +393,7 @@ btn.addEventListener('click', () => {
 % ============================================================
 \section{Git et GitHub}
 % ============================================================
+Les commandes sont à saisir dans l'application Git Bash
 
 \subsection{Configuration de l'identité Git}
 
@@ -407,6 +411,7 @@ Cette configuration ne se fait \textbf{qu'une seule fois par machine} : elle vau
 \subsection{Premier commit local}
 
 \begin{lstlisting}[language=bash]
+cd Documents/Passerelle/Web/miniforum
 git init
 git add .
 git commit -m "Premier commit : structure de base du MiniForum"
@@ -416,25 +421,15 @@ git commit -m "Premier commit : structure de base du MiniForum"
 
 Si ce n'est pas déjà fait : aller sur \texttt{github.com}, cliquer sur \textit{Sign up}, et suivre les étapes (e-mail, mot de passe, nom d'utilisateur).
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/github-account-01.png}\\
-\small\textit{Capture d'écran --- page d'inscription GitHub}
-\end{center}
-
 \subsection{Créer le dépôt distant}
 
 \begin{enumerate}
   \item Se connecter sur \texttt{github.com}, cliquer sur le bouton \textbf{+} en haut à droite, puis \textit{New repository}.
   \item \textit{Repository name} : \texttt{miniforum}.
-  \item Laisser la visibilité en \textit{Public} (ou \textit{Private}, selon la consigne du cours).
+  \item Laisser la visibilité en \textit{Public}.
   \item \textbf{Ne cocher aucune case} (\textit{Add a README file}, \textit{.gitignore}, \textit{licence}) : le dépôt doit rester \textbf{vide}, puisque le projet existe déjà sur ta machine.
   \item Cliquer sur \textit{Create repository}.
 \end{enumerate}
-
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/github-repo-01.png}\\
-\small\textit{Capture d'écran --- écran de création du dépôt GitHub}
-\end{center}
 
 \begin{tcolorbox}[attention, title={Piège fréquent}]
 Si tu coches \textit{Add a README file}, GitHub crée un premier commit sur le dépôt distant. Ton envoi (\texttt{git push}) sera alors refusé, car le dépôt local et le dépôt distant auront des historiques différents. Le plus simple : recommencer avec un dépôt vraiment vide.
@@ -444,12 +439,7 @@ Si tu coches \textit{Add a README file}, GitHub crée un premier commit sur le d
 
 Sur la page du dépôt fraîchement créé, cliquer sur le bouton vert \textbf{Code}, onglet \textbf{HTTPS}, et copier l'URL affichée.
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/github-repo-02.png}\\
-\small\textit{Capture d'écran --- bouton Code, copie de l'URL HTTPS}
-\end{center}
-
-Dans le terminal, à la racine de \texttt{miniforum/} :
+Dans Git Bash, à la racine de \texttt{miniforum/} :
 
 \begin{lstlisting}[language=bash]
 git remote add origin https://github.com/votre-login/miniforum.git
@@ -459,11 +449,6 @@ git push -u origin main
 \begin{tcolorbox}[astuce, title={Authentification}]
 Lors du tout premier \texttt{git push}, une fenêtre s'ouvre automatiquement dans le navigateur et demande de se connecter à GitHub. C'est normal : GitHub n'accepte plus les mots de passe directement dans le terminal. Il suffit de se connecter une fois --- Git mémorise ensuite la connexion pour les prochaines fois.
 \end{tcolorbox}
-
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/github-auth-01.png}\\
-\small\textit{Capture d'écran --- fenêtre de connexion GitHub lors du premier push}
-\end{center}
 
 \subsection{Vérification}
 

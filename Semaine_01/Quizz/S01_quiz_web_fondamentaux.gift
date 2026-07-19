@@ -1,0 +1,177 @@
+// ============================================================
+//  Quiz Moodle — Semaine 1 : Fondamentaux du web
+//  Classe passerelle — Développement web — cfpt·i / hepia
+//  Format : GIFT (import direct dans Moodle)
+//  Encodage : UTF-8
+//  Import : Banque de questions > Importer > format GIFT > UTF-8
+//  Catégorie cible : $course$/Semaine 1 - Fondamentaux du web
+// ============================================================
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web
+
+// ------------------------------------------------------------
+// 1. Signification de WWW (QCM)
+// ------------------------------------------------------------
+::S01-Q01 — Signification de WWW::
+Que signifie l'acronyme « www » que l'on retrouve dans de nombreuses adresses de sites ?{
+=World Wide Web
+~World Web Wide
+~Wide World Web
+~World Wireless Web
+####La bonne réponse est « World Wide Web », que l'on traduit en français par « toile (d'araignée) mondiale ».
+}
+
+// ------------------------------------------------------------
+// 2. Lien hypertexte (QCM)
+// ------------------------------------------------------------
+::S01-Q02 — Le lien hypertexte::
+Qu'est-ce qu'un lien hypertexte ?{
+=Un élément d'une page web qui, quand on clique dessus, mène vers un autre contenu (même site ou site différent)
+~Un câble physique qui relie deux serveurs entre eux
+~Un mot de passe qui protège l'accès à une page web
+~Un programme qui traduit le code HTML pour l'afficher
+####Un lien hypertexte relie les pages entre elles : en cliquant dessus, on accède à un autre contenu, sur le même site (lien interne) ou sur un autre site (lien externe).
+}
+
+// ------------------------------------------------------------
+// 3. Internet vs Web (Vrai/Faux)
+// ------------------------------------------------------------
+::S01-Q03 — Internet et le web, est-ce pareil ?::
+Internet et le Web désignent exactement la même chose.{
+FALSE
+####Faux. Internet est le réseau physique mondial qui relie les ordinateurs entre eux. Le Web n'est qu'un des services qui circulent sur Internet (au même titre que l'e-mail par exemple) : c'est l'ensemble des pages reliées par des liens hypertexte, que l'on consulte avec un navigateur.
+}
+
+// ------------------------------------------------------------
+// 4. Inventeur du Web (QCM)
+// ------------------------------------------------------------
+::S01-Q04 — L'inventeur du Web::
+Qui est à l'origine du Web, inventé en 1991 alors qu'il était chercheur au CERN ?{
+=Tim Berners-Lee
+~Linus Torvalds
+~Bill Gates
+~Steve Jobs
+####C'est Tim Berners-Lee, chercheur au CERN (Genève) en 1991, qui a inventé le Web. Il est à l'origine du langage HTML et a fondé l'organisme W3C.
+}
+
+// ------------------------------------------------------------
+// 5. Ancêtre du Web (QCM)
+// ------------------------------------------------------------
+::S01-Q05 — L'ancêtre du Web::
+Quel réseau, créé en 1969, est considéré comme l'ancêtre d'Internet ?{
+=ARPAnet
+~Ethernet
+~Netscape
+~World Wide Web
+####ARPAnet, créé en 1969, est l'ancêtre d'Internet. Les e-mails apparaissent en 1972, et le Web seulement en 1991.
+}
+
+// ------------------------------------------------------------
+// 6. Premier navigateur grand public (QCM)
+// ------------------------------------------------------------
+::S01-Q06 — Le premier navigateur grand public::
+Quel a été le premier navigateur web commercial distribué à grande échelle, lancé en 1994 ?{
+=Netscape Navigator
+~Google Chrome
+~Internet Explorer
+~Mozilla Firefox
+####Netscape Navigator (1994) a été le premier navigateur grand public — d'où le terme « navigateur ». Il a rapidement supplanté son ancêtre NCSA Mosaic.
+}
+
+// ------------------------------------------------------------
+// 7. Rôle du navigateur (QCM)
+// ------------------------------------------------------------
+::S01-Q07 — Le rôle du navigateur::
+Quel est le rôle principal d'un navigateur web (Firefox, Chrome, etc.) ?{
+=Traduire le code HTML, CSS et JavaScript pour afficher une page web utilisable
+~Héberger les sites web et les envoyer aux visiteurs
+~Effectuer des recherches par mots-clés sur le web
+~Stocker les bases de données des sites web
+####Le navigateur interprète (traduit) le code HTML, CSS et JavaScript reçu, pour en faire une page web affichable et utilisable.
+}
+
+// ------------------------------------------------------------
+// 8. Google : navigateur ou moteur de recherche ? (Vrai/Faux)
+// ------------------------------------------------------------
+::S01-Q08 — Google est-il un navigateur ?::
+Google est un navigateur web.{
+FALSE
+####Faux. Google est, à la base, un moteur de recherche : il sert à effectuer des recherches, pas à afficher les pages. Attention à ne pas le confondre avec le navigateur Google Chrome, qui est un produit différent.
+}
+
+// ------------------------------------------------------------
+// 9. Pourquoi tester sur plusieurs navigateurs (QCM)
+// ------------------------------------------------------------
+::S01-Q09 — Tester sur plusieurs navigateurs::
+Pourquoi est-il recommandé de tester son site web sur différents navigateurs ?{
+=Parce que tous les navigateurs ne traduisent pas le code de la même manière, et l'affichage peut varier
+~Parce que chaque navigateur utilise un langage HTML complètement différent
+~Parce qu'un site ne fonctionne que sur le navigateur avec lequel il a été créé
+~Parce que c'est obligatoire pour publier un site sur Internet
+####Les navigateurs n'interprètent pas toujours le code de façon identique : un même site peut s'afficher différemment de l'un à l'autre. D'où l'importance de tester.
+}
+
+// ------------------------------------------------------------
+// 10. Client et serveur (association)
+// ------------------------------------------------------------
+::S01-Q10 — Les deux types d'ordinateurs du web::
+Associez chaque type d'ordinateur à son rôle sur le web.{
+=Client -> L'ordinateur qui consulte les sites web (le vôtre, via le navigateur)
+=Serveur -> L'ordinateur qui héberge les sites web et les envoie aux visiteurs
+}
+
+// ------------------------------------------------------------
+// 11. Langages côté client (association)
+// ------------------------------------------------------------
+::S01-Q11 — Les trois langages côté client::
+Associez chaque langage côté client à son rôle.{
+=HTML -> La structure et le contenu de la page
+=CSS -> La présentation (couleurs, polices, mise en page)
+=JavaScript -> Le comportement et l'interactivité
+####Ces trois langages s'exécutent dans le navigateur, côté client.
+}
+
+// ------------------------------------------------------------
+// 12. Langage côté client vs serveur (QCM)
+// ------------------------------------------------------------
+::S01-Q12 — Côté client ou côté serveur ?::
+Un langage côté serveur permet notamment de...{
+=décider qu'un menu ne s'affiche que si l'utilisateur a créé un compte
+~définir la couleur de fond d'un bouton
+~positionner un menu à gauche de la page
+~structurer les titres et paragraphes d'une page
+####Les langages serveur décrivent comment le site se comporte (logique, conditions, comptes utilisateurs). L'apparence et la position des éléments relèvent, elles, des langages client (CSS notamment).
+}
+
+// ------------------------------------------------------------
+// 13. Le cloud (QCM)
+// ------------------------------------------------------------
+::S01-Q13 — Qu'est-ce que le cloud ?::
+Que désigne le « cloud » (cloud computing) ?{
+=Le fait de déporter le stockage et les traitements sur des serveurs distants plutôt que sur son propre poste
+~Un type de connexion Internet sans fil réservé aux téléphones
+~Un logiciel qui protège l'ordinateur contre les virus
+~Le réseau physique de câbles qui relie les continents
+####Le cloud consiste à déporter sur des serveurs distants des stockages et des traitements qui étaient traditionnellement réalisés en local, sur le poste de l'utilisateur ou un serveur local.
+}
+
+// ------------------------------------------------------------
+// 14. Bases de données et SQL (QCM)
+// ------------------------------------------------------------
+::S01-Q14 — Bases de données et langage associé::
+Beaucoup de sites web utilisent une base de données pour stocker leurs informations (comptes, messages...). Quel langage sert principalement à interroger ces bases de données ?{
+=SQL
+~HTML
+~CSS
+~JavaScript
+####SQL (Structured Query Language) est le langage utilisé pour dialoguer avec la plupart des bases de données : y ajouter, lire, modifier ou supprimer des informations.
+}
+
+// ------------------------------------------------------------
+// 15. Où s'exécute quoi ? (Vrai/Faux)
+// ------------------------------------------------------------
+::S01-Q15 — Où s'exécutent HTML, CSS et JavaScript ?::
+HTML, CSS et JavaScript sont les trois langages exécutés directement par le navigateur (côté client).{
+TRUE
+####Vrai. Ce sont les trois seuls langages compris nativement par un navigateur : ils s'exécutent côté client. Les langages serveur (comme Node.js dans ce cours), eux, tournent sur le serveur.
+}
