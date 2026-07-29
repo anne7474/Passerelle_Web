@@ -1,0 +1,317 @@
+// ============================================================
+//  Quiz Moodle — Semaine 1 : Fondamentaux du web & environnement
+//  Classe passerelle — Développement web — cfpt·i / hepia
+//  Format : GIFT (import direct dans Moodle)
+//  Encodage : UTF-8
+//  Import : Banque de questions > Importer > format GIFT > UTF-8
+//
+//  Banque de 33 questions répartie en 5 sous-catégories.
+//  Pour une auto-évaluation de fin de semaine, compter 12 à 15
+//  questions tirées des catégories B, C, D et E.
+//
+//  Rappels de format GIFT respectés ici :
+//   - une question ne doit contenir AUCUNE ligne vide
+//   - les questions sont séparées par au moins une ligne vide
+//   - une question d'association exige AU MOINS 3 paires
+//   - les questions d'association n'acceptent PAS de feedback
+// ============================================================
+
+
+// ############################################################
+// A — ORIGINES ET CULTURE WEB
+// ############################################################
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web/A - Origines et culture web
+
+::S01-Q01 — Signification de WWW::
+Que signifie l'acronyme « www » que l'on retrouve dans de nombreuses adresses de sites ?{
+=World Wide Web
+~World Web Wide
+~Wide World Web
+~World Wireless Web
+####La bonne réponse est « World Wide Web », que l'on traduit en français par « toile (d'araignée) mondiale ».
+}
+
+::S01-Q02 — Le lien hypertexte::
+Qu'est-ce qu'un lien hypertexte ?{
+=Un élément d'une page web qui, quand on clique dessus, mène vers un autre contenu (même site ou site différent)
+~Un câble physique qui relie deux serveurs entre eux
+~Un mot de passe qui protège l'accès à une page web
+~Un programme qui traduit le code HTML pour l'afficher
+####Un lien hypertexte relie les pages entre elles : en cliquant dessus, on accède à un autre contenu, sur le même site (lien interne) ou sur un autre site (lien externe).
+}
+
+::S01-Q03 — Internet et le web, est-ce pareil ?::
+Internet et le Web désignent exactement la même chose.{
+FALSE
+####Faux. Internet est le réseau physique mondial qui relie les ordinateurs entre eux. Le Web n'est qu'un des services qui circulent sur Internet (au même titre que l'e-mail par exemple) : c'est l'ensemble des pages reliées par des liens hypertexte, que l'on consulte avec un navigateur.
+}
+
+::S01-Q04 — L'inventeur du Web::
+Qui est à l'origine du Web, qu'il a conçu alors qu'il était chercheur au CERN, à Genève ?{
+=Tim Berners-Lee
+~Linus Torvalds
+~Bill Gates
+~Steve Jobs
+####Tim Berners-Lee rédige sa proposition au CERN en 1989. Le premier serveur et le premier navigateur voient le jour en 1990, et le Web est ouvert au public en 1991. Il est aussi à l'origine du langage HTML et a fondé le W3C, l'organisme qui normalise les technologies du web.
+}
+
+::S01-Q05 — L'ancêtre d'Internet::
+Quel réseau, créé en 1969, est considéré comme l'ancêtre d'Internet ?{
+=ARPAnet
+~Ethernet
+~Netscape
+~World Wide Web
+####ARPAnet, créé en 1969, est l'ancêtre d'Internet. L'e-mail apparaît en 1972, et le Web une vingtaine d'années plus tard seulement. Autre confirmation qu'Internet et le Web sont deux choses distinctes.
+}
+
+::S01-Q06 — Le navigateur qui a popularisé le web::
+Quel navigateur, lancé en 1994, a fait connaître le web au grand public ?{
+=Netscape Navigator
+~Google Chrome
+~Internet Explorer
+~Mozilla Firefox
+####Netscape Navigator (1994), successeur du pionnier NCSA Mosaic (1993), est le navigateur qui a diffusé le web auprès du grand public. Internet Explorer arrive en 1995, Firefox en 2004 et Chrome en 2008.
+}
+
+::S01-Q07 — Qu'est-ce que le cloud ?::
+Que désigne le « cloud » (cloud computing) ?{
+=Le fait de déporter le stockage et les traitements sur des serveurs distants plutôt que sur son propre poste
+~Un type de connexion Internet sans fil réservé aux téléphones
+~Un logiciel qui protège l'ordinateur contre les virus
+~Le réseau physique de câbles qui relie les continents
+####Le cloud consiste à déporter sur des serveurs distants des stockages et des traitements qui étaient traditionnellement réalisés en local, sur le poste de l'utilisateur ou un serveur local. Le Google Drive que vous avez configuré en TP en est un exemple.
+}
+
+
+// ############################################################
+// B — COMMENT FONCTIONNE LE WEB
+// ############################################################
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web/B - Comment fonctionne le web
+
+::S01-Q08 — Le rôle du navigateur::
+Quel est le rôle principal d'un navigateur web (Firefox, Chrome, etc.) ?{
+=Traduire le code HTML, CSS et JavaScript pour afficher une page web utilisable
+~Héberger les sites web et les envoyer aux visiteurs
+~Effectuer des recherches par mots-clés sur le web
+~Stocker les bases de données des sites web
+####Le navigateur interprète (traduit) le code HTML, CSS et JavaScript reçu, pour en faire une page web affichable et utilisable.
+}
+
+::S01-Q09 — Google est-il un navigateur ?::
+Google est un navigateur web.{
+FALSE
+####Faux. Google est, à la base, un moteur de recherche : il sert à effectuer des recherches, pas à afficher les pages. Attention à ne pas le confondre avec le navigateur Google Chrome, qui est un produit différent.
+}
+
+::S01-Q10 — Tester sur plusieurs navigateurs::
+Pourquoi est-il recommandé de tester son site web sur différents navigateurs ?{
+=Parce que tous les navigateurs ne traduisent pas le code de la même manière, et l'affichage peut varier
+~Parce que chaque navigateur utilise un langage HTML complètement différent
+~Parce qu'un site ne fonctionne que sur le navigateur avec lequel il a été créé
+~Parce que c'est obligatoire pour publier un site sur Internet
+####Les navigateurs n'interprètent pas toujours le code de façon identique : un même site peut s'afficher différemment de l'un à l'autre. D'où l'importance de tester.
+}
+
+::S01-Q11 — Les acteurs d'une requête web::
+Associez chaque élément à son rôle dans le fonctionnement du web.{
+=Client -> L'ordinateur qui consulte les sites web, en général via un navigateur
+=Serveur -> L'ordinateur qui héberge les sites web et les envoie aux visiteurs
+=DNS -> Le service qui traduit un nom de domaine en adresse IP
+}
+
+::S01-Q12 — Anatomie d'une URL::
+Dans l'adresse https\://www.hepia.ch/formations, associez chaque partie à sa dénomination.{
+=https -> Le protocole
+=www.hepia.ch -> Le nom de domaine
+=/formations -> Le chemin
+}
+
+::S01-Q13 — À quoi sert le DNS ?::
+Quel est le rôle du DNS (Domain Name System) ?{
+=Traduire un nom de domaine lisible en adresse IP numérique
+~Chiffrer les échanges entre le navigateur et le serveur
+~Stocker les pages web des sites les plus visités
+~Vérifier l'identité de l'auteur d'un site web
+####Un ordinateur ne sait pas joindre « www.hepia.ch » directement : il lui faut une adresse IP. Le DNS joue le rôle d'annuaire, en traduisant le nom en numéro.
+}
+
+::S01-Q14 — Le code de statut 404::
+Que signifie le code de statut HTTP 404 renvoyé par un serveur ?{
+=La ressource demandée n'existe pas
+~Le serveur a rencontré une erreur interne
+~L'accès à la ressource est refusé
+~La requête s'est déroulée correctement
+####404 signifie « Not Found » : l'adresse demandée ne correspond à aucune ressource sur le serveur. À ne pas confondre avec 403 (accès refusé) ni avec 500 (erreur du serveur).
+}
+
+::S01-Q15 — Les familles de codes de statut::
+Un code de statut HTTP commençant par le chiffre 5 signale une erreur survenue du côté du serveur.{
+TRUE
+####Vrai. Le premier chiffre indique la famille : 2 pour un succès, 3 pour une redirection, 4 pour une erreur venant du client (adresse erronée, accès refusé) et 5 pour une erreur venant du serveur lui-même.
+}
+
+::S01-Q16 — Site statique ou dynamique ?::
+Qu'est-ce qui caractérise un site dynamique par rapport à un site statique ?{
+=Son contenu est généré à la demande, souvent à partir d'une base de données
+~Il contient des animations et des effets visuels
+~Il se met à jour automatiquement quand on redimensionne la fenêtre
+~Il peut être consulté depuis un téléphone comme depuis un ordinateur
+####Un site statique renvoie toujours le même fichier, déjà prêt sur le serveur. Un site dynamique construit la page au moment de la demande : deux visiteurs peuvent donc recevoir des contenus différents. Les animations et l'adaptation à la taille de l'écran relèvent, elles, du CSS, et existent aussi sur un site statique.
+}
+
+::S01-Q17 — MiniForum en semaine 1::
+Tel qu'il est créé en semaine 1, le projet MiniForum est un site statique.{
+TRUE
+####Vrai. Jusqu'en semaine 5, le contenu est écrit en dur dans le HTML. En semaines 6 et 7, JavaScript le rendra interactif, mais les données disparaîtront à chaque rafraîchissement. Il ne deviendra réellement dynamique qu'à partir de la semaine 12, avec Node.js et MySQL.
+}
+
+::S01-Q18 — Qui parle à la base de données ?::
+Pour gagner du temps, le JavaScript exécuté dans le navigateur peut interroger directement la base de données du site.{
+FALSE
+####Faux, et c'est une règle fondamentale. Le navigateur s'adresse toujours au serveur, et c'est le serveur seul qui interroge la base de données. Autoriser le contraire reviendrait à exposer la base à n'importe quel visiteur.
+}
+
+
+// ############################################################
+// C — LES LANGAGES
+// ############################################################
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web/C - Les langages
+
+::S01-Q19 — Les trois langages côté client::
+Ces trois langages s'exécutent tous dans le navigateur. Associez chacun à son rôle.{
+=HTML -> La structure et le contenu de la page
+=CSS -> La présentation : couleurs, polices, mise en page
+=JavaScript -> Le comportement et l'interactivité
+}
+
+::S01-Q20 — Côté client ou côté serveur ?::
+Un langage côté serveur permet notamment de...{
+=décider qu'un menu ne s'affiche que si l'utilisateur a créé un compte
+~définir la couleur de fond d'un bouton
+~positionner un menu à gauche de la page
+~structurer les titres et paragraphes d'une page
+####Les langages serveur décrivent comment le site se comporte (logique, conditions, comptes utilisateurs). L'apparence et la position des éléments relèvent, elles, des langages client (CSS notamment).
+}
+
+::S01-Q21 — Bases de données et langage associé::
+Beaucoup de sites web utilisent une base de données pour stocker leurs informations (comptes, messages...). Quel langage sert principalement à interroger ces bases de données ?{
+=SQL
+~HTML
+~CSS
+~JavaScript
+####SQL (Structured Query Language) est le langage utilisé pour dialoguer avec la plupart des bases de données : y ajouter, lire, modifier ou supprimer des informations. Vous le travaillerez à partir de la semaine 8.
+}
+
+::S01-Q22 — Où s'exécutent HTML, CSS et JavaScript ?::
+HTML, CSS et JavaScript sont les trois langages exécutés directement par le navigateur (côté client).{
+TRUE
+####Vrai. Ce sont les trois seuls langages compris nativement par un navigateur : ils s'exécutent côté client. Les langages serveur (comme Node.js dans ce cours), eux, tournent sur le serveur.
+}
+
+::S01-Q23 — À quoi sert Node.js ?::
+Que permet de faire Node.js ?{
+=Exécuter du JavaScript en dehors du navigateur, notamment sur un serveur
+~Écrire des pages web plus rapidement grâce à une syntaxe simplifiée
+~Transformer du code JavaScript en code HTML
+~Afficher des pages web sans passer par un navigateur
+####Node.js exécute du JavaScript côté serveur : créer un serveur web, traiter des requêtes HTTP, interroger une base de données. C'est ce qui permet, dans ce cours, d'utiliser un seul et même langage des deux côtés.
+}
+
+
+// ############################################################
+// D — ENVIRONNEMENT ET GIT
+// ############################################################
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web/D - Environnement et Git
+
+::S01-Q24 — La version de Node.js du cours::
+En tapant node -v dans un terminal, quelle version devez-vous voir s'afficher pour ce cours ?{
+=Une version 24
+~Une version 20
+~Une version 16
+~Peu importe, toutes les versions se valent
+####Le cours utilise Node.js 24 LTS. La version 20, encore proposée par beaucoup de tutoriels en ligne, est en fin de vie et ne doit plus être utilisée.
+}
+
+::S01-Q25 — Initialiser un dépôt::
+Quelle commande crée un dépôt Git dans le dossier courant ?{
+=git init
+~git start
+~git new
+~git create
+####git init crée le dépôt local, c'est-à-dire le dossier caché .git qui contiendra tout l'historique du projet.
+}
+
+::S01-Q26 — Les commandes Git essentielles::
+Associez chaque commande Git à ce qu'elle fait.{
+=git add -> Placer des fichiers modifiés dans la zone de préparation
+=git commit -> Enregistrer un instantané dans l'historique local
+=git push -> Envoyer les commits vers le dépôt distant sur GitHub
+}
+
+::S01-Q27 — Le rôle du fichier .gitignore::
+À quoi sert le fichier .gitignore ?{
+=À indiquer à Git les fichiers et dossiers qu'il ne doit pas suivre
+~À supprimer définitivement des fichiers du projet
+~À masquer certains fichiers dans l'explorateur de VS Code
+~À lister les fichiers à envoyer en priorité sur GitHub
+####Le .gitignore liste ce que Git doit ignorer : dépendances téléchargées, fichiers de configuration locaux et surtout fichiers contenant des mots de passe.
+}
+
+::S01-Q28 — Quand créer le .gitignore ?::
+Il vaut mieux créer le fichier .gitignore avant le tout premier commit du projet.{
+TRUE
+####Vrai. Un fichier déjà enregistré dans un commit reste présent dans l'historique même si on l'ajoute au .gitignore ensuite. C'est ainsi que des mots de passe se retrouvent publiés sur GitHub sans que leur auteur s'en aperçoive.
+}
+
+::S01-Q29 — Le dossier node_modules::
+Pourquoi le dossier node_modules ne doit-il jamais être envoyé sur GitHub ?{
+=Parce qu'il est très volumineux et qu'il peut être régénéré en une commande
+~Parce qu'il contient les mots de passe de la base de données
+~Parce que GitHub refuse les dossiers contenant du code JavaScript
+~Parce qu'il change de nom à chaque installation
+####node_modules peut contenir des milliers de fichiers et peser plusieurs centaines de mégaoctets, alors que la commande npm install suffit à le reconstituer. Il n'a donc rien à faire dans l'historique.
+}
+
+::S01-Q30 — Un bon message de commit::
+Parmi ces messages de commit, lequel est le plus utile ?{
+=Ajout du formulaire de création de sujet
+~modif
+~ça marche enfin
+~update
+####Un bon message décrit ce qui a changé, de façon compréhensible plusieurs semaines plus tard. Dans ce cours, l'historique Git fait partie de l'évaluation du projet.
+}
+
+
+// ############################################################
+// E — RÈGLES DU COURS
+// ############################################################
+
+$CATEGORY: $course$/Semaine 1 - Fondamentaux du web/E - Règles du cours
+
+::S01-Q31 — Les assistants de génération de code::
+L'usage de GitHub Copilot, ChatGPT ou d'un autre assistant générateur de code est autorisé pour les travaux pratiques et les jalons de ce cours.{
+FALSE
+####Faux. Ces outils sont interdits pour l'ensemble des travaux rendus. L'objectif de l'année est que vous sachiez programmer : cela s'apprend en écrivant du code, en le voyant échouer et en comprenant pourquoi. En 1re année hepia, les évaluations d'algorithmique sont individuelles et sans assistance.
+}
+
+::S01-Q32 — Ce qui reste autorisé::
+Parmi ces ressources, laquelle est explicitement encouragée dans ce cours ?{
+=La documentation MDN Web Docs
+~GitHub Copilot, pour compléter le code plus vite
+~ChatGPT, à condition de relire le code produit
+~Un assistant IA, uniquement pour les exercices non notés
+####MDN est la référence à consulter en premier, avant tout forum ou vidéo. Les moteurs de recherche et Stack Overflow restent permis, à condition de comprendre et de savoir expliquer tout code repris. Les générateurs de code, eux, sont interdits sans exception.
+}
+
+::S01-Q33 — En cas de retard sur le projet::
+Un dépôt de référence conforme à l'état attendu est fourni à la fin de chaque phase (semaines 7, 11 et 17). À quoi sert-il ?{
+=À permettre de repartir sur une base saine au début de la phase suivante, sans pénalité
+~À corriger automatiquement le travail rendu au jalon
+~À remplacer le projet personnel pour les personnes en difficulté
+~À servir de modèle à recopier pour le rendu final
+####Sur vingt semaines, un blocage en semaine 4 ne doit pas empêcher de suivre la suite du cours. Repartir d'un dépôt de référence n'entraîne aucune pénalité sur les jalons suivants. La seule condition est de signaler la difficulté.
+}

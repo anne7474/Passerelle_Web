@@ -1,12 +1,20 @@
 % ============================================================
-%  Semaine 1 — Fiche TP — Mise en place du projet
+%  Semaine 1 — Fiche TP — Mise en place du projet  [Module A]
 %  cfpt·i | Anne Terrier
-%  Charte graphique : charte cfpt·i originale, police sans-serif
+%  Aligné sur PlanCours_Pass_Web_v2 (S1 : environnement + dépôt Git
+%  MiniForum avec .gitignore correct dès le premier commit)
+%
+%  Images attendues dans ./images/ :
+%    cfpti.png, Drive1.png, Drive2.png, Drive3.png,
+%    invit.png, verif.png, Git1.png, miniforum.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
 % ============================================================
 \documentclass[a4paper,11pt]{article}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
 \usepackage[scaled=0.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
@@ -25,11 +33,11 @@
 \usepackage{lastpage}
 \usepackage{titlesec}
 \usepackage{listings}
-\usepackage[hidelinks]{hyperref}
 \usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
 
 % ---------------------------------------------------------------
-% Palette cfpt·i originale
+% Palette cfpt·i
 % ---------------------------------------------------------------
 \definecolor{cfptYellow}{HTML}{F5C400}
 \definecolor{cfptBlack}{HTML}{1A1A1A}
@@ -40,8 +48,9 @@
 \definecolor{codeGrey}{HTML}{F5F5F5}
 \definecolor{successGreen}{HTML}{1E7145}
 \definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
 
-% Alias (le contenu du document utilise ces noms) vers la palette ci-dessus
 \colorlet{uniInk}{cfptBlack}
 \colorlet{uniNavy}{accentBlue}
 \colorlet{uniTeal}{successGreen}
@@ -52,19 +61,45 @@
 
 \color{cfptBlack}
 
-% --- En-tête / pied de page ---
+% ---------------------------------------------------------------
+% Images : insertion robuste
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \capture[largeur]{chemin}{légende}
+\newcommand{\capture}[3][0.72\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][2.8cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ capture à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[L]{\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}
+\fancyhead[L]{\logocfpt}
 \fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
 \fancyhead[R]{\color{cfptDarkGrey}\small\textit{Fiche TP --- Semaine 1}}
 \fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
-\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize S01\_TP.pdf}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize Mise en place du projet}
 \fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% --- Titres sections : bandeau plein largeur ---
+% ---------------------------------------------------------------
+% Titres de section
+% ---------------------------------------------------------------
 \newcommand{\sectionbox}[1]{%
   \colorbox{accentBlue}{%
     \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
@@ -81,12 +116,18 @@
 \titlespacing{\section}{0pt}{18pt}{8pt}
 \titlespacing{\subsection}{0pt}{12pt}{4pt}
 
-% --- Listes ---
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
 \setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
   leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
 \setlist[enumerate]{itemsep=6pt, topsep=4pt, leftmargin=1.6em}
 
-% --- Boîtes tcolorbox ---
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
 \tcbset{
   definition/.style={
     colback=lightBlue!30, colframe=accentBlue,
@@ -105,10 +146,40 @@
     fonttitle=\bfseries\small\color{successGreen},
     boxrule=0.8pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt}
 }
 
-% --- Listings code ---
+% ---------------------------------------------------------------
+% Listings : JavaScript et CSS ne sont pas fournis par le paquet
+% ---------------------------------------------------------------
+\lstdefinelanguage{JavaScript}{
+  morekeywords={await, async, break, case, catch, class, const, continue,
+    default, delete, do, else, export, extends, false, finally, for, function,
+    if, import, in, instanceof, let, new, null, of, return, super, switch,
+    this, throw, true, try, typeof, var, void, while, yield},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`,
+  sensitive=true,
+}
+
+\lstdefinelanguage{CSS}{
+  morekeywords={background-color, border, border-radius, color, cursor,
+    display, flex, font-family, font-size, grid, height, margin, padding,
+    text-align, width},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  sensitive=false,
+}
+
 \lstset{
   basicstyle=\ttfamily\small,
   backgroundcolor=\color{codeGrey},
@@ -121,10 +192,34 @@
   showstringspaces=false,
   numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
   numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
 }
+\renewcommand{\lstlistingname}{Extrait}
 
-% --- supprime les retraits de paragraphe ---
-\setlength{\parindent}{0pt}
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+%   1) \aboverulesep / \belowrulesep a 0 : supprime le lisere blanc
+%      entre le filet booktabs et la bande coloree du \rowcolor.
+%   2) \hdr : force l'alignement de la cellule d'en-tete. Sans cela,
+%      une colonne p{} ou X place le texte trop bas dans la bande
+%      coloree (mesure : 12 pt de couleur au-dessus contre 4 en dessous).
+% Usage : \hdr{Titre} a gauche, \hdrc{Titre} centre, \hdrr{Titre} a droite.
+% Trois macros distinctes plutot qu'un argument optionnel : ce dernier
+% n'est pas expansible et casse la passe de mesure de tabularx.
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -137,27 +232,28 @@
   colback=accentBlue, colframe=accentBlue,
   arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
   \begin{minipage}{0.72\linewidth}
-    {\color{white}\Large\bfseries Fiche TP --- Semaine 1 --- Mise en place du projet}\\[4pt]
+    {\color{cfptYellow}\Large\bfseries Fiche TP --- Semaine 1}\\[4pt]
+    {\color{white}\Large\bfseries Mise en place du projet}\\[4pt]
     {\color{lightBlue}\normalsize Développement web, classe passerelle}
   \end{minipage}
   \hfill
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.24\linewidth}
     \raggedleft
-    \begin{tabular}{r}
-      \color{lightBlue}\small Durée \\
-      \color{white}\small indicative : 4h \\
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Durée & \color{white}\small 4h \\
+      \color{lightBlue}\small Rendu & \color{white}\small avant S2 \\
     \end{tabular}
   \end{minipage}
 \end{tcolorbox}
 
 \vspace{6pt}
 \begin{tcolorbox}[definition, title={Objectif du TP}]
-Configurer un environnement de développement fonctionnel et initialiser le dépôt Git du projet fil rouge \textbf{MiniForum}.
+Configurer un environnement de développement fonctionnel et initialiser le dépôt Git du projet fil rouge \textbf{MiniForum}, avec un \texttt{.gitignore} correct dès le premier commit.
 \end{tcolorbox}
 
 \begin{tcolorbox}[astuce, title={Avant de commencer}]
-Ce TP suppose que les notions du polycopié \textit{S01\_polycop} (client/serveur, HTML/CSS/JS, Git) ont été vues en cours. Garde-le à portée de main.\\
-Les instructions ci-dessous concernent \textbf{Windows}.
+Ce TP suppose que les notions du polycopié \textit{S01\_polycop} (client / serveur, HTML / CSS / JS, Git) ont été vues en cours. Garde-le à portée de main.\\[3pt]
+Les instructions ci-dessous concernent \textbf{Windows}. Sous macOS ou Linux, les téléchargements sont différents mais les commandes du terminal sont identiques : signale-le et je te guiderai.
 \end{tcolorbox}
 
 % ============================================================
@@ -171,7 +267,7 @@ Avant d'installer quoi que ce soit, on met en place une organisation de fichiers
 \begin{enumerate}
   \item Sur ton disque, ouvrir le répertoire \texttt{Documents}.
   \item Y créer un répertoire \texttt{Passerelle}.
-  \item À l'intérieur de \texttt{Passerelle}, créer les sous-répertoires suivants :
+  \item À l'intérieur de \texttt{Passerelle}, créer les trois sous-répertoires suivants :
 \end{enumerate}
 
 \begin{center}
@@ -183,9 +279,9 @@ Avant d'installer quoi que ce soit, on met en place une organisation de fichiers
   arr/.style={-{Stealth[length=5pt]}, cfptDarkGrey, thick}]
 
 \node[folder] (root) {\texttt{Passerelle}};
-\node[sub, below=0.8cm of root, xshift=-2.5cm] (web)  {\texttt{Web}};
-\node[sub, below=0.8cm of root, xshift=0cm] (prog) {\texttt{Programmation}};
-\node[sub, below=0.8cm of root, xshift=2.5cm]  (lin)  {\texttt{Linux}};
+\node[sub, below=0.8cm of root, xshift=-2.8cm] (web)  {\texttt{Web}};
+\node[sub, below=0.8cm of root, xshift=0cm]    (prog) {\texttt{Programmation}};
+\node[sub, below=0.8cm of root, xshift=2.8cm]  (lin)  {\texttt{Linux}};
 
 \draw[arr] (root.south) -- (web.north);
 \draw[arr] (root.south) -- (prog.north);
@@ -195,21 +291,18 @@ Avant d'installer quoi que ce soit, on met en place une organisation de fichiers
 
 \subsection{Synchroniser automatiquement sur Google Drive}
 
-Afin de ne pas perdre ton travail en cas de perte, casse ou écrasement de disque, tu vas synchroniser automatiquement le répertoire \texttt{Passerelle} sur ton espace Google Drive personnel.
+Afin de ne pas perdre ton travail en cas de perte, de casse ou d'écrasement de disque, tu vas synchroniser automatiquement le répertoire \texttt{Passerelle} sur ton espace Google Drive personnel.
 
 \paragraph{Étape 1 --- Mettre en place la synchronisation}
 
 \begin{enumerate}
-  \item Télécharger et installer \textbf{Drive pour ordinateur} : \url{https://workspace.google.com/intl/fr/products/drive/#download}
+  \item Télécharger et installer \textbf{Drive pour ordinateur} : \url{https://workspace.google.com/intl/fr/products/drive/}
   \item Se connecter avec ton \textbf{compte eduge}.
   \item Appuyer deux fois sur \textit{Suivant}, jusqu'à l'étape de sélection du dossier à synchroniser.
   \item Cliquer sur \textbf{Ajouter un dossier}.
 \end{enumerate}
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/Drive1.png}\\
-\small\textit{Capture d'écran --- ajouter un dossier à synchroniser}
-\end{center}
+\capture{images/Drive1.png}{Capture d'écran --- ajouter un dossier à synchroniser}
 
 \begin{enumerate}[resume]
   \item Sélectionner le dossier \texttt{Passerelle} créé à l'étape précédente.
@@ -217,13 +310,10 @@ Afin de ne pas perdre ton travail en cas de perte, casse ou écrasement de disqu
   \item Continuer en appuyant sur \textit{Suivant}.
 \end{enumerate}
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/Drive2.png}\\
-\small\textit{Capture d'écran --- dossier Passerelle sélectionné}
-\end{center}
+\capture{images/Drive2.png}{Capture d'écran --- dossier Passerelle sélectionné}
 
 \begin{tcolorbox}[attention, title={Attention}]
-Ne synchronise que le dossier \texttt{Passerelle}. Ne coche pas \textit{Desktop}, \textit{Documents} ou \textit{Downloads} : tu risquerais de synchroniser bien plus que nécessaire et de saturer ton espace Drive.
+Ne synchronise que le dossier \texttt{Passerelle}. Ne coche pas \textit{Bureau}, \textit{Documents} ou \textit{Téléchargements} : tu risquerais de synchroniser bien plus que nécessaire et de saturer ton espace Drive.
 \end{tcolorbox}
 
 \paragraph{Étape 2 --- Vérifier le bon fonctionnement}
@@ -234,18 +324,15 @@ Ne synchronise que le dossier \texttt{Passerelle}. Ne coche pas \textit{Desktop}
   \item Tu dois retrouver l'arborescence créée sur ton ordinateur.
 \end{enumerate}
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{images/Drive3.png}\\
-\small\textit{Capture d'écran --- vérification de l'arborescence côté Drive}
-\end{center}
+\capture{images/Drive3.png}{Capture d'écran --- vérification de l'arborescence côté Drive}
 
 \begin{enumerate}[resume]
   \item Créer un fichier \texttt{test.txt} sur ton ordinateur, dans le dossier \texttt{Web}.
-  \item Vérifier qu'il apparaît bien côté Drive (après quelques secondes).
+  \item Vérifier qu'il apparaît bien côté Drive au bout de quelques secondes, puis le supprimer.
 \end{enumerate}
 
 \begin{tcolorbox}[astuce, title={C'est en place}]
-Ton travail est désormais sauvegardé automatiquement. Tu es prêt à attaquer l'année de manière organisée.
+Ton travail est désormais sauvegardé automatiquement. Attention toutefois : Google Drive est une \textbf{sauvegarde}, pas un outil de versionnage. C'est le rôle de Git, que tu mettras en place en section~4.
 \end{tcolorbox}
 
 % ============================================================
@@ -255,7 +342,7 @@ Ton travail est désormais sauvegardé automatiquement. Tu es prêt à attaquer 
 \subsection{Node.js}
 
 \begin{enumerate}
-  \item Aller sur \url{https://nodejs.org/fr/download} et télécharger la version \textbf{LTS} pour Windows (fichier \texttt{.msi}).
+  \item Aller sur \url{https://nodejs.org/fr/download} et télécharger la version \textbf{24 LTS} pour Windows (fichier \texttt{.msi}).
   \item Lancer l'installateur téléchargé, accepter la licence, cliquer sur \textit{Next}.
   \item Dossier de destination : garder celui proposé par défaut.
   \item Écran \textit{Custom Setup} : laisser toutes les cases cochées, en particulier \textbf{npm package manager} et \textbf{Add to PATH}.
@@ -269,66 +356,92 @@ Ton travail est désormais sauvegardé automatiquement. Tu es prêt à attaquer 
 \begin{tcolorbox}[attention, title={Vérification}]
 \begin{enumerate}
   \item Ouvrir une invite de commande (\textit{cmd} ou \textit{PowerShell}).
-    \begin{center}
-    \includegraphics[width=0.5\linewidth]{images/invit.png}\\
-    \small\textit{Capture d'écran --- ouvrir une invite à la commande}
-    \end{center}
-  \item  exécuter \texttt{node -v} puis \texttt{npm -v} : chaque commande doit afficher un numéro de version.
-  \begin{center}
-    \includegraphics[width=0.55\linewidth]{images/verif.png}\\
-    \small\textit{Capture d'écran --- vérification de l'installation de nodeJS}
-    \end{center}
+    \capture[0.5\linewidth]{images/invit.png}{Capture d'écran --- ouvrir une invite de commande}
+  \item Exécuter \texttt{node -v} puis \texttt{npm -v} : chaque commande doit afficher un numéro de version, et celui de Node doit commencer par \texttt{v24}.
+    \capture[0.55\linewidth]{images/verif.png}{Capture d'écran --- vérification de l'installation de Node.js}
 \end{enumerate}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Ne pas installer Node.js 20}]
+Beaucoup de tutoriels en ligne proposent encore Node.js 20 : cette version est en fin de vie et ne doit plus être utilisée. Si \texttt{node -v} affiche autre chose que \texttt{v24}\ldots, désinstalle et recommence.
 \end{tcolorbox}
 
 \subsection{Git}
 
 \begin{enumerate}
-  \item Aller sur \url{https://git-scm.com/install/windows} et télécharger l'installateur 64-bit.
+  \item Aller sur \url{https://git-scm.com/install/windows} et télécharger l'installateur proposé (la page détecte automatiquement l'architecture : c'est \texttt{x64} dans la quasi-totalité des cas).
   \item Lancer l'installateur, accepter la licence, garder le dossier de destination par défaut.
   \item Écran de sélection des composants : garder les cases cochées par défaut.
   \item Écran \textit{Choosing the default editor used by Git} : sélectionner \textbf{Visual Studio Code} dans la liste déroulante.
 \end{enumerate}
 
-\begin{center}
-\includegraphics[width=0.72\linewidth]{Semaine1/images/Git1.png}\\
-\small\textit{Capture d'écran --- choix de l'éditeur par défaut}
-\end{center}
+\capture{images/Git1.png}{Capture d'écran --- choix de l'éditeur par défaut}
 
 \begin{enumerate}[resume]
-  \item Écran \textit{Adjusting the name of the initial branch} : choisir \textbf{main} comme nom de branche par défaut.
+  \item Écran \textit{Adjusting the name of the initial branch} : choisir explicitement \textbf{main} comme nom de branche par défaut.
   \item Écran \textit{Adjusting your PATH environment} : garder l'option recommandée du milieu (\textit{Git from the command line and also from 3rd-party software}).
-\end{enumerate}
-
-\begin{enumerate}[resume]
   \item Écran \textit{Choosing the SSH executable} : garder par défaut (\textit{Use bundled OpenSSH}).
   \item Écran \textit{Choosing HTTPS transport backend} : garder par défaut (\textit{Use the OpenSSL library}).
   \item Écran \textit{Configuring the line ending conversions} : garder l'option par défaut (\textit{Checkout Windows-style, commit Unix-style line endings}).
-\end{enumerate}
-
-\begin{enumerate}[resume]
   \item Écrans suivants (\textit{terminal emulator}, \textit{git pull}, \textit{credential helper}) : garder les options par défaut proposées.
   \item Cliquer sur \textit{Install}, puis \textit{Finish}.
 \end{enumerate}
 
 \begin{tcolorbox}[attention, title={Vérification}]
-Ouvrir une invite de commande et exécuter \texttt{git -v} : la commande doit afficher un numéro de version.
+Ouvrir une invite de commande et exécuter \texttt{git -{}-version} : la commande doit afficher un numéro de version.
 \end{tcolorbox}
-
-\newpage
 
 \subsection{Visual Studio Code}
 
 \begin{enumerate}
   \item Aller sur \url{https://code.visualstudio.com} et télécharger la version Windows.
   \item Lancer l'installateur, accepter la licence, garder le dossier de destination par défaut.
-  \item Écran \textit{Select Additional Tasks} : cocher \textbf{Add to PATH}, \textbf{Register Code as an editor for supported file types}, et les options \textit{Open with Code} du menu contextuel.
+  \item Écran \textit{Select Additional Tasks} : cocher \textbf{Add to PATH}, \textbf{Register Code as an editor for supported file types}, ainsi que les options \textit{Open with Code} du menu contextuel.
+  \item Cliquer sur \textit{Install}, puis \textit{Finish} en laissant \textit{Launch Visual Studio Code} coché.
 \end{enumerate}
 
-\begin{enumerate}[resume]
-  \item Cliquer sur \textit{Install}, puis \textit{Finish} en laissant \textit{Launch Visual Studio Code} coché.
-  \item Installer les extensions listées dans le polycopié (Prettier, ESLint, Live Server, REST Client, GitLens).
+\subsection{Extensions VS Code}
+
+Dans VS Code, ouvrir le panneau des extensions (\texttt{Ctrl+Shift+X}) et installer :
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.6cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Extension} &  \hdr{Utilité} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Prettier      & Formatage automatique du code \\
+  ESLint        & Détection d'erreurs JavaScript \\
+  \rowcolor{uniPaper}
+  Live Server   & Rechargement automatique du navigateur \\
+  GitLens       & Visualiser l'historique Git dans l'éditeur \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Plus tard dans l'année}]
+Deux autres extensions seront installées le moment venu : \textbf{SQLTools} en semaine 8 (connexion à MySQL) et \textbf{REST Client} en semaine 13 (test des routes d'API). Inutile de les installer aujourd'hui.
+\end{tcolorbox}
+
+\subsection{Désinstaller les extensions d'assistance IA}
+
+\begin{tcolorbox}[interdit, title={Étape obligatoire du cours}]
+Les assistants de génération de code sont \textbf{interdits} dans ce cours. Leur absence est vérifiée à chaque jalon. Les raisons sont expliquées en section~7 du polycopié.
+\end{tcolorbox}
+
+\begin{enumerate}
+  \item Dans VS Code, ouvrir le panneau des extensions (\texttt{Ctrl+Shift+X}).
+  \item Dans la barre de recherche, taper successivement : \texttt{copilot}, \texttt{ai}, \texttt{codeium}, \texttt{tabnine}.
+  \item Pour chaque extension \textbf{installée} qui apparaît (GitHub Copilot, GitHub Copilot Chat, ou équivalent), cliquer sur l'engrenage puis \textit{Désinstaller}.
+  \item Redémarrer VS Code.
+  \item Vérifier : dans la vue \textit{Extensions} $\rightarrow$ \textit{Installed}, plus aucun assistant de code ne doit être présent.
 \end{enumerate}
+
+\begin{tcolorbox}[attention, title={Complétion et assistant, ce n'est pas la même chose}]
+La complétion automatique native de VS Code --- celle qui propose \texttt{addEventListener} quand tu tapes \texttt{addEv} --- reste active et n'est pas concernée. Elle se contente de compléter des noms existants ; elle n'écrit pas de code à ta place.
+\end{tcolorbox}
 
 % ============================================================
 \section{Mise en place du projet}
@@ -336,19 +449,22 @@ Ouvrir une invite de commande et exécuter \texttt{git -v} : la commande doit af
 
 \begin{enumerate}
   \item \textbf{Vérifier les installations.} Ouvrir un terminal et exécuter :
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash, numbers=none]
 node -v
 git --version
 \end{lstlisting}
-  Chaque commande doit afficher un numéro de version. Sinon, revoir la section 2 avant de continuer.
+  Chaque commande doit afficher un numéro de version. Sinon, reprendre la section~2 avant de continuer.
 
-  \item \textbf{Créer le dossier du projet.}
-Dans le dossier Web précédement créé et ajouter le dossier \textbf{miniforum}
+  \item \textbf{Créer le dossier du projet.} Dans le dossier \texttt{Web} créé précédemment (\texttt{Documents\textbackslash Passerelle\textbackslash Web}), créer un dossier nommé \texttt{miniforum}.
 
-  \item \textbf{Créer les trois fichiers de base} (\texttt{index.html}, \texttt{style.css}, \texttt{app.js}) directement depuis VS Code, ou avec \texttt{touch} sous macOS/Linux.
+  \item \textbf{Ouvrir le dossier dans VS Code} : menu \textit{Fichier} $\rightarrow$ \textit{Ouvrir le dossier}, puis sélectionner \texttt{miniforum}.
 
-  \item \textbf{Reproduire l'exemple minimal} vu en cours :
-\begin{lstlisting}[language=HTML, caption={index.html}]
+  \item \textbf{Créer les trois fichiers de base} --- \texttt{index.html}, \texttt{style.css} et \texttt{app.js} --- directement depuis l'explorateur de VS Code.
+
+  \item \textbf{Reproduire l'exemple minimal} vu en cours. Recopie-le à la main : c'est en tapant que l'on retient la syntaxe.
+\end{enumerate}
+
+\begin{lstlisting}[language=HTML, caption={\texttt{index.html}}]
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -363,43 +479,47 @@ Dans le dossier Web précédement créé et ajouter le dossier \textbf{miniforum
 </body>
 </html>
 \end{lstlisting}
-\begin{lstlisting}[language=HTML, caption={style.css}]
+
+\begin{lstlisting}[language=CSS, caption={\texttt{style.css}}]
 button {
-  background-color: #1D3557;
+  background-color: #1D4E89;
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
-
-\newpage
-
 \end{lstlisting}
-\begin{lstlisting}[language=bash, caption={app.js}]
+
+\begin{lstlisting}[language=JavaScript, caption={\texttt{app.js}}]
 const btn = document.getElementById('btn');
+
 btn.addEventListener('click', () => {
   alert('Bonjour depuis JavaScript !');
 });
 \end{lstlisting}
 
-\item Vérifier dans le navigateur que le bouton affiche bien une alerte au clic.
-\begin{center}
-    \includegraphics[width=0.8\linewidth]{images/miniforum.png}\\
-    \small\textit{Capture d'écran --- toute première version de miniforum}
-\end{center}
+\begin{enumerate}[resume]
+  \item \textbf{Tester dans le navigateur.} Clic droit sur \texttt{index.html} dans VS Code $\rightarrow$ \textit{Open with Live Server}. Le clic sur le bouton doit déclencher une alerte.
 \end{enumerate}
+
+\capture[0.8\linewidth]{images/miniforum.png}{Capture d'écran --- toute première version de MiniForum}
+
+\begin{tcolorbox}[astuce, title={Si le bouton ne fait rien}]
+Ouvrir les outils de développement du navigateur (\texttt{F12}), onglet \textit{Console}. Le message d'erreur t'indique la ligne fautive. Les deux causes les plus fréquentes : un nom de fichier mal orthographié dans \texttt{<script src="...">}, ou un \texttt{id} qui ne correspond pas entre le HTML et le JavaScript.
+\end{tcolorbox}
 
 % ============================================================
 \section{Git et GitHub}
 % ============================================================
-Les commandes sont à saisir dans l'application Git Bash
+
+Les commandes de cette section sont à saisir dans \textbf{Git Bash} (clic droit dans le dossier \texttt{miniforum} $\rightarrow$ \textit{Open Git Bash here}).
 
 \subsection{Configuration de l'identité Git}
 
 À la toute première utilisation de Git sur une machine, il faut indiquer qui tu es : ce nom et cet e-mail seront associés à chacun de tes commits.
 
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash, numbers=none]
 git config --global user.name "Prenom Nom"
 git config --global user.email "ton.email@exemple.com"
 \end{lstlisting}
@@ -408,18 +528,47 @@ git config --global user.email "ton.email@exemple.com"
 Cette configuration ne se fait \textbf{qu'une seule fois par machine} : elle vaudra pour tous tes futurs projets Git, pas seulement MiniForum.
 \end{tcolorbox}
 
+\subsection{Créer le fichier \texttt{.gitignore}}
+
+\begin{tcolorbox}[attention, title={À faire avant le premier commit}]
+Un fichier déjà enregistré dans un commit reste dans l'historique \textbf{même si on l'ajoute au \texttt{.gitignore} par la suite}. Le \texttt{.gitignore} se crée donc \textbf{maintenant}, avant tout \texttt{git add}.
+\end{tcolorbox}
+
+Dans VS Code, créer à la racine de \texttt{miniforum} un fichier nommé exactement \texttt{.gitignore} (avec le point initial, et sans extension), puis y copier :
+
+\begin{lstlisting}[caption={\texttt{.gitignore}}]
+# Dépendances Node.js : jamais dans Git
+node_modules/
+
+# Variables d'environnement (mots de passe, clés d'API)
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Réglages locaux de l'éditeur
+.vscode/
+\end{lstlisting}
+
 \subsection{Premier commit local}
 
-\begin{lstlisting}[language=bash]
-cd Documents/Passerelle/Web/miniforum
+\begin{lstlisting}[language=bash, numbers=none]
+cd ~/Documents/Passerelle/Web/miniforum
 git init
+git branch -M main
+git status
 git add .
-git commit -m "Premier commit : structure de base du MiniForum"
+git commit -m "Structure de base du MiniForum"
 \end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Lire la sortie de \texttt{git status}}]
+Avant le \texttt{git add}, \texttt{git status} liste les fichiers \textit{non suivis}. Tu dois y voir \texttt{index.html}, \texttt{style.css}, \texttt{app.js} et \texttt{.gitignore} --- et rien d'autre. Prends l'habitude de lire cette sortie avant chaque commit : c'est ce qui évite d'envoyer par erreur un fichier qui n'a rien à y faire.
+\end{tcolorbox}
 
 \subsection{Créer un compte GitHub}
 
-Si ce n'est pas déjà fait : aller sur \texttt{github.com}, cliquer sur \textit{Sign up}, et suivre les étapes (e-mail, mot de passe, nom d'utilisateur).
+Si ce n'est pas déjà fait : aller sur \url{https://github.com}, cliquer sur \textit{Sign up} et suivre les étapes (e-mail, mot de passe, nom d'utilisateur).
 
 \subsection{Créer le dépôt distant}
 
@@ -432,30 +581,28 @@ Si ce n'est pas déjà fait : aller sur \texttt{github.com}, cliquer sur \textit
 \end{enumerate}
 
 \begin{tcolorbox}[attention, title={Piège fréquent}]
-Si tu coches \textit{Add a README file}, GitHub crée un premier commit sur le dépôt distant. Ton envoi (\texttt{git push}) sera alors refusé, car le dépôt local et le dépôt distant auront des historiques différents. Le plus simple : recommencer avec un dépôt vraiment vide.
+Si tu coches \textit{Add a README file}, GitHub crée un premier commit sur le dépôt distant. Ton envoi (\texttt{git push}) sera alors refusé, car le dépôt local et le dépôt distant auront des historiques différents. Le plus simple : supprimer le dépôt et recommencer avec un dépôt vraiment vide.
 \end{tcolorbox}
 
 \subsection{Envoyer le projet sur GitHub}
 
-Sur la page du dépôt fraîchement créé, cliquer sur le bouton vert \textbf{Code}, onglet \textbf{HTTPS}, et copier l'URL affichée.
+Sur la page du dépôt fraîchement créé, cliquer sur le bouton vert \textbf{Code}, onglet \textbf{HTTPS}, et copier l'URL affichée. Puis, dans Git Bash, à la racine de \texttt{miniforum} :
 
-Dans Git Bash, à la racine de \texttt{miniforum/} :
-
-\begin{lstlisting}[language=bash]
-git remote add origin https://github.com/votre-login/miniforum.git
+\begin{lstlisting}[language=bash, numbers=none]
+git remote add origin https://github.com/ton-login/miniforum.git
 git push -u origin main
 \end{lstlisting}
 
 \begin{tcolorbox}[astuce, title={Authentification}]
-Lors du tout premier \texttt{git push}, une fenêtre s'ouvre automatiquement dans le navigateur et demande de se connecter à GitHub. C'est normal : GitHub n'accepte plus les mots de passe directement dans le terminal. Il suffit de se connecter une fois --- Git mémorise ensuite la connexion pour les prochaines fois.
+Lors du tout premier \texttt{git push}, une fenêtre s'ouvre dans le navigateur et demande de se connecter à GitHub. C'est normal : GitHub n'accepte plus les mots de passe directement dans le terminal. Il suffit de se connecter une fois --- Git mémorise ensuite la connexion.
 \end{tcolorbox}
 
 \subsection{Vérification}
 
-Rafraîchir la page du dépôt sur \texttt{github.com} : les trois fichiers (\texttt{index.html}, \texttt{style.css}, \texttt{app.js}) doivent y apparaître.
+Rafraîchir la page du dépôt sur \texttt{github.com}. Les quatre fichiers doivent y apparaître : \texttt{index.html}, \texttt{style.css}, \texttt{app.js} et \texttt{.gitignore}.
 
 \begin{tcolorbox}[definition, title={Pour la suite du cours}]
-Le dépôt \texttt{miniforum} va évoluer chaque semaine. Prends l'habitude, à chaque début de séance, de récupérer les éventuelles mises à jour avec \texttt{git pull}, et de sauvegarder ton travail régulièrement avec \texttt{git add . / git commit / git push}.
+Le dépôt \texttt{miniforum} va évoluer chaque semaine, et son \textbf{historique fait partie de l'évaluation du projet final}. Prends dès maintenant l'habitude de committer à chaque étape logique de ton travail, avec un message clair --- et non en une seule fois à la fin.
 \end{tcolorbox}
 
 % ============================================================
@@ -464,19 +611,27 @@ Le dépôt \texttt{miniforum} va évoluer chaque semaine. Prends l'habitude, à 
 
 \begin{tcolorbox}[definition, title={Auto-évaluation}]
 \begin{itemize}
-  \item[$\square$] \texttt{node -v} et \texttt{git --version} affichent un numéro de version
-  \item[$\square$] Le dossier \texttt{miniforum/} contient \texttt{index.html}, \texttt{style.css}, \texttt{app.js}
+  \item[$\square$] Le dossier \texttt{Documents\textbackslash Passerelle} est créé et synchronisé sur Drive
+  \item[$\square$] \texttt{node -v} affiche une version \texttt{v24}\ldots\ et \texttt{git -{}-version} affiche un numéro
+  \item[$\square$] Les extensions Prettier, ESLint, Live Server et GitLens sont installées
+  \item[$\square$] \textbf{Aucune extension d'assistance IA n'est installée dans VS Code}
+  \item[$\square$] Le dossier \texttt{miniforum} contient \texttt{index.html}, \texttt{style.css}, \texttt{app.js} et \texttt{.gitignore}
   \item[$\square$] Le clic sur le bouton déclenche bien l'alerte JavaScript
-  \item[$\square$] L'identité Git (\texttt{user.name} / \texttt{user.email}) est configurée
-  \item[$\square$] Le dépôt Git local contient au moins un commit
+  \item[$\square$] L'identité Git (\texttt{user.name} et \texttt{user.email}) est configurée
+  \item[$\square$] Le dépôt Git local contient au moins un commit, sur la branche \texttt{main}
   \item[$\square$] Le dépôt GitHub a été créé \textbf{vide} (sans README)
-  \item[$\square$] Le dépôt \texttt{miniforum} est visible sur GitHub avec les trois fichiers
+  \item[$\square$] Les quatre fichiers sont visibles sur GitHub
 \end{itemize}
 \end{tcolorbox}
 
 \vspace{6pt}
 \begin{tcolorbox}[attention, title={À rendre avant la semaine 2}]
-Lien du dépôt GitHub \texttt{miniforum} envoyé par mail ou déposé sur la plateforme du cours.
+Le lien du dépôt GitHub \texttt{miniforum}, envoyé par courriel ou déposé sur la plateforme du cours.
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[astuce, title={Bloqué ?}]
+Ce TP est une mise en place, pas une évaluation : personne n'est censé y arriver seul du premier coup. Si une étape résiste plus de dix minutes, demande --- c'est exactement à cela que sert la séance.
 \end{tcolorbox}
 
 \end{document}

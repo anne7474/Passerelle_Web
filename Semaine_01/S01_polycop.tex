@@ -1,12 +1,18 @@
 % ============================================================
-%  Semaine 1 — Fondamentaux du web & environnement
+%  Semaine 1 — Fondamentaux du web & environnement  [Module A]
 %  Polycopié étudiant — cfpt·i | Anne Terrier
-%  Charte graphique : charte cfpt·i originale, police sans-serif
+%  Aligné sur PlanCours_Pass_Web_v2 (20 semaines, 3h cours + 4h TP)
+%
+%  Images attendues dans le sous-dossier ./images/ :
+%    cfpti.png, client-serveur.jpg
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
 % ============================================================
 \documentclass[a4paper,11pt]{article}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
 \usepackage[scaled=0.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
@@ -28,7 +34,7 @@
 \usepackage[hidelinks]{hyperref}
 
 % ---------------------------------------------------------------
-% Palette cfpt·i originale
+% Palette cfpt·i
 % ---------------------------------------------------------------
 \definecolor{cfptYellow}{HTML}{F5C400}
 \definecolor{cfptBlack}{HTML}{1A1A1A}
@@ -39,8 +45,10 @@
 \definecolor{codeGrey}{HTML}{F5F5F5}
 \definecolor{successGreen}{HTML}{1E7145}
 \definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
 
-% Alias (le contenu du document utilise ces noms) vers la palette ci-dessus
+% Alias utilisés dans le corps du document
 \colorlet{uniInk}{cfptBlack}
 \colorlet{uniNavy}{accentBlue}
 \colorlet{uniTeal}{successGreen}
@@ -51,19 +59,45 @@
 
 \color{cfptBlack}
 
-% --- En-tête / pied de page ---
+% ---------------------------------------------------------------
+% Images : insertion robuste (cadre de réservation si absente)
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \imagefig[largeur]{chemin}{légende}
+\newcommand{\imagefig}[3][0.80\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.2cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ image à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[L]{\IfFileExists{Semaine1/images/cfpti.png}{\includegraphics[height=18pt]{Semaine1/images/cfpti.png}}{}}
+\fancyhead[L]{\logocfpt}
 \fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
-\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 1}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 1 --- Module A}}
 \fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
-\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize {Fondamentaux du web \& environnement}}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize Fondamentaux du web \& environnement}
 \fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% --- Titres sections : bandeau plein largeur ---
+% ---------------------------------------------------------------
+% Titres de section : bandeau pleine largeur
+% ---------------------------------------------------------------
 \newcommand{\sectionbox}[1]{%
   \colorbox{accentBlue}{%
     \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
@@ -80,16 +114,19 @@
 \titlespacing{\section}{0pt}{18pt}{8pt}
 \titlespacing{\subsection}{0pt}{12pt}{4pt}
 
-% --- supprime les retraits de paragraphe ---
 \setlength{\parindent}{0pt}
 
-% --- Listes ---
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
 \setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
   leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
 \setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
 \setlist[enumerate]{itemsep=4pt, topsep=4pt, leftmargin=1.6em}
 
-% --- Boîtes tcolorbox ---
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
 \tcbset{
   definition/.style={
     colback=lightBlue!30, colframe=accentBlue,
@@ -109,6 +146,13 @@
     boxrule=0.8pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small\color{white},
+    coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
   corrige/.style={
     colback=cfptGrey, colframe=cfptDarkGrey,
     fonttitle=\bfseries\small\color{cfptDarkGrey},
@@ -117,7 +161,32 @@
     toptitle=2pt, bottomtitle=2pt}
 }
 
-% --- Listings code ---
+% ---------------------------------------------------------------
+% Langages listings : JavaScript et CSS ne sont pas fournis
+% par le paquet listings, il faut les définir.
+% ---------------------------------------------------------------
+\lstdefinelanguage{JavaScript}{
+  morekeywords={await, async, break, case, catch, class, const, continue,
+    default, delete, do, else, export, extends, false, finally, for, function,
+    if, import, in, instanceof, let, new, null, of, return, super, switch,
+    this, throw, true, try, typeof, var, void, while, yield},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`,
+  sensitive=true,
+}
+
+\lstdefinelanguage{CSS}{
+  morekeywords={background-color, border, border-radius, color, cursor,
+    display, flex, font-family, font-size, grid, height, margin, padding,
+    text-align, width},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  sensitive=false,
+}
+
 \lstset{
   basicstyle=\ttfamily\small,
   backgroundcolor=\color{codeGrey},
@@ -131,8 +200,35 @@
   numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
   numbersep=8pt,
   captionpos=b,
+  extendedchars=true,
+  % Les caractères accentués doivent être déclarés explicitement,
+  % sinon les commentaires français cassent la compilation.
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
 }
 \renewcommand{\lstlistingname}{Extrait}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+%   1) \aboverulesep / \belowrulesep a 0 : supprime le lisere blanc
+%      entre le filet booktabs et la bande coloree du \rowcolor.
+%   2) \hdr : force l'alignement de la cellule d'en-tete. Sans cela,
+%      une colonne p{} ou X place le texte trop bas dans la bande
+%      coloree (mesure : 12 pt de couleur au-dessus contre 4 en dessous).
+% Usage : \hdr{Titre} a gauche, \hdrc{Titre} centre, \hdrr{Titre} a droite.
+% Trois macros distinctes plutot qu'un argument optionnel : ce dernier
+% n'est pas expansible et casse la passe de mesure de tabularx.
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -144,18 +240,18 @@
 \begin{tcolorbox}[
   colback=accentBlue, colframe=accentBlue,
   arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
-  \begin{minipage}{0.72\linewidth}
-    {\color{white}\Large\bfseries Semaine 1}\\[4pt]
+  \begin{minipage}{0.70\linewidth}
+    {\color{cfptYellow}\Large\bfseries Semaine 1 \quad\textbar\quad Module A}\\[4pt]
     {\color{white}\Large\bfseries Fondamentaux du web \& environnement}\\[4pt]
     {\color{lightBlue}\normalsize Anne Terrier --- Développement web, classe passerelle}
   \end{minipage}
   \hfill
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.24\linewidth}
     \raggedleft
     \begin{tabular}{rl}
-      \multicolumn{2}{r}{\color{white}\small \today} \\
-      \color{lightBlue}\small Cours & \color{white}\small 4h \\
+      \color{lightBlue}\small Cours & \color{white}\small 3h \\
       \color{lightBlue}\small TP    & \color{white}\small 4h \\
+      \color{lightBlue}\small Fil rouge & \color{white}\small MiniForum \\
     \end{tabular}
   \end{minipage}
 \end{tcolorbox}
@@ -163,11 +259,12 @@
 \vspace{6pt}
 \begin{tcolorbox}[definition, title={Objectifs de la semaine}]
 \begin{itemize}
-  \item Comprendre le modèle client/serveur et le fonctionnement du web
-  \item Distinguer les rôles de HTML, CSS et JavaScript
+  \item Comprendre le modèle client / serveur et le rôle des technologies web
+  \item Distinguer HTML, CSS et JavaScript dans leurs rôles respectifs
   \item Distinguer un site statique d'un site dynamique
-  \item Installer et configurer son environnement de développement
-  \item Créer son premier dépôt Git et effectuer un premier commit
+  \item Installer et configurer un environnement de développement fonctionnel
+  \item Créer le dépôt Git de MiniForum avec un \texttt{.gitignore} correct dès le premier commit
+  \item Connaître les règles du cours : fil rouge, jalons, usage de l'IA générative
 \end{itemize}
 \end{tcolorbox}
 
@@ -177,22 +274,45 @@
 
 Quand tu tapes \texttt{https://www.hepia.ch} dans ton navigateur, une série d'échanges invisibles se produit en quelques millisecondes. Comprendre ce mécanisme est le point de départ de tout développeur web.
 
+\subsection{Aux origines du web}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{1.6cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Année} &  \hdr{Étape} \\
+  \midrule
+  \rowcolor{uniPaper}
+  1969 & \textbf{ARPAnet}, ancêtre d'Internet, relie quatre universités américaines \\
+  1972 & Apparition de l'\textbf{e-mail} \\
+  \rowcolor{uniPaper}
+  1989 & Tim Berners-Lee rédige sa proposition au \textbf{CERN}, à Genève \\
+  1990 & Premier serveur et premier navigateur web \\
+  \rowcolor{uniPaper}
+  1991 & Le \textbf{Web} est ouvert au public \\
+  1993--1994 & NCSA Mosaic puis \textbf{Netscape Navigator} font connaître le web au grand public \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Deux confusions courantes}]
+\textbf{Internet n'est pas le Web.} Internet est le réseau physique mondial qui relie les ordinateurs. Le Web n'est que l'un des services qui y circulent --- l'ensemble des pages reliées par des \textbf{liens hypertexte} --- au même titre que l'e-mail.\\[4pt]
+\textbf{Un navigateur n'est pas un moteur de recherche.} Le \textbf{navigateur} (Firefox, Chrome, Safari) traduit le code reçu pour afficher une page. Le \textbf{moteur de recherche} (Google, Bing, DuckDuckGo) est un site web qui aide à trouver des adresses. Google Chrome est un navigateur ; Google est un moteur de recherche.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Une conséquence très concrète}]
+Chaque navigateur interprète le code à sa manière, et l'affichage peut varier de l'un à l'autre. D'où une habitude à prendre dès maintenant : \textbf{tester ses pages sur au moins deux navigateurs différents}.
+\end{tcolorbox}
+
 \subsection{Le modèle client / serveur}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{Semaine1/images/client serveur.jpg}
-    \caption{Architecteur Client-Serveur}
-    \label{fig:ClientServeur}
-\end{figure}
-
-
-
+\imagefig[0.95\linewidth]{images/client-serveur.jpg}{Architecture client--serveur}
 
 \begin{tcolorbox}[definition, title={Définition --- Client et serveur}]
 \textbf{Client} : programme qui \textit{demande} une ressource (le navigateur).\\
 \textbf{Serveur} : programme qui \textit{répond} à la demande en envoyant des fichiers ou des données.\\
-La communication se fait via le protocole \textbf{HTTP} (ou \textbf{HTTPS} pour la version sécurisée).
+La communication se fait via le protocole \textbf{HTTP} (ou \textbf{HTTPS} pour la version chiffrée).
 \end{tcolorbox}
 
 \subsection{Anatomie d'une URL}
@@ -216,12 +336,12 @@ La communication se fait via le protocole \textbf{HTTP} (ou \textbf{HTTPS} pour 
         text=uniGold, font=\footnotesize\bfseries] (lc) {Chemin};
 
   \draw[-{Stealth[length=5pt]}, uniTeal!70, thick] (lp.north) -- ++(0,0.65);
-  \draw[-{Stealth[length=5pt]}, uniNavy!70, thick]   (ld.north) -- ++(0,0.65);
+  \draw[-{Stealth[length=5pt]}, uniNavy!70, thick] (ld.north) -- ++(0,0.65);
   \draw[-{Stealth[length=5pt]}, uniGold!70, thick] (lc.north) -- ++(0,0.65);
 \end{tikzpicture}
 \end{center}
 
-\subsection{DNS --- de l'adresse au nom}
+\subsection{DNS --- du nom à l'adresse}
 
 Un ordinateur ne comprend pas \texttt{www.hepia.ch} : il a besoin d'une adresse numérique, appelée \textbf{adresse IP} (par exemple \texttt{192.0.2.34}). Le \textbf{DNS} (\textit{Domain Name System}) est le service qui traduit un nom de domaine lisible en adresse IP.
 
@@ -239,53 +359,66 @@ Le DNS fonctionne comme un annuaire : tu connais le \textit{nom} d'une personne 
 
 \subsection{Les codes de statut HTTP}
 
+Chaque réponse du serveur commence par un nombre à trois chiffres qui indique comment la requête s'est passée. Le premier chiffre donne la famille : \texttt{2xx} succès, \texttt{3xx} redirection, \texttt{4xx} erreur du client, \texttt{5xx} erreur du serveur.
+
 \begin{center}
-\begin{tabularx}{0.85\linewidth}{ccX}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{0.9\linewidth}{ccX}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Code} &
-  \color{white}\textbf{Signification} &
-  \color{white}\textbf{Quand ?} \\
+  \hdrc{Code} &  \hdrc{Signification} &  \hdr{Quand ?} \\
   \midrule
   \rowcolor{uniPaper}
   \texttt{200} & OK & Tout s'est bien passé \\
-  \texttt{301} & Redirection & La page a changé d'adresse \\
+  \texttt{301} & Moved Permanently & La ressource a changé d'adresse \\
   \rowcolor{uniPaper}
-  \texttt{404} & Not Found & La page n'existe pas \\
-  \texttt{500} & Server Error & Erreur côté serveur \\
+  \texttt{403} & Forbidden & L'accès est refusé \\
+  \texttt{404} & Not Found & La ressource n'existe pas \\
+  \rowcolor{uniPaper}
+  \texttt{500} & Internal Server Error & Erreur côté serveur \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
+\begin{tcolorbox}[astuce, title={On y reviendra}]
+Ces codes reviendront en semaine 13, lorsque tu écriras toi-même le serveur qui les renvoie. Pour l'instant, il suffit de savoir les lire dans l'onglet \textit{Réseau} des outils de développement du navigateur.
+\end{tcolorbox}
+
 \subsection{Sites statiques et sites dynamiques}
 
-\begin{tcolorbox}[definition, title={Définition --- Statique vs dynamique}]
+\begin{tcolorbox}[definition, title={Définition --- Statique et dynamique}]
 Un \textbf{site statique} renvoie toujours le même contenu au client : le fichier HTML existe déjà sur le serveur et est envoyé tel quel.\\
 Un \textbf{site dynamique} génère le contenu à la demande, souvent à partir d'une base de données : deux visiteurs, ou deux moments différents, peuvent recevoir des pages différentes.
 \end{tcolorbox}
 
 \begin{center}
+\renewcommand{\arraystretch}{1.0}
 \begin{tabularx}{\linewidth}{lXX}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{} &
-  \color{white}\textbf{Site statique} &
-  \color{white}\textbf{Site dynamique} \\
+  \hdr{} &  \hdr{Site statique} &  \hdr{Site dynamique} \\
   \midrule
   \rowcolor{uniPaper}
   Contenu & Identique pour tout le monde & Généré à chaque requête \\
-  Exemple & Page vitrine simple, portfolio & Forum, boutique en ligne, réseau social \\
+  Exemple & Page vitrine, portfolio & Forum, boutique en ligne, réseau social \\
   \rowcolor{uniPaper}
-  Techniquement & Fichiers HTML/CSS/JS seuls & Serveur applicatif (Node.js) + base de données \\
+  Techniquement & Fichiers HTML / CSS / JS seuls & Serveur applicatif (Node.js) + base de données \\
+  \bottomrule
 \end{tabularx}
 \end{center}
 
 \begin{tcolorbox}[attention, title={Où se situe MiniForum ?}]
-Le projet fil rouge \textbf{MiniForum} commence comme un site \textbf{statique} (données codées en dur en semaine 1--5), puis devient \textbf{dynamique} à partir de la phase 3, lorsqu'il se connecte à une vraie base de données via Node.js/Express.
+Le projet fil rouge \textbf{MiniForum} passe par trois états successifs :
+\begin{itemize}
+  \item \textbf{semaines 1 à 5} --- site \textbf{statique} : contenu écrit en dur dans le HTML ;
+  \item \textbf{semaines 6 et 7} --- site \textbf{interactif mais volatile} : JavaScript manipule des données stockées en mémoire, qui disparaissent à chaque rafraîchissement ;
+  \item \textbf{à partir de la semaine 12} --- site \textbf{dynamique} : Node.js / Express interroge une vraie base de données MySQL.
+\end{itemize}
+Cette frustration de la semaine 7 est voulue : c'est elle qui rend évidente la nécessité d'une base de données.
 \end{tcolorbox}
 
 % ============================================================
-\section{Les trois langages côté clients}
+\section{Les trois langages côté client}
 % ============================================================
 
 \vspace{6pt}
@@ -293,45 +426,42 @@ Le projet fil rouge \textbf{MiniForum} commence comme un site \textbf{statique} 
 \begin{tikzpicture}[font=\small]
 
 \node[draw=uniGold, thin, rounded corners=2pt, fill=uniGold!8,
-      minimum width=3.4cm, minimum height=3.8cm, align=center] (html) at (0,0) {};
-\node[font=\bfseries\large, text=uniGold, above=-0.8cm of html] {HTML};
-\node[below=1cm of html.north, align=center, text width=3cm, font=\footnotesize]
+      minimum width=3.4cm, minimum height=3.8cm] (html) at (0,0) {};
+\node[font=\bfseries\large, text=uniGold] at ([yshift=1.3cm]html.center) {HTML};
+\node[align=center, text width=3cm, font=\footnotesize] at ([yshift=-0.3cm]html.center)
   {\textbf{Structure}\\[4pt] Titres, paragraphes,\\liens, images,\\formulaires};
 
 \node[draw=uniNavy, thin, rounded corners=2pt, fill=uniNavy!8,
-      minimum width=3.4cm, minimum height=3.8cm, align=center,
+      minimum width=3.4cm, minimum height=3.8cm,
       right=0.5cm of html] (css) {};
-\node[font=\bfseries\large, text=uniNavy, above=-0.8cm of css] {CSS};
-\node[below=1cm of css.north, align=center, text width=3cm, font=\footnotesize]
+\node[font=\bfseries\large, text=uniNavy] at ([yshift=1.3cm]css.center) {CSS};
+\node[align=center, text width=3cm, font=\footnotesize] at ([yshift=-0.3cm]css.center)
   {\textbf{Présentation}\\[4pt] Couleurs, polices,\\mise en page,\\animations};
 
 \node[draw=uniTeal, thin, rounded corners=2pt, fill=uniTeal!8,
-      minimum width=3.4cm, minimum height=3.8cm, align=center,
+      minimum width=3.4cm, minimum height=3.8cm,
       right=0.5cm of css] (js) {};
-\node[font=\bfseries\large, text=uniTeal, above=-0.8cm of js] {JavaScript};
-\node[below=1cm of js.north, align=center, text width=3cm, font=\footnotesize]
-  {\textbf{Comportement}\\[4pt] Interactions,\\formulaires,\\appels serveur};
+\node[font=\bfseries\large, text=uniTeal] at ([yshift=1.3cm]js.center) {JavaScript};
+\node[align=center, text width=3cm, font=\footnotesize] at ([yshift=-0.3cm]js.center)
+  {\textbf{Comportement}\\[4pt] Interactions,\\validation,\\appels serveur};
 
-\node[below=0.4cm of html.south, font=\footnotesize\itshape, text=uniGrey]
-  {Les murs};
-\node[below=0.4cm of css.south, font=\footnotesize\itshape, text=uniGrey]
-  {La peinture};
-\node[below=0.4cm of js.south, font=\footnotesize\itshape, text=uniGrey]
-  {L'électricité};
+\node[below=0.35cm of html.south, font=\footnotesize\itshape, text=uniGrey] {Les murs};
+\node[below=0.35cm of css.south, font=\footnotesize\itshape, text=uniGrey] {La peinture};
+\node[below=0.35cm of js.south, font=\footnotesize\itshape, text=uniGrey] {L'électricité};
 
 \node[below=1cm of css.south, font=\footnotesize\bfseries, text=uniGrey]
-  {Analogie : construction d'une maison};
+  {Analogie : la construction d'une maison};
 \end{tikzpicture}
 \end{center}
 \vspace{6pt}
 
 \begin{tcolorbox}[attention, title={Important --- Qui exécute quoi ?}]
-\textbf{HTML, CSS et JavaScript} s'exécutent dans le \textbf{navigateur} (côté client).
+\textbf{HTML}, \textbf{CSS} et \textbf{JavaScript} s'exécutent tous les trois dans le \textbf{navigateur}, donc côté client. Le serveur se contente de les envoyer ; il ne les interprète pas.
 \end{tcolorbox}
 
 \subsection{Un premier exemple}
 
-\begin{lstlisting}[language=HTML, caption={index.html --- Structure}]
+\begin{lstlisting}[language=HTML, caption={\texttt{index.html} --- la structure}]
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -347,9 +477,9 @@ Le projet fil rouge \textbf{MiniForum} commence comme un site \textbf{statique} 
 </html>
 \end{lstlisting}
 
-\begin{lstlisting}[language=HTML, caption={style.css --- Présentation}]
+\begin{lstlisting}[language=CSS, caption={\texttt{style.css} --- la présentation}]
 button {
-  background-color: #1D3557; /* bleu marine */
+  background-color: #1D4E89; /* bleu cfpt.i */
   color: white;
   padding: 10px 20px;
   border: none;
@@ -358,150 +488,112 @@ button {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=bash, caption={app.js --- Comportement}]
+\begin{lstlisting}[language=JavaScript, caption={\texttt{app.js} --- le comportement}]
+// On récupère le bouton, puis on réagit au clic
 const btn = document.getElementById('btn');
+
 btn.addEventListener('click', () => {
   alert('Bonjour depuis JavaScript !');
 });
 \end{lstlisting}
 
+\begin{tcolorbox}[astuce, title={L'ordre compte}]
+La balise \texttt{<script>} est placée \textbf{juste avant} \texttt{</body>}, donc après le bouton. Si elle était dans le \texttt{<head>}, le script chercherait un bouton qui n'existe pas encore et \texttt{getElementById} renverrait \texttt{null}. C'est l'une des erreurs les plus fréquentes en début d'apprentissage.
+\end{tcolorbox}
+
 % ============================================================
 \section{Les langages côté serveur}
 % ============================================================
-Jusqu'à présent, nous avons vu les langages exécutés dans le navigateur :
-\textbf{HTML}, \textbf{CSS} et \textbf{JavaScript}. Mais une application web doit souvent enregistrer et récupérer des données.
-Pour cela, le navigateur communique avec un programme exécuté sur un serveur.
+
+Jusqu'ici, tout se passait dans le navigateur. Mais une application web doit aussi enregistrer et retrouver des données, ce que le navigateur seul ne sait pas faire durablement. Pour cela, il dialogue avec un programme exécuté sur un serveur.
 
 \begin{tcolorbox}[definition, title={Définition --- Langage côté serveur}]
-Un langage côté serveur est exécuté sur le serveur.
-Il reçoit une requête du navigateur, traite cette requête et renvoie une réponse.
+Un langage côté serveur s'exécute \textbf{sur le serveur}. Il reçoit une requête du navigateur, la traite --- souvent en interrogeant une base de données --- puis renvoie une réponse.
 \end{tcolorbox}
 
-\subsection{Client et serveur}
+\subsection{La chaîne complète}
 
-Le fonctionnement peut être résumé ainsi :
-
+\vspace{6pt}
 \begin{center}
-\begin{tikzpicture}[font=\small]
+\begin{tikzpicture}[font=\small, node distance=1.9cm]
 
-\node[
-  draw=accentBlue,
-  fill=lightBlue,
-  rounded corners=2pt,
-  minimum width=3.5cm,
-  minimum height=1.2cm,
-  align=center
-] (client)
-{\textbf{Navigateur}\\
-HTML + CSS + JavaScript};
+\node[draw=accentBlue, fill=lightBlue, rounded corners=2pt,
+      minimum width=3.1cm, minimum height=1.3cm, align=center] (client)
+  {\textbf{Navigateur}\\{\footnotesize HTML + CSS + JS}};
 
-\node[
-  draw=successGreen,
-  fill=successGreen!10,
-  rounded corners=2pt,
-  minimum width=3.5cm,
-  minimum height=1.2cm,
-  align=center,
-  right=2cm of client
-] (server)
-{\textbf{Serveur}\\
-Node.js + Express};
+\node[draw=successGreen, fill=successGreen!10, rounded corners=2pt,
+      minimum width=3.1cm, minimum height=1.3cm, align=center,
+      right=of client] (server)
+  {\textbf{Serveur}\\{\footnotesize Node.js + Express}};
 
-\draw[-{Stealth[length=5pt]}, thick]
-(client) -- node[above, font=\footnotesize]{Requête HTTP} (server);
+\node[draw=warningOrange, fill=warningOrange!10, rounded corners=2pt,
+      minimum width=3.1cm, minimum height=1.3cm, align=center,
+      right=of server] (db)
+  {\textbf{Base de données}\\{\footnotesize MySQL / MariaDB}};
 
-\draw[-{Stealth[length=5pt]}, thick]
-(server) -- node[below, font=\footnotesize]{Réponse HTTP} (client);
+\draw[-{Stealth[length=5pt]}, thick, accentBlue]
+  ([yshift=5pt]client.east) -- node[above, font=\scriptsize]{requête HTTP} ([yshift=5pt]server.west);
+\draw[-{Stealth[length=5pt]}, thick, accentBlue]
+  ([yshift=-5pt]server.west) -- node[below, font=\scriptsize]{réponse HTTP} ([yshift=-5pt]client.east);
+
+\draw[-{Stealth[length=5pt]}, thick, warningOrange]
+  ([yshift=5pt]server.east) -- node[above, font=\scriptsize]{requête SQL} ([yshift=5pt]db.west);
+\draw[-{Stealth[length=5pt]}, thick, warningOrange]
+  ([yshift=-5pt]db.west) -- node[below, font=\scriptsize]{données} ([yshift=-5pt]server.east);
 
 \end{tikzpicture}
 \end{center}
+\vspace{4pt}
 
-Le serveur peut également communiquer avec une base de données :
-
-\begin{center}
-\begin{tikzpicture}[font=\small]
-
-\node[
-  draw=successGreen,
-  fill=successGreen!10,
-  rounded corners=2pt,
-  minimum width=3.5cm,
-  minimum height=1.2cm,
-  align=center
-] (server)
-{\textbf{Serveur}\\
-Node.js + Express};
-
-\node[
-  draw=warningOrange,
-  fill=warningOrange!10,
-  rounded corners=2pt,
-  minimum width=3.5cm,
-  minimum height=1.2cm,
-  align=center,
-  right=2cm of server
-] (database)
-{\textbf{Base de données}\\
-MySQL / MariaDB};
-
-\draw[-{Stealth[length=5pt]}, thick]
-(server) -- node[above, font=\footnotesize]{Requête SQL} (database);
-
-\draw[-{Stealth[length=5pt]}, thick]
-(database) -- node[below, font=\footnotesize]{Données} (server);
-
-\end{tikzpicture}
-\end{center}
+\begin{tcolorbox}[attention, title={À noter dès maintenant}]
+Le navigateur ne parle \textbf{jamais} directement à la base de données. Il passe toujours par le serveur. Cette règle paraît anodine ; elle est en réalité au cœur de la sécurité d'une application web, et on y reviendra en semaine 19.
+\end{tcolorbox}
 
 \subsection{Quelques langages côté serveur}
 
-Il existe de nombreux langages permettant de développer des applications web.
+Contrairement au navigateur, qui n'exécute que du JavaScript, un serveur n'est pas limité à un seul langage.
 
 \begin{center}
 \renewcommand{\arraystretch}{1.0}
-\begin{tabularx}{\linewidth}{p{4cm}X}
+\begin{tabularx}{\linewidth}{p{4.6cm}X}
 \toprule
 \rowcolor{uniNavy}
-\color{white}\textbf{Langage} &
-\color{white}\textbf{Exemple d'utilisation}\\
+  \hdr{Langage} &  \hdr{Exemple d'utilisation} \\
 \midrule
 \rowcolor{uniPaper}
-PHP & Sites et applications web\\
-Python & Applications web et API\\
-Java & Applications d'entreprise\\
+PHP & Sites et applications web (WordPress, Symfony)\\
+Python & Applications web et API (Django, Flask)\\
+\rowcolor{uniPaper}
+Java & Applications d'entreprise (Spring)\\
 C\# & Applications web avec ASP.NET\\
 \rowcolor{uniPaper}
-JavaScript avec Node.js & Serveurs web et API\\
+JavaScript avec Node.js & Serveurs web et API \quad\textbf{-- notre choix}\\
 \bottomrule
 \end{tabularx}
 \end{center}
 
 \subsection{Node.js}
 
-Dans ce cours, nous utiliserons \textbf{Node.js}.
-
-Node.js permet d'exécuter du JavaScript en dehors du navigateur.
-
-Il permet notamment de :
+Dans ce cours, nous utiliserons \textbf{Node.js}, qui permet d'exécuter du JavaScript en dehors du navigateur. Il permet notamment de :
 
 \begin{itemize}
   \item créer un serveur web ;
-  \item recevoir des requêtes HTTP ;
+  \item recevoir et traiter des requêtes HTTP ;
   \item communiquer avec une base de données ;
-  \item créer des API.
+  \item exposer une API.
 \end{itemize}
 
-\begin{tcolorbox}[attention, title={Important --- Côté client et côté serveur}]
-\textbf{JavaScript côté client} s'exécute dans le navigateur.
-
-\textbf{JavaScript côté serveur} s'exécute sur le serveur avec Node.js.
+\begin{tcolorbox}[attention, title={Important --- Le même langage, deux environnements}]
+\textbf{JavaScript côté client} s'exécute dans le navigateur : il a accès à la page (le DOM), pas au disque dur.\\[3pt]
+\textbf{JavaScript côté serveur} s'exécute avec Node.js : il a accès au système de fichiers et à la base de données, mais pas à la page.\\[3pt]
+Même langage, mêmes règles de syntaxe, mais deux mondes qu'il ne faut pas confondre.
 \end{tcolorbox}
 
 % ============================================================
 \section{La stack du cours}
 % ============================================================
 
-Dans notre projet \textbf{MiniForum}, les différentes technologies auront les rôles suivants :
+Dans le projet \textbf{MiniForum}, chaque technologie occupe une place précise.
 
 \vspace{8pt}
 \begin{center}
@@ -510,16 +602,16 @@ Dans notre projet \textbf{MiniForum}, les différentes technologies auront les r
     minimum height=1.1cm, align=left, inner xsep=10pt}]
 
 \node[layer, fill=uniGold!10, draw=uniGold] (html)
-  {\textbf{HTML5 + CSS}\\\footnotesize\textit{Structure \& présentation (navigateur)}};
+  {\textbf{HTML5 + CSS}\\\footnotesize\textit{Structure \& présentation --- semaines 2 à 5}};
 
 \node[layer, fill=uniNavy!8, draw=uniNavy, below=of html] (js)
-  {\textbf{JavaScript ES6+}\\\footnotesize\textit{Interactivité (navigateur)}};
+  {\textbf{JavaScript ES6+}\\\footnotesize\textit{Interactivité dans le navigateur --- semaines 6 et 7}};
 
 \node[layer, fill=uniNavy!14, draw=uniNavy, below=of js] (node)
-  {\textbf{Node.js + Express}\\\footnotesize\textit{Serveur HTTP \& API REST}};
+  {\textbf{Node.js + Express}\\\footnotesize\textit{Serveur HTTP \& API REST --- semaines 12 à 17}};
 
 \node[layer, fill=uniTeal!10, draw=uniTeal, below=of node] (sql)
-  {\textbf{MySQL / MariaDB}\\\footnotesize\textit{Base de données relationnelle}};
+  {\textbf{MySQL / MariaDB}\\\footnotesize\textit{Base de données relationnelle --- semaines 8 à 11}};
 
 \draw[decorate, decoration={brace,amplitude=6pt}, uniNavy, thick]
   ([xshift=0.5cm]html.north east) -- ([xshift=0.5cm]js.south east)
@@ -531,23 +623,14 @@ Dans notre projet \textbf{MiniForum}, les différentes technologies auront les r
 
 \node[layer, fill=uniPaper, draw=uniGrey,
       minimum height=1.0cm, below=0.5cm of sql] (git)
-  {\textbf{Git + GitHub}\\\footnotesize\textit{Gestion de version (tout au long du cours)}};
+  {\textbf{Git + GitHub}\\\footnotesize\textit{Gestion de version --- de la semaine 1 à la semaine 20}};
 
 \end{tikzpicture}
 \end{center}
 
-\begin{tcolorbox}[astuce, title={A retenir}]
-Une application web complète est généralement composée de trois parties :
-
-\begin{itemize}
-  \item une interface côté client ;
-  \item un serveur côté serveur ;
-  \item une base de données.
-\end{itemize}
-
-Dans ce cours, nous utiliserons JavaScript des deux côtés :
-\textbf{JavaScript dans le navigateur} et
-\textbf{Node.js sur le serveur}.
+\begin{tcolorbox}[astuce, title={À retenir}]
+Une application web complète comporte presque toujours trois parties : une \textbf{interface} dans le navigateur, un \textbf{serveur} qui traite les demandes, une \textbf{base de données} qui conserve l'information.\\[4pt]
+La particularité de ce cours : nous utilisons \textbf{JavaScript des deux côtés}. Un seul langage à apprendre au lieu de deux.
 \end{tcolorbox}
 
 % ============================================================
@@ -556,35 +639,44 @@ Dans ce cours, nous utiliserons JavaScript des deux côtés :
 
 \subsection{Outils à installer}
 
-\begin{tcolorbox}[definition, title={Liste des outils --- Semaine 1}]
+\begin{tcolorbox}[definition, title={Liste des outils --- semaine 1}]
 \begin{itemize}
   \item \textbf{Visual Studio Code} \hfill \texttt{code.visualstudio.com}
-  \item \textbf{Node.js LTS (v20+)} \hfill \texttt{nodejs.org}
+  \item \textbf{Node.js 24 LTS} \hfill \texttt{nodejs.org}
   \item \textbf{Git} \hfill \texttt{git-scm.com}
-  \item \textbf{Compte GitHub} \hfill \texttt{github.com}
+  \item \textbf{Un compte GitHub} \hfill \texttt{github.com}
 \end{itemize}
 \end{tcolorbox}
 
-\subsection{Extensions VS Code recommandées}
+\begin{tcolorbox}[attention, title={Version de Node.js}]
+Installe bien la version \textbf{24 LTS}. Node.js 20, encore proposée sur beaucoup de tutoriels, est en fin de vie et ne doit plus être utilisée. En cas de doute, \texttt{node -v} doit afficher un numéro commençant par \texttt{v24}.
+\end{tcolorbox}
+
+\subsection{Extensions VS Code}
 
 \begin{center}
 \renewcommand{\arraystretch}{1.0}
-\begin{tabularx}{\linewidth}{p{4cm}X}
+\begin{tabularx}{\linewidth}{p{4cm}Xc}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Extension} & \color{white}\textbf{Utilité} \\
+  \hdr{Extension} &  \hdr{Utilité} &  \hdrc{Dès} \\
   \midrule
   \rowcolor{uniPaper}
-  Prettier      & Formatage automatique du code \\
-  ESLint        & Détection d'erreurs JavaScript \\
+  Prettier      & Formatage automatique du code & S1 \\
+  ESLint        & Détection d'erreurs JavaScript & S1 \\
   \rowcolor{uniPaper}
-  Live Server   & Rechargement automatique du navigateur \\
-  REST Client   & Tester les routes API depuis VS Code \\
+  Live Server   & Rechargement automatique du navigateur & S1 \\
+  GitLens       & Visualiser l'historique Git dans l'éditeur & S1 \\
   \rowcolor{uniPaper}
-  GitLens       & Visualiser l'historique Git dans l'éditeur \\
+  REST Client   & Tester les routes d'une API depuis VS Code & S13 \\
+  SQLTools      & Se connecter à une base MySQL depuis VS Code & S8 \\
   \bottomrule
 \end{tabularx}
 \end{center}
+
+\begin{tcolorbox}[interdit, title={À désinstaller : les extensions d'assistance IA}]
+GitHub Copilot et toute extension équivalente doivent être \textbf{désinstallées} de Visual Studio Code cette semaine. Leur absence est vérifiée à chaque jalon. Les raisons sont détaillées en section~7.
+\end{tcolorbox}
 
 \subsection{Premiers pas dans le terminal}
 
@@ -595,23 +687,31 @@ Git et Node.js s'utilisent en ligne de commande. Quelques commandes suffisent po
 \begin{tabularx}{\linewidth}{p{4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Commande} & \color{white}\textbf{Effet} \\
+  \hdr{Commande} &  \hdr{Effet} \\
   \midrule
   \rowcolor{uniPaper}
-  \texttt{pwd}        & Affiche le dossier courant \\
-  \texttt{ls} (ou \texttt{dir})  & Liste le contenu du dossier courant \\
+  \texttt{pwd}            & Affiche le dossier courant \\
+  \texttt{ls} (ou \texttt{dir}) & Liste le contenu du dossier courant \\
   \rowcolor{uniPaper}
   \texttt{cd nom-dossier} & Se déplace dans un sous-dossier \\
-  \texttt{cd ..}      & Remonte d'un niveau \\
+  \texttt{cd ..}          & Remonte d'un niveau \\
   \rowcolor{uniPaper}
-  \texttt{mkdir nom}  & Crée un nouveau dossier \\
-  \texttt{touch nom.txt} & Crée un fichier vide (macOS/Linux) \\
+  \texttt{mkdir nom}      & Crée un nouveau dossier \\
+  \texttt{touch nom.txt}  & Crée un fichier vide (Git Bash, macOS, Linux) \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\begin{tcolorbox}[astuce, title={Remarque}]
-Ces commandes seront revues et approfondies dans le cours Linux/Bash donné en parallèle. Il suffit ici de savoir se déplacer et créer un dossier pour démarrer le projet MiniForum.
+\begin{tcolorbox}[astuce, title={Lien avec le cours Linux / Bash}]
+Ces commandes sont revues et approfondies dans le module Linux / Bash donné en parallèle. Il suffit ici de savoir se déplacer et créer un dossier pour démarrer MiniForum.
+\end{tcolorbox}
+
+\subsection{MDN, le bon réflexe documentation}
+
+\textbf{MDN Web Docs} (\texttt{developer.mozilla.org}) est la référence pour HTML, CSS et JavaScript. C'est la première source à consulter --- avant un forum, avant une vidéo.
+
+\begin{tcolorbox}[astuce, title={Méthode de recherche}]
+Tape dans ton moteur de recherche \texttt{mdn} suivi du nom de l'élément cherché : \texttt{mdn addEventListener}, \texttt{mdn input type}, \texttt{mdn flexbox}. Sur une page MDN, trois zones sont utiles : la \textbf{description}, la \textbf{syntaxe} et surtout les \textbf{exemples}, qui sont modifiables directement dans la page.
 \end{tcolorbox}
 
 \subsection{Structure du projet MiniForum}
@@ -626,41 +726,41 @@ Ces commandes seront revues et approfondies dans le cours Linux/Bash donné en p
   arr/.style={-{Stealth[length=5pt]}, uniGrey, thick}]
 
 \node[folder] (root) {\texttt{miniforum/}};
-\node[file, below=0.6cm of root, xshift=-3.5cm] (html) {\texttt{index.html}};
-\node[file, below=0.6cm of root, xshift=0cm]    (css)  {\texttt{style.css}};
-\node[file, below=0.6cm of root, xshift=3.5cm]  (js)   {\texttt{app.js}};
+\node[file, below=0.9cm of root, xshift=-4.2cm] (html) {\texttt{index.html}};
+\node[file, below=0.9cm of root, xshift=-1.4cm] (css)  {\texttt{style.css}};
+\node[file, below=0.9cm of root, xshift=1.4cm]  (js)   {\texttt{app.js}};
+\node[file, below=0.9cm of root, xshift=4.2cm]  (gi)   {\texttt{.gitignore}};
 
 \draw[arr] (root.south) -- (html.north);
 \draw[arr] (root.south) -- (css.north);
 \draw[arr] (root.south) -- (js.north);
+\draw[arr] (root.south) -- (gi.north);
 
-\node[below=0.2cm of html, font=\footnotesize\itshape, text=uniGrey]
-  {Structure HTML};
-\node[below=0.2cm of css, font=\footnotesize\itshape, text=uniGrey]
-  {Styles CSS};
-\node[below=0.2cm of js, font=\footnotesize\itshape, text=uniGrey]
-  {Scripts JS};
+\node[below=0.2cm of html, font=\footnotesize\itshape, text=uniGrey] {Structure};
+\node[below=0.2cm of css,  font=\footnotesize\itshape, text=uniGrey] {Styles};
+\node[below=0.2cm of js,   font=\footnotesize\itshape, text=uniGrey] {Scripts};
+\node[below=0.2cm of gi,   font=\footnotesize\itshape, text=uniGrey] {Exclusions Git};
 \end{tikzpicture}
 \end{center}
 
 \newpage
 
 % ============================================================
-\section{Git --- Premiers pas}
+\section{Git --- premiers pas}
 % ============================================================
 
-Git est un outil de \textbf{gestion de version} : il enregistre l'historique de chaque modification de ton code, permet de revenir en arrière en cas d'erreur, et facilite le travail en équipe. C'est un outil professionnel incontournable, utilisé dans tous les projets informatiques.
+Git est un outil de \textbf{gestion de version} : il enregistre l'historique de chaque modification de ton code, permet de revenir en arrière en cas d'erreur, et facilite le travail en équipe. C'est un outil professionnel incontournable, utilisé dans pratiquement tous les projets informatiques.
 
 \subsection{Pourquoi utiliser Git ?}
 
-Imagine que tu travailles sur ton projet MiniForum. Sans Git, tu te retrouves rapidement dans cette situation :
+Sans Git, on se retrouve rapidement dans cette situation :
 
 \begin{center}
 \renewcommand{\arraystretch}{1.0}
-\begin{tabularx}{\linewidth}{p{4cm}X}
+\begin{tabularx}{\linewidth}{p{5cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Fichier} & \color{white}\textbf{Ce que tu essaies de faire} \\
+  \hdr{Fichier} &  \hdr{Ce que tu essayais de faire} \\
   \midrule
   \rowcolor{uniPaper}
   \texttt{index.html} & Version qui marche \\
@@ -687,7 +787,7 @@ Git résout ce problème : un seul fichier, un historique complet, la possibilit
 
 \subsection{Les quatre zones de Git}
 
-Git organise le travail en quatre zones distinctes. Comprendre ces zones est essentiel pour ne pas être perdu face aux commandes.
+Git organise le travail en quatre zones distinctes. Les comprendre évite bien des blocages face aux commandes.
 
 \vspace{8pt}
 \begin{center}
@@ -703,12 +803,9 @@ Git organise le travail en quatre zones distinctes. Comprendre ces zones est ess
 \node[state, right=of st]  (lo) {\textbf{Local}\\{\footnotesize Historique}};
 \node[remote, right=of lo] (gh) {\textbf{GitHub}\\{\footnotesize En ligne}};
 
-\draw[arr, uniNavy]
-  (wd) -- node[above, font=\footnotesize]{\texttt{git add}} (st);
-\draw[arr, uniNavy]
-  (st) -- node[above, font=\footnotesize]{\texttt{git commit}} (lo);
-\draw[arr, uniNavy]
-  (lo) -- node[above, font=\footnotesize]{\texttt{git push}} (gh);
+\draw[arr, uniNavy] (wd) -- node[above, font=\footnotesize]{\texttt{git add}} (st);
+\draw[arr, uniNavy] (st) -- node[above, font=\footnotesize]{\texttt{git commit}} (lo);
+\draw[arr, uniNavy] (lo) -- node[above, font=\footnotesize]{\texttt{git push}} (gh);
 
 \draw[arr, uniTeal, bend right=-34]
   (gh.south) to node[below, font=\footnotesize]{\texttt{git pull}} (lo.south);
@@ -722,20 +819,19 @@ Git organise le travail en quatre zones distinctes. Comprendre ces zones est ess
 \begin{tabularx}{\linewidth}{p{4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Zone} & \color{white}\textbf{Description} \\
+  \hdr{Zone} &  \hdr{Description} \\
   \midrule
   \rowcolor{uniPaper}
   \textbf{Working Directory} & Tes fichiers tels que tu les vois dans ton éditeur. Toutes tes modifications vivent ici. \\
-  \textbf{Stage (Index)} & Zone de préparation : tu sélectionnes les fichiers que tu veux inclure dans le prochain commit. \\
+  \textbf{Stage (Index)} & Zone de préparation : tu sélectionnes les fichiers à inclure dans le prochain commit. \\
   \rowcolor{uniPaper}
-  \textbf{Repository local} & L'historique Git stocké sur ta machine. Chaque commit est un instantané du projet. \\
-  \textbf{Remote (GitHub)} & Copie du dépôt hébergée en ligne. Permet la sauvegarde et le partage. \\
+  \textbf{Dépôt local} & L'historique Git stocké sur ta machine. Chaque commit est un instantané du projet. \\
+  \textbf{Dépôt distant (GitHub)} & Copie du dépôt hébergée en ligne. Permet la sauvegarde et le partage. \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
 \begin{tcolorbox}[astuce, title={Analogie --- La photo de groupe}]
-Imagine que tu prépares une photo de groupe.
 \textbf{Working Directory} : tout le monde est dans la salle.
 \textbf{Stage} : tu demandes à certaines personnes de se mettre en position.
 \textbf{Commit} : tu prends la photo --- c'est un instantané permanent.
@@ -745,79 +841,169 @@ Imagine que tu prépares une photo de groupe.
 \subsection{Commandes essentielles}
 
 \begin{lstlisting}[language=bash, caption={Initialiser un projet Git}]
-# Initialiser un depot Git dans le dossier courant
+# Initialiser un dépôt Git dans le dossier courant
 git init
 
-# Voir l'etat des fichiers (modifies, en attente, non suivis)
+# Voir l'état des fichiers (modifiés, en attente, non suivis)
 git status
 
-# Ajouter tous les fichiers modifies au stage
+# Ajouter tous les fichiers modifiés au stage
 git add .
 
-# Ajouter un seul fichier specifique
+# Ajouter un seul fichier
 git add index.html
 
 # Enregistrer un commit avec un message
-git commit -m "Premier commit : structure de base du MiniForum"
+git commit -m "Structure de base du MiniForum"
 
 # Voir l'historique des commits
 git log --oneline
 \end{lstlisting}
 
 \begin{lstlisting}[language=bash, caption={Synchroniser avec GitHub}]
-# Lier le depot local a un depot GitHub
-git remote add origin https://github.com/votre-login/miniforum.git
+# Lier le dépôt local à un dépôt GitHub
+git remote add origin https://github.com/ton-login/miniforum.git
 
-# Envoyer les commits sur GitHub (premiere fois)
+# Envoyer les commits sur GitHub (la première fois)
 git push -u origin main
 
 # Envoyer les commits suivants
 git push
 
-# Recuperer les modifications depuis GitHub
+# Récupérer les modifications depuis GitHub
 git pull
 \end{lstlisting}
 
-\begin{lstlisting}[language=bash, caption={Revenir en arriere}]
-# Voir quelles modifications ont ete faites sur un fichier
+\begin{lstlisting}[language=bash, caption={Revenir en arrière}]
+# Voir les modifications faites sur un fichier
 git diff index.html
 
 # Annuler les modifications d'un fichier (avant git add)
 git restore index.html
 
-# Voir le detail d'un commit
+# Voir le détail d'un commit
 git show abc1234
 \end{lstlisting}
 
 \begin{tcolorbox}[astuce, title={Bonne pratique --- Messages de commit}]
-Un bon message de commit décrit \textbf{ce qui a changé}, pas comment.\\[4pt]
-\textcolor{uniTeal}{\textbf{OK}}\quad \texttt{Ajout formulaire création de sujet}\\
-\textcolor{uniTeal}{\textbf{OK}}\quad \texttt{Correction bug affichage liste des messages}\\
-\textcolor{BrickRed}{\textbf{NON}}\quad \texttt{modif} \qquad
-\textcolor{BrickRed}{\textbf{NON}}\quad \texttt{ca marche} \qquad
-\textcolor{BrickRed}{\textbf{NON}}\quad \texttt{update}
+Un bon message décrit \textbf{ce qui a changé}, pas comment.\\[4pt]
+\textcolor{successGreen}{\textbf{OUI}}\quad \texttt{Ajout du formulaire de création de sujet}\\
+\textcolor{successGreen}{\textbf{OUI}}\quad \texttt{Correction de l'affichage de la liste des messages}\\[3pt]
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{modif} \qquad
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{ça marche} \qquad
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{update}
 \end{tcolorbox}
 
 \subsection{Le fichier \texttt{.gitignore}}
 
-Certains fichiers ne doivent jamais être versionnés : mots de passe, dépendances téléchargées, fichiers temporaires. Le fichier \texttt{.gitignore} indique à Git quels fichiers ignorer.
+Certains fichiers ne doivent jamais être versionnés : mots de passe, dépendances téléchargées, fichiers temporaires du système. Le fichier \texttt{.gitignore}, placé à la racine du dépôt, indique à Git ce qu'il doit ignorer.
 
-\begin{lstlisting}[language=bash, caption={.gitignore --- Exemple pour MiniForum}]
-# Dependances Node.js (a ne jamais committer)
+\begin{lstlisting}[language=bash, caption={\texttt{.gitignore} --- version à créer dès la semaine 1}]
+# Dépendances Node.js : jamais dans Git
 node_modules/
 
-# Variables d'environnement (mots de passe, cles API)
+# Variables d'environnement (mots de passe, clés d'API)
 .env
 
-# Fichiers systeme macOS
+# Fichiers système
 .DS_Store
+Thumbs.db
 
-# Fichiers temporaires de l'editeur
-.vscode/settings.json
+# Réglages locaux de l'éditeur
+.vscode/
 \end{lstlisting}
 
-\begin{tcolorbox}[attention, title={Important --- Ne jamais committer \texttt{node\_modules/}}]
-Le dossier \texttt{node\_modules/} peut contenir des milliers de fichiers et peser plusieurs centaines de mégaoctets. Il doit \textbf{toujours} figurer dans \texttt{.gitignore} : les dépendances se réinstallent en une commande (\texttt{npm install}), elles n'ont pas leur place dans l'historique Git.
+\begin{tcolorbox}[attention, title={Important --- Le \texttt{.gitignore} vient avant le premier commit}]
+Le dossier \texttt{node\_modules/} peut contenir des milliers de fichiers et peser plusieurs centaines de mégaoctets ; les dépendances se réinstallent en une commande (\texttt{npm install}) et n'ont donc pas leur place dans l'historique.\\[4pt]
+Surtout : un fichier déjà commité reste dans l'historique \textbf{même si on l'ajoute au \texttt{.gitignore} ensuite}. C'est la raison pour laquelle on crée ce fichier \textbf{avant} le tout premier commit --- et c'est aussi ce qui évite, plus tard dans l'année, de publier par erreur un mot de passe de base de données sur GitHub.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Le cours : fil rouge, jalons et règles}
+% ============================================================
+
+\subsection{MiniForum, le projet fil rouge}
+
+Plutôt que des exercices isolés, l'ensemble du cours est construit autour d'un projet unique qui grandit de semaine en semaine : \textbf{MiniForum}, un forum simplifié avec des utilisateurs, des sujets de discussion, des messages et des réactions.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{clXc}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdrc{Phase} &  \hdr{Sem.} &  \hdr{Ce que tu construis} &  \hdrc{Jalon} \\
+  \midrule
+  \rowcolor{uniPaper}
+  1 & 1--7   & HTML / CSS / JS : une interface interactive, données en mémoire & J1 (S7) \\
+  2 & 8--11  & SQL : modélisation et requêtes sur une vraie base & J2 (S11) \\
+  \rowcolor{uniPaper}
+  3 & 12--17 & Node.js / Express : une API REST branchée sur MySQL & J3 (S17) \\
+  4 & 18--20 & Authentification, sécurité, soutenance & Soutenance \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Comment le cours est évalué}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{lXcc}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Épreuve} &  \hdr{Objet} &  \hdrc{Sem.} &  \hdrc{Poids} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Jalon 1 & Interface MiniForum interactive & 7 & 10\,\% \\
+  Jalon 2 & Modèle de données et requêtes SQL & 11 & 10\,\% \\
+  \rowcolor{uniPaper}
+  Contrôle écrit & Individuel, sur machine, sans réseau & 12 & 25\,\% \\
+  Jalon 3 & API Express connectée à MySQL & 17 & 10\,\% \\
+  \rowcolor{uniPaper}
+  Projet final & MiniForum complet & 20 & 30\,\% \\
+  Soutenance & Présentation orale et démonstration & 20 & 15\,\% \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Le filet de sécurité --- dépôts de référence}]
+Un projet mené sur vingt semaines a un défaut : rester bloqué en semaine 4 pourrait signifier ne plus jamais rattraper le retard.\\[4pt]
+Pour l'éviter, un \textbf{dépôt de référence} est fourni à la fin de chaque phase (semaines 7, 11 et 17). Il contient un MiniForum conforme à l'état attendu. Chacun peut repartir de ce dépôt au début de la phase suivante, \textbf{sans pénalité} sur les jalons ultérieurs. Un retard ne doit jamais se transformer en abandon : il faut simplement le signaler.
+\end{tcolorbox}
+
+\subsection{Usage de l'intelligence artificielle générative}
+
+\begin{tcolorbox}[interdit, title={Les assistants de génération de code sont interdits dans ce cours}]
+GitHub Copilot, ChatGPT, Claude, Gemini et tout autre assistant produisant du code sont \textbf{interdits} pour l'ensemble des travaux rendus : travaux pratiques, jalons, projet final et contrôle écrit.
+\end{tcolorbox}
+
+\vspace{4pt}
+\textbf{Pourquoi.} L'objectif de ce cours est que des personnes n'ayant jamais programmé sachent programmer à la fin de l'année. Cette compétence s'acquiert en écrivant du code, en le voyant échouer et en comprenant pourquoi. Un assistant qui produit immédiatement une réponse correcte supprime exactement l'étape où l'apprentissage se produit. L'enjeu est concret : en 1\textsuperscript{re} année hepia, les évaluations d'algorithmique sont individuelles et sans assistance.
+
+\vspace{6pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Autorisé} &  \hdr{Condition} \\
+  \midrule
+  \rowcolor{uniPaper}
+  MDN, documentation Express, manuel MySQL & Aucune, c'est même recommandé \\
+  Moteurs de recherche, Stack Overflow & Comprendre et savoir expliquer tout code repris \\
+  \rowcolor{uniPaper}
+  Entraide entre étudiant·e·s & Chacun·e écrit son propre code \\
+  Prettier, ESLint, correcteur orthographique & Ce sont des outils de mise en forme, pas de génération \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+\textbf{Comment c'est vérifié.} Les extensions d'assistance IA sont désinstallées en semaine 1 et leur absence est contrôlée aux jalons. L'historique Git est examiné : un projet qui apparaît en un seul commit massif donne lieu à un entretien. Chaque jalon comporte des questions orales sur le code rendu, et le contrôle écrit de la semaine 12 se déroule sur machine sans accès au réseau. Le manquement à cette règle relève du règlement de l'établissement en matière de fraude.
+
+\begin{tcolorbox}[astuce, title={Pour être clair}]
+Cette interdiction porte sur la \textbf{période d'apprentissage des fondamentaux}, pas sur la pratique professionnelle. Les usages en contexte professionnel sont abordés en semaine 20, dans le bilan de fin de cours.
 \end{tcolorbox}
 
 % ============================================================
@@ -829,36 +1015,29 @@ Le dossier \texttt{node\_modules/} peut contenir des milliers de fichiers et pes
 \begin{tabularx}{\linewidth}{p{4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Terme} & \color{white}\textbf{Définition} \\
+  \hdr{Terme} &  \hdr{Définition} \\
   \midrule
   \rowcolor{uniPaper}
   URL & Adresse permettant de localiser une ressource sur le web \\
-  DNS & Service qui traduit un nom de domaine en adresse IP \\
+  Adresse IP & Identifiant numérique d'une machine sur un réseau \\
   \rowcolor{uniPaper}
-  HTTP / HTTPS & Protocole de communication entre client et serveur (HTTPS = version chiffrée) \\
+  DNS & Service qui traduit un nom de domaine en adresse IP \\
+  HTTP / HTTPS & Protocole de communication entre client et serveur (HTTPS = chiffré) \\
+  \rowcolor{uniPaper}
+  Code de statut & Nombre à trois chiffres résumant l'issue d'une requête (200, 404\ldots) \\
   Client & Programme qui demande une ressource (le navigateur) \\
   \rowcolor{uniPaper}
-  Serveur & Programme qui répond à une demande en fournissant fichiers ou données \\
+  Serveur & Programme qui répond en fournissant fichiers ou données \\
   Statique & Contenu identique quel que soit le visiteur ou le moment \\
   \rowcolor{uniPaper}
   Dynamique & Contenu généré à la demande, souvent depuis une base de données \\
-  Commit & Enregistrement d'un instantané des modifications dans Git \\
+  Dépôt (\textit{repository}) & Dossier suivi par Git, contenant l'historique du projet \\
   \rowcolor{uniPaper}
-  Dépôt (repository) & Dossier suivi par Git, contenant l'historique du projet \\
+  Commit & Instantané enregistré de l'état du projet \\
+  \texttt{.gitignore} & Fichier listant ce que Git doit ignorer \\
   \bottomrule
 \end{tabularx}
 \end{center}
-
-% ============================================================
-\section*{Pour aller plus loin}
-% ============================================================
-
-\begin{tcolorbox}[astuce, title={Quiz et travaux pratiques}]
-\begin{itemize}
-  \item Un \textbf{quiz d'auto-évaluation} sur cette semaine est disponible sur Moodle.
-  \item La \textbf{fiche TP} (mise en place de l'environnement et premier dépôt Git) est distribuée séparément : \textit{S01\_TP.pdf}.
-\end{itemize}
-\end{tcolorbox}
 
 % ============================================================
 \section*{Résumé de la semaine}
@@ -866,22 +1045,25 @@ Le dossier \texttt{node\_modules/} peut contenir des milliers de fichiers et pes
 
 \begin{tcolorbox}[definition, title={Ce qu'il faut retenir}]
 \begin{itemize}
-  \item Le web fonctionne sur un modèle \textbf{client / serveur} via le protocole \textbf{HTTP}
+  \item Le web repose sur un modèle \textbf{client / serveur} et sur le protocole \textbf{HTTP}
   \item Le \textbf{DNS} traduit un nom de domaine en adresse IP
-  \item \textbf{HTML} structure, \textbf{CSS} présente, \textbf{JavaScript} rend interactif
-  \item Un site \textbf{statique} renvoie toujours le même contenu, un site \textbf{dynamique} le génère à la demande
-  \item \textbf{Git} : \texttt{add} $\to$ \texttt{commit} $\to$ \texttt{push} pour versionner son code
-  \item \textbf{MiniForum} sera le projet fil rouge développé progressivement sur 15 semaines
+  \item \textbf{HTML} structure, \textbf{CSS} présente, \textbf{JavaScript} rend interactif --- les trois s'exécutent dans le navigateur
+  \item Un site \textbf{statique} renvoie toujours le même contenu ; un site \textbf{dynamique} le génère à la demande
+  \item \textbf{Node.js} permet d'exécuter du JavaScript côté serveur : un seul langage pour toute la stack
+  \item \textbf{Git} : \texttt{add} $\rightarrow$ \texttt{commit} $\rightarrow$ \texttt{push}, avec un \texttt{.gitignore} dès le premier commit
+  \item \textbf{MiniForum} est le projet fil rouge, développé sur les \textbf{20 semaines} du cours
 \end{itemize}
 \end{tcolorbox}
 
 \vspace{8pt}
 \begin{tcolorbox}[attention, title={Pour la semaine 2}]
 \begin{itemize}
-  \item Vérifier que VS Code, Node.js et Git sont correctement installés
-  \item Créer son compte GitHub si ce n'est pas déjà fait
-  \item Avoir son dépôt \texttt{miniforum/} initialisé avec les trois fichiers de base et poussé sur GitHub
+  \item VS Code, Node.js 24 et Git installés et vérifiés (\texttt{node -v}, \texttt{git --version})
+  \item Extensions d'assistance IA désinstallées de VS Code
+  \item Compte GitHub créé
+  \item Dépôt \texttt{miniforum} poussé sur GitHub, avec \texttt{.gitignore} dans le premier commit
 \end{itemize}
+Le détail pas à pas se trouve dans la fiche \textit{S01\_TP}.
 \end{tcolorbox}
 
 \end{document}

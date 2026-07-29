@@ -1,20 +1,40 @@
 % ============================================================
-%  Semaine 1 — Fondamentaux du web & environnement
+%  Semaine 1 — Fondamentaux du web & environnement  [Module A]
 %  PRÉSENTATION (Beamer) — cfpt·i | Anne Terrier
-%  Charte graphique : cfpt·i (bleu accentBlue + jaune cfptYellow)
+%  Aligné sur PlanCours_Pass_Web_v2 (20 semaines, 3h cours + 4h TP)
+%
+%  Images attendues dans ./images/ : client-serveur.jpg
+%  Une image absente est remplacée par un cadre de réservation.
 % ============================================================
 \documentclass[aspectratio=169,11pt]{beamer}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
 \usepackage[scaled=0.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 
+\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, decorations.pathreplacing}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{colortbl}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+%   1) \aboverulesep / \belowrulesep a 0 : supprime le lisere blanc
+%      entre le filet booktabs et la bande coloree du \rowcolor.
+%   2) \hdr : force l'alignement de la cellule d'en-tete. Sans cela,
+%      une colonne p{}, m{} ou X place le texte trop bas dans la bande.
+% Trois macros distinctes plutot qu'un argument optionnel : ce dernier
+% n'est pas expansible et casse la passe de mesure de tabularx.
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
 \usepackage{listings}
 
 % ---------------------------------------------------------------
@@ -29,8 +49,9 @@
 \definecolor{codeGrey}{HTML}{F5F5F5}
 \definecolor{successGreen}{HTML}{1E7145}
 \definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
 
-% Alias (repris du polycop)
+% Alias (repris du polycopié)
 \colorlet{uniInk}{cfptBlack}
 \colorlet{uniNavy}{accentBlue}
 \colorlet{uniTeal}{successGreen}
@@ -40,7 +61,19 @@
 \colorlet{uniRule}{cfptDarkGrey!35}
 
 % ---------------------------------------------------------------
-% Thème Beamer personnalisé cfpt·i
+% Image robuste : cadre de réservation si le fichier est absent
+% ---------------------------------------------------------------
+\newcommand{\imageslide}[2][0.80\textwidth]{%
+  \IfFileExists{#2}%
+    {\includegraphics[width=#1]{#2}}%
+    {\setlength{\fboxrule}{0.6pt}%
+     \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.6cm][c]{#1}{%
+       \centering\small\color{cfptDarkGrey}%
+       [ image à insérer ]\\[4pt]\texttt{\detokenize{#2}}}}}}%
+}
+
+% ---------------------------------------------------------------
+% Thème Beamer cfpt·i
 % ---------------------------------------------------------------
 \usetheme{default}
 \usecolortheme{default}
@@ -65,7 +98,7 @@
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{blocks}[rounded][shadow=false]
 
-% Titre de frame : bandeau plein largeur
+% Titre de frame : bandeau pleine largeur
 \setbeamertemplate{frametitle}{%
   \nointerlineskip%
   \begin{beamercolorbox}[wd=\paperwidth, ht=2.6ex, dp=1.2ex, leftskip=0.3cm]{frametitle}%
@@ -73,7 +106,7 @@
   \end{beamercolorbox}%
 }
 
-% Pied de page : logo texte + section + numéro
+% Pied de page
 \setbeamertemplate{footline}{%
   \leavevmode%
   \hbox{%
@@ -81,7 +114,7 @@
       \usebeamerfont{author in head/foot}\tiny Anne Terrier%
     \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.44\paperwidth, ht=2.4ex, dp=1ex, center]{palette primary}%
-      \usebeamerfont{title in head/foot}\tiny Semaine 1 --- Fondamentaux du web%
+      \usebeamerfont{title in head/foot}\tiny Semaine 1 --- Fondamentaux du web \& environnement%
     \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.24\paperwidth, ht=2.4ex, dp=1ex, right, rightskip=0.3cm]{palette primary}%
       \usebeamerfont{date in head/foot}\tiny\insertframenumber\,/\,\inserttotalframenumber%
@@ -89,9 +122,45 @@
   }%
 }
 
+% Diapositive de séparation de partie
+\newcommand{\partieslide}[1]{%
+{%
+\setbeamertemplate{footline}{}%
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
+    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center) {#1};
+  \end{tikzpicture}
+\end{frame}
+}}
+
 % ---------------------------------------------------------------
-% Listings
+% Listings : JavaScript et CSS ne sont pas fournis par le paquet
 % ---------------------------------------------------------------
+\lstdefinelanguage{JavaScript}{
+  morekeywords={await, async, break, case, catch, class, const, continue,
+    default, delete, do, else, export, extends, false, finally, for, function,
+    if, import, in, instanceof, let, new, null, of, return, super, switch,
+    this, throw, true, try, typeof, var, void, while, yield},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`,
+  sensitive=true,
+}
+
+\lstdefinelanguage{CSS}{
+  morekeywords={background-color, border, border-radius, color, cursor,
+    display, flex, font-family, font-size, grid, height, margin, padding,
+    text-align, width},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  sensitive=false,
+}
+
 \lstset{
   basicstyle=\ttfamily\scriptsize,
   backgroundcolor=\color{codeGrey},
@@ -102,9 +171,15 @@
   commentstyle=\color{cfptDarkGrey}\itshape,
   stringstyle=\color{successGreen},
   showstringspaces=false,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
 }
-
-
 
 % ---------------------------------------------------------------
 % Métadonnées
@@ -136,7 +211,7 @@
     \fill[cfptYellow] ([yshift=-3.2cm]current page.north west) rectangle ([yshift=-3.35cm]current page.north east);
 
     \node[anchor=south west, font=\large\bfseries, text=accentBlue]
-      at ([shift={(0.8cm,1.8cm)}]current page.south west) {Semaine 1};
+      at ([shift={(0.8cm,1.8cm)}]current page.south west) {Semaine 1 \quad\textbar\quad Module A};
     \node[anchor=south west, font=\normalsize, text=cfptDarkGrey]
       at ([shift={(0.8cm,1.1cm)}]current page.south west)
       {Anne Terrier \quad\textbar\quad cfpt\textperiodcentered i --- École d'informatique};
@@ -160,30 +235,77 @@
         \setcounter{enumi}{4}
         \item Environnement de développement
         \item Git --- premiers pas
+        \item Le cours : fil rouge, jalons et règles
       \end{enumerate}
-      \vspace{0.6cm}
-      \begin{block}{Objectif de la semaine}
-        Comprendre le fonctionnement du web et installer son environnement de développement.
-      \end{block}
     \end{column}
   \end{columns}
+  \vspace{0.4cm}
+  \begin{block}{Objectif de la semaine}
+    Comprendre le fonctionnement du web, installer son environnement de développement et mettre en place son premier dépôt Git.
+  \end{block}
 \end{frame}
 
 % ===============================================================
 \section{Comment fonctionne le web ?}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {1. Comment fonctionne le web ?};
+\partieslide{1. Comment fonctionne le web ?}
+
+\begin{frame}{Aux origines du web}
+  \vspace{0.5cm}
+  \begin{center}
+  \begin{tikzpicture}[font=\footnotesize, x=2.05cm,
+    ev/.style={circle, fill=accentBlue, inner sep=2.2pt},
+    evg/.style={circle, fill=warningOrange, inner sep=2.2pt}]
+
+    \draw[cfptDarkGrey!45, line width=1.1pt] (-0.35,0) -- (5.35,0);
+
+    \foreach \x/\y/\t/\d in {%
+      0/ev/1969/{ARPAnet},
+      1/ev/1972/{L'e-mail},
+      2/evg/1989/{Proposition\\au CERN},
+      3/evg/1990/{1\textsuperscript{er} serveur\\1\textsuperscript{er} navigateur},
+      4/evg/1991/{Web ouvert\\au public},
+      5/ev/1994/{Netscape\\Navigator}}{%
+        \node[\y] (n\x) at (\x,0) {};
+        \node[above=6pt of n\x, font=\small\bfseries, text=accentBlue] {\t};
+        \node[below=6pt of n\x, align=center, text width=2cm,
+              font=\scriptsize, text=cfptDarkGrey] {\d};
+      }
+    \draw[warningOrange, thick, {Bar[]}-{Bar[]}] (1.85,0.95) -- (4.15,0.95)
+      node[midway, above, font=\scriptsize\bfseries, text=warningOrange]
+      {Tim Berners-Lee, au CERN};
   \end{tikzpicture}
+  \end{center}
+  \vspace{0.4cm}
+  \begin{center}
+    \small Le web est né à \textbf{Genève} --- vingt ans après le réseau qui le porte.
+  \end{center}
 \end{frame}
-}
+
+\begin{frame}{Deux confusions courantes}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Internet n'est pas le Web}
+        \textbf{Internet} est le réseau physique mondial qui relie les ordinateurs.
+        \vspace{0.15cm}
+
+        Le \textbf{Web} n'est que l'un des services qui y circulent --- les pages reliées par des \textbf{liens hypertexte} --- au même titre que l'e-mail.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Un navigateur n'est pas un moteur de recherche}
+        Le \textbf{navigateur} (Firefox, Chrome, Safari) traduit le code reçu pour afficher la page.
+        \vspace{0.15cm}
+
+        Le \textbf{moteur de recherche} (Google, Bing) est un site qui aide à trouver des adresses.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{block}{Une conséquence très concrète}
+    Chaque navigateur interprète le code à sa manière : l'affichage peut varier de l'un à l'autre. D'où l'habitude à prendre dès maintenant --- \textbf{tester ses pages sur au moins deux navigateurs}.
+  \end{block}
+\end{frame}
 
 \begin{frame}{Le modèle client / serveur}
   \begin{center}
@@ -201,18 +323,18 @@
       ([yshift=-4pt]server.west) -- node[below, font=\footnotesize]{Réponse HTTP} ([yshift=-4pt]client.east);
   \end{tikzpicture}
   \end{center}
-    \vspace{0.5cm}
+  \vspace{0.5cm}
   \begin{block}{Définition --- Client et serveur}
     \textbf{Client} : programme qui \textit{demande} une ressource (le navigateur).\\
     \textbf{Serveur} : programme qui \textit{répond} en envoyant fichiers ou données.\\
-    Communication via le protocole \textbf{HTTP} (ou \textbf{HTTPS} sécurisé).
+    Communication via le protocole \textbf{HTTP} (ou \textbf{HTTPS}, sa version chiffrée).
   \end{block}
 \end{frame}
 
 \begin{frame}{Le modèle client / serveur --- en détail}
   \begin{center}
-    \includegraphics[width=0.9\textwidth]{Semaine1/images/client serveur.jpg}
-  \end{center}  
+    \imageslide[0.85\textwidth]{images/client-serveur.jpg}
+  \end{center}
 \end{frame}
 
 \begin{frame}{Anatomie d'une URL}
@@ -235,7 +357,7 @@
   \end{center}
 \end{frame}
 
-\begin{frame}{DNS --- de l'adresse au nom}
+\begin{frame}{DNS --- du nom à l'adresse}
   Un ordinateur ne comprend pas \texttt{www.hepia.ch} : il lui faut une \textbf{adresse IP} (ex. \texttt{192.0.2.34}). Le \textbf{DNS} traduit le nom de domaine en adresse IP.
   \vspace{0.3cm}
   \begin{block}{Analogie --- L'annuaire téléphonique}
@@ -251,25 +373,27 @@
 \end{frame}
 
 \begin{frame}{Les codes de statut HTTP}
-  \vspace{0.3cm}
+  \vspace{0.2cm}
   \begin{center}
-  \begin{tabular}{cc>{\raggedright\arraybackslash}m{5cm}}
+  \begin{tabular}{cc>{\raggedright\arraybackslash}m{5.2cm}}
     \toprule
     \rowcolor{accentBlue}
-    \color{white}\textbf{Code} & \color{white}\textbf{Signification} & \color{white}\textbf{Quand ?} \\
+  \hdrc{Code} &  \hdrc{Signification} &  \hdr{Quand ?} \\
     \midrule
     \rowcolor{cfptGrey}
     \texttt{200} & OK & Tout s'est bien passé \\
-    \texttt{301} & Redirection & La page a changé d'adresse \\
+    \texttt{301} & Moved Permanently & La ressource a changé d'adresse \\
     \rowcolor{cfptGrey}
-    \texttt{404} & Not Found & La page n'existe pas \\
-    \texttt{500} & Server Error & Erreur côté serveur \\
+    \texttt{403} & Forbidden & L'accès est refusé \\
+    \texttt{404} & Not Found & La ressource n'existe pas \\
+    \rowcolor{cfptGrey}
+    \texttt{500} & Internal Server Error & Erreur côté serveur \\
     \bottomrule
   \end{tabular}
   \end{center}
-  \vspace{0.3cm}
+  \vspace{0.2cm}
   \begin{center}
-    \small\itshape Le fameux « 404 » que tout le monde a déjà rencontré !
+    \small\itshape Le premier chiffre donne la famille : 2 succès, 3 redirection, 4 erreur du client, 5 erreur du serveur.
   \end{center}
 \end{frame}
 
@@ -284,37 +408,22 @@
   \begin{tabularx}{\textwidth}{lXX}
     \toprule
     \rowcolor{accentBlue}
-    \color{white}\textbf{} & \color{white}\textbf{Statique} & \color{white}\textbf{Dynamique} \\
+  \hdr{} &  \hdr{Statique} &  \hdr{Dynamique} \\
     \midrule
     \rowcolor{cfptGrey}
     Contenu & Identique pour tous & Généré à chaque requête \\
     Exemple & Vitrine, portfolio & Forum, boutique, réseau social \\
     \rowcolor{cfptGrey}
-    Technique & HTML/CSS/JS seuls & Node.js + base de données \\
+    Technique & HTML / CSS / JS seuls & Node.js + base de données \\
     \bottomrule
   \end{tabularx}
   \end{center}
-  \vspace{0.1cm}
-  \begin{alertblock}{Où se situe MiniForum ?}
-    Statique au départ (sem. 1--5), puis dynamique dès la phase 3 avec une vraie base de données.
-  \end{alertblock}
 \end{frame}
 
 % ===============================================================
 \section{Les langages côté client}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {2. Les langages côté client};
-  \end{tikzpicture}
-\end{frame}
-}
+\partieslide{2. Les langages côté client}
 
 \begin{frame}{HTML, CSS, JavaScript}
   \begin{center}
@@ -345,7 +454,7 @@
   \end{tikzpicture}
   \end{center}
   \begin{alertblock}{Qui exécute quoi ?}
-    HTML, CSS et JavaScript s'exécutent dans le \textbf{navigateur} (côté client).
+    HTML, CSS et JavaScript s'exécutent tous les trois dans le \textbf{navigateur}. Le serveur se contente de les envoyer.
   \end{alertblock}
 \end{frame}
 
@@ -355,25 +464,29 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>MiniForum</title>
+  <title>Ma première page</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Bienvenue sur MiniForum</h1>
+  <h1>Bienvenue !</h1>
   <button id="btn">Cliquez-moi</button>
   <script src="app.js"></script>
 </body>
 </html>
 \end{lstlisting}
+  \vspace{0.2cm}
+  \begin{center}
+    \small La balise \texttt{<script>} est placée \textbf{après} le bouton : sinon, JavaScript chercherait un élément qui n'existe pas encore.
+  \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Un premier exemple --- présentation \& comportement}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \begin{center}\footnotesize\textbf{style.css}\end{center}
-\begin{lstlisting}[language=HTML]
+\begin{lstlisting}[language=CSS]
 button {
-  background-color: #1D3557;
+  background-color: #1D4E89;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -384,7 +497,7 @@ button {
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{center}\footnotesize\textbf{app.js}\end{center}
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=JavaScript]
 const btn =
   document.getElementById('btn');
 
@@ -404,60 +517,94 @@ btn.addEventListener('click',
 % ===============================================================
 \section{Les langages côté serveur}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {3. Les langages côté serveur};
+\partieslide{3. Les langages côté serveur}
+
+\begin{frame}{La chaîne complète}
+  \begin{center}
+  \begin{tikzpicture}[font=\small, node distance=1.7cm]
+    \node[draw=accentBlue, fill=lightBlue, rounded corners=2pt, thick,
+          minimum width=2.9cm, minimum height=1.3cm, align=center] (client)
+      {\textbf{Navigateur}\\{\scriptsize HTML + CSS + JS}};
+    \node[draw=successGreen, fill=successGreen!10, rounded corners=2pt, thick,
+          minimum width=2.9cm, minimum height=1.3cm, align=center, right=of client] (server)
+      {\textbf{Serveur}\\{\scriptsize Node.js + Express}};
+    \node[draw=warningOrange, fill=warningOrange!10, rounded corners=2pt, thick,
+          minimum width=2.9cm, minimum height=1.3cm, align=center, right=of server] (db)
+      {\textbf{Base de données}\\{\scriptsize MySQL / MariaDB}};
+
+    \draw[-{Stealth[length=5pt]}, thick, accentBlue]
+      ([yshift=5pt]client.east) -- node[above, font=\scriptsize]{requête HTTP} ([yshift=5pt]server.west);
+    \draw[-{Stealth[length=5pt]}, thick, accentBlue]
+      ([yshift=-5pt]server.west) -- node[below, font=\scriptsize]{réponse} ([yshift=-5pt]client.east);
+    \draw[-{Stealth[length=5pt]}, thick, warningOrange]
+      ([yshift=5pt]server.east) -- node[above, font=\scriptsize]{requête SQL} ([yshift=5pt]db.west);
+    \draw[-{Stealth[length=5pt]}, thick, warningOrange]
+      ([yshift=-5pt]db.west) -- node[below, font=\scriptsize]{données} ([yshift=-5pt]server.east);
   \end{tikzpicture}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{alertblock}{Une règle à retenir dès maintenant}
+    Le navigateur ne parle \textbf{jamais} directement à la base de données. Il passe toujours par le serveur. C'est le fondement de la sécurité d'une application web.
+  \end{alertblock}
 \end{frame}
-}
 
 \begin{frame}{Côté serveur : un choix de langages}
   \begin{block}{Dans ce cours}
-    \textbf{Node.js} s'exécute sur le \textbf{serveur}. La base de données est aussi côté serveur, jamais accessible directement depuis le navigateur.
+    \textbf{Node.js} permet d'exécuter du JavaScript en dehors du navigateur : créer un serveur, recevoir des requêtes HTTP, interroger une base de données, exposer une API.
   \end{block}
-  \begin{exampleblock}{Pour info --- D'autres langages, mêmes principes}
-    Contrairement au navigateur, un serveur n'est pas limité à un seul langage : \textbf{PHP, Python, Java, Ruby, C\#}... coexistent sur le web. Chacun peut jouer le même rôle que Node.js.
+  \begin{exampleblock}{Pour information --- d'autres langages, mêmes principes}
+    Contrairement au navigateur, un serveur n'est pas limité à un seul langage : \textbf{PHP, Python, Java, Ruby, C\#}\ldots\ coexistent sur le web, et chacun peut jouer le même rôle que Node.js.
     \vspace{0.2cm}
 
-    Le principe reste partout le même : recevoir une requête, dialoguer avec une base de données (en \textbf{SQL}), renvoyer une réponse.
+    Le principe reste partout identique : recevoir une requête, dialoguer avec une base de données (en \textbf{SQL}), renvoyer une réponse.
   \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Le même langage, deux environnements}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{JavaScript côté client}
+        \begin{itemize}
+          \item S'exécute dans le \textbf{navigateur}
+          \item Accès à la page (le DOM)
+          \item Aucun accès au disque
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{JavaScript côté serveur}
+        \begin{itemize}
+          \item S'exécute avec \textbf{Node.js}
+          \item Accès aux fichiers et à la base
+          \item Aucun accès à la page
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.4cm}
+  \begin{center}
+    \small Même syntaxe, mêmes règles --- mais deux mondes qu'il ne faut pas confondre.
+  \end{center}
 \end{frame}
 
 % ===============================================================
 \section{La stack du cours}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {4. La stack du cours};
-  \end{tikzpicture}
-\end{frame}
-}
+\partieslide{4. La stack du cours}
 
-\begin{frame}{La stack de MiniForum}
+\begin{frame}{Les quatre couches du cours}
   \begin{center}
   \begin{tikzpicture}[font=\small, node distance=0.35cm,
-    layer/.style={draw=cfptDarkGrey, thin, rounded corners=2pt, text width=8cm,
+    layer/.style={draw=cfptDarkGrey, thin, rounded corners=2pt, text width=8.6cm,
       minimum height=0.95cm, align=left, inner xsep=10pt}]
     \node[layer, fill=warningOrange!12, draw=warningOrange] (html)
-      {\textbf{HTML5 + CSS} --- {\footnotesize structure \& présentation}};
+      {\textbf{HTML5 + CSS} --- {\footnotesize structure \& présentation (sem. 2 à 5)}};
     \node[layer, fill=accentBlue!8, draw=accentBlue, below=of html] (js)
-      {\textbf{JavaScript ES6+} --- {\footnotesize interactivité}};
+      {\textbf{JavaScript ES6+} --- {\footnotesize interactivité (sem. 6 et 7)}};
     \node[layer, fill=accentBlue!14, draw=accentBlue, below=of js] (node)
-      {\textbf{Node.js + Express} --- {\footnotesize serveur HTTP \& API}};
+      {\textbf{Node.js + Express} --- {\footnotesize serveur HTTP \& API (sem. 12 à 17)}};
     \node[layer, fill=successGreen!12, draw=successGreen, below=of node] (sql)
-      {\textbf{MySQL / MariaDB} --- {\footnotesize base de données}};
+      {\textbf{MySQL / MariaDB} --- {\footnotesize base de données (sem. 8 à 11)}};
 
     \draw[decorate, decoration={brace,amplitude=5pt}, accentBlue, thick]
       ([xshift=0.4cm]html.north east) -- ([xshift=0.4cm]js.south east)
@@ -467,7 +614,7 @@ btn.addEventListener('click',
       node[midway, right=6pt, font=\scriptsize\bfseries, text=successGreen]{Serveur};
 
     \node[layer, fill=cfptGrey, draw=cfptDarkGrey, minimum height=0.85cm, below=0.5cm of sql] (git)
-      {\textbf{Git + GitHub} --- {\footnotesize gestion de version (tout le cours)}};
+      {\textbf{Git + GitHub} --- {\footnotesize gestion de version, de la semaine 1 à la semaine 20}};
   \end{tikzpicture}
   \end{center}
 \end{frame}
@@ -476,31 +623,20 @@ btn.addEventListener('click',
   \begin{block}{Une application web = trois parties}
     \begin{itemize}
       \item une interface \textbf{côté client}
-      \item un serveur \textbf{côté serveur}
-      \item une \textbf{base de données}
+      \item un serveur qui traite les demandes
+      \item une \textbf{base de données} qui conserve l'information
     \end{itemize}
   \end{block}
   \vspace{0.3cm}
   \begin{exampleblock}{La particularité de ce cours}
-    Nous utiliserons \textbf{JavaScript des deux côtés} : dans le navigateur \emph{et} sur le serveur (Node.js). Un seul langage à maîtriser pour toute la stack applicative.
+    Nous utiliserons \textbf{JavaScript des deux côtés} : dans le navigateur \emph{et} sur le serveur (Node.js). Un seul langage à apprendre au lieu de deux.
   \end{exampleblock}
 \end{frame}
 
 % ===============================================================
 \section{Environnement de développement}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {5. Environnement de développement};
-  \end{tikzpicture}
-\end{frame}
-}
+\partieslide{5. Environnement de développement}
 
 \begin{frame}{Les outils à installer}
   \begin{columns}[T]
@@ -508,7 +644,7 @@ btn.addEventListener('click',
       \begin{block}{À installer cette semaine}
         \begin{itemize}
           \item \textbf{VS Code} --- éditeur de code
-          \item \textbf{Node.js} (LTS) --- serveur JS
+          \item \textbf{Node.js 24 LTS} --- exécution JS
           \item \textbf{Git} --- gestion de version
           \item Un compte \textbf{GitHub}
         \end{itemize}
@@ -519,70 +655,89 @@ btn.addEventListener('click',
         \begin{itemize}
           \item Prettier --- mise en forme
           \item ESLint --- qualité du code
-          \item Live Server --- aperçu live
+          \item Live Server --- aperçu direct
           \item GitLens --- visualiser Git
         \end{itemize}
       \end{exampleblock}
     \end{column}
   \end{columns}
-  \vspace{0.3cm}
-  \begin{center}
-    \small Le détail pas-à-pas se trouve dans la \textbf{fiche TP} de la semaine.
-  \end{center}
+  \vspace{0.25cm}
+  \begin{alertblock}{Attention à la version de Node}
+    Bien prendre la \textbf{24 LTS}. La version 20, encore proposée par beaucoup de tutoriels, est en fin de vie. \texttt{node -v} doit afficher \texttt{v24}\ldots
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}[fragile]{Premiers pas dans le terminal}
 \begin{lstlisting}[language=bash]
 pwd           # afficher le dossier courant
 ls            # lister les fichiers
-cd miniforum  # entrer dans un dossier
+cd mon-projet # entrer dans un dossier
 cd ..         # remonter d'un niveau
-mkdir css     # creer un dossier
-touch app.js  # creer un fichier vide
+mkdir css     # créer un dossier
+touch app.js  # créer un fichier vide
 \end{lstlisting}
   \vspace{0.2cm}
   \begin{center}
-    \small Ces commandes seront approfondies dans le cours \textbf{Linux / Bash}.
+    \small Ces commandes seront approfondies dans le cours \textbf{Linux / Bash} donné en parallèle.
+  \end{center}
+\end{frame}
+
+\begin{frame}{MDN --- le bon réflexe documentation}
+  \begin{block}{La référence du web}
+    \texttt{developer.mozilla.org} --- la source à consulter \textbf{en premier}, avant un forum ou une vidéo.
+  \end{block}
+  \vspace{0.2cm}
+  \begin{exampleblock}{Méthode}
+    Tape \texttt{mdn} suivi de ce que tu cherches : \texttt{mdn addEventListener}, \texttt{mdn input type}, \texttt{mdn flexbox}.
+    \vspace{0.15cm}
+
+    Sur la page : la \textbf{description}, la \textbf{syntaxe}, et surtout les \textbf{exemples}, modifiables directement dans le navigateur.
+  \end{exampleblock}
+  \vspace{0.2cm}
+  \begin{center}
+    \small Savoir chercher dans la documentation est une compétence à part entière --- on la travaillera toute l'année.
   \end{center}
 \end{frame}
 
 % ===============================================================
 \section{Git --- premiers pas}
 % ===============================================================
-{
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
-    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
-      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
-    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center)
-      {6. Git --- premiers pas};
-  \end{tikzpicture}
-\end{frame}
-}
+\partieslide{6. Git --- premiers pas}
 
 \begin{frame}{Pourquoi utiliser Git ?}
-  \begin{itemize}
-    \item \textbf{Sauvegarder} son travail et son historique
-    \item \textbf{Revenir en arrière} en cas d'erreur
-    \item \textbf{Collaborer} à plusieurs sans s'écraser
-    \item \textbf{Partager} son code (GitHub)
-  \end{itemize}
-  \vspace{0.4cm}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item \textbf{Sauvegarder} son travail et son historique
+        \item \textbf{Revenir en arrière} en cas d'erreur
+        \item \textbf{Collaborer} sans s'écraser
+        \item \textbf{Partager} son code (GitHub)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{alertblock}{Sans Git\ldots}
+        \small
+        \texttt{index.html}\\
+        \texttt{index\_final.html}\\
+        \texttt{index\_final2.html}\\
+        \texttt{index\_VRAI\_final.html}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.35cm}
   \begin{block}{L'outil standard du métier}
-    Git est utilisé par la quasi-totalité des équipes de développement dans le monde. Le maîtriser tôt est un vrai atout.
+    Git est utilisé par la quasi-totalité des équipes de développement. Dans ce cours, l'\textbf{historique Git fait partie de l'évaluation} : un projet livré en un seul commit n'est pas conforme.
   \end{block}
 \end{frame}
 
 \begin{frame}{Les quatre zones de Git}
   \vspace{0.3cm}
   \begin{center}
-  \begin{tikzpicture}[font=\small, node distance=2.1cm,
+  \begin{tikzpicture}[font=\small, node distance=1.75cm,
     state/.style={draw=accentBlue, thin, rounded corners=2pt, fill=accentBlue!8,
-      minimum width=2.1cm, minimum height=1.2cm, align=center},
+      minimum width=2.0cm, minimum height=1.15cm, align=center},
     remote/.style={draw=warningOrange, thin, rounded corners=2pt, fill=warningOrange!10,
-      minimum width=2.1cm, minimum height=1.2cm, align=center},
+      minimum width=2.0cm, minimum height=1.15cm, align=center},
     arr/.style={-{Stealth[length=6pt]}, thick}]
     \node[state] (wd) {\textbf{Working}\\{\scriptsize Tes fichiers}};
     \node[state, right=of wd] (st) {\textbf{Stage}\\{\scriptsize Sélection}};
@@ -601,17 +756,162 @@ touch app.js  # creer un fichier vide
 
 \begin{frame}[fragile]{Commandes essentielles}
 \begin{lstlisting}[language=bash]
-git init                    # initialiser un depot
-git status                  # etat des fichiers
+git init                    # initialiser un dépôt
+git status                  # état des fichiers
 git add .                   # tout ajouter au stage
 git commit -m "message"     # enregistrer un commit
-git push origin main        # envoyer sur GitHub
-git pull                    # recuperer les changements
+git push -u origin main     # envoyer sur GitHub (1re fois)
+git pull                    # récupérer les changements
 \end{lstlisting}
   \vspace{0.2cm}
   \begin{alertblock}{Le bon réflexe}
-    Commit \textbf{souvent}, avec des messages clairs. Un commit = une étape logique de ton travail.
+    Commit \textbf{souvent}, avec des messages clairs. Un commit = une étape logique.
+    \vspace{0.1cm}
+
+    \textcolor{successGreen}{\textbf{OUI}} \texttt{Ajout du formulaire de création de sujet} \quad
+    \textcolor{alertRed}{\textbf{NON}} \texttt{modif}, \texttt{ça marche}, \texttt{update}
   \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Le fichier \texttt{.gitignore}}
+  Certains fichiers ne doivent \textbf{jamais} être versionnés : mots de passe, dépendances téléchargées, fichiers système.
+\begin{lstlisting}[language=bash]
+node_modules/     # dépendances Node.js
+.env              # mots de passe, clés d'API
+.DS_Store         # fichiers système
+.vscode/          # réglages locaux de l'éditeur
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{alertblock}{À créer avant le premier commit}
+    Un fichier déjà commité reste dans l'historique \textbf{même si on l'ajoute au \texttt{.gitignore} ensuite}. C'est ce qui évite, plus tard dans l'année, de publier un mot de passe de base de données sur GitHub.
+  \end{alertblock}
+\end{frame}
+
+% ===============================================================
+\section{Le cours : fil rouge, jalons et règles}
+% ===============================================================
+\partieslide{7. Le cours : fil rouge, jalons et règles}
+
+\begin{frame}{MiniForum, le projet fil rouge}
+  Un projet unique, construit du début à la fin de l'année : un forum simplifié avec des utilisateurs, des sujets, des messages et des réactions.
+  \vspace{0.3cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{clXc}
+    \toprule
+    \rowcolor{accentBlue}
+  \hdrc{Phase} &  \hdr{Sem.} &  \hdr{Ce que tu construis} &  \hdrc{Jalon} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    1 & 1--7 & Interface interactive (HTML / CSS / JS), données en mémoire & J1 (S7) \\
+    2 & 8--11 & Modélisation et requêtes SQL sur une vraie base & J2 (S11) \\
+    \rowcolor{cfptGrey}
+    3 & 12--17 & API REST Express branchée sur MySQL & J3 (S17) \\
+    4 & 18--20 & Authentification, sécurité, soutenance & Soutenance \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Les trois états de MiniForum}
+  \begin{center}
+  \begin{tikzpicture}[font=\small, node distance=0.7cm,
+    etape/.style={rounded corners=2pt, minimum width=3.4cm, minimum height=1.5cm, align=center, thick}]
+    \node[etape, draw=warningOrange, fill=warningOrange!10] (a)
+      {\textbf{Statique}\\{\footnotesize semaines 1 à 5}\\{\scriptsize contenu écrit en dur}};
+    \node[etape, draw=accentBlue, fill=accentBlue!10, right=of a] (b)
+      {\textbf{Interactif}\\{\footnotesize semaines 6 et 7}\\{\scriptsize données en mémoire}};
+    \node[etape, draw=successGreen, fill=successGreen!10, right=of b] (c)
+      {\textbf{Dynamique}\\{\footnotesize dès la semaine 12}\\{\scriptsize base de données MySQL}};
+    \draw[-{Stealth[length=6pt]}, thick, cfptDarkGrey] (a) -- (b);
+    \draw[-{Stealth[length=6pt]}, thick, cfptDarkGrey] (b) -- (c);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{alertblock}{Une frustration volontaire}
+    En semaine 7, ton forum fonctionnera\ldots\ mais tout disparaîtra au rafraîchissement de la page. C'est voulu : c'est ce qui rendra évidente la nécessité d'une base de données.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Comment le cours est évalué}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.95\textwidth}{lXcc}
+    \toprule
+    \rowcolor{accentBlue}
+  \hdr{Épreuve} &  \hdr{Objet} &  \hdrc{Sem.} &  \hdrc{Poids} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    Jalon 1 & Interface MiniForum interactive & 7 & 10\,\% \\
+    Jalon 2 & Modèle de données et requêtes SQL & 11 & 10\,\% \\
+    \rowcolor{cfptGrey}
+    Contrôle écrit & Individuel, sur machine, sans réseau & 12 & 25\,\% \\
+    Jalon 3 & API Express connectée à MySQL & 17 & 10\,\% \\
+    \rowcolor{cfptGrey}
+    Projet final & MiniForum complet & 20 & 30\,\% \\
+    Soutenance & Présentation orale et démonstration & 20 & 15\,\% \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.2cm}
+  \begin{center}
+    \small Les jalons sont surtout \textbf{formatifs} : leur rôle est de repérer tôt les difficultés.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Le filet de sécurité}
+  \begin{block}{Un dépôt de référence à chaque fin de phase}
+    Un MiniForum conforme à l'état attendu est fourni en \textbf{semaines 7, 11 et 17}. Chacun peut repartir de ce dépôt au début de la phase suivante, \textbf{sans pénalité} sur les jalons ultérieurs.
+  \end{block}
+  \vspace{0.4cm}
+  \begin{exampleblock}{Pourquoi je vous le dis dès aujourd'hui}
+    Sur vingt semaines, un blocage en semaine 4 pourrait signifier ne plus jamais rattraper. Le but n'est pas de sanctionner un retard, mais d'éviter qu'il ne se transforme en abandon.
+    \vspace{0.15cm}
+
+    \textbf{La seule condition : me le dire.}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Les assistants IA sont interdits dans ce cours}
+  \begin{alertblock}{La règle}
+    Copilot, ChatGPT, Claude, Gemini et tout autre générateur de code sont \textbf{interdits} pour les TP, les jalons, le projet final et le contrôle écrit.
+  \end{alertblock}
+  \vspace{0.2cm}
+  \begin{block}{Pourquoi}
+    L'objectif de l'année est que vous sachiez programmer. Cela s'apprend en écrivant du code, en le voyant échouer et en comprenant pourquoi. Un assistant qui donne immédiatement la bonne réponse supprime exactement l'étape où l'apprentissage se produit.
+    \vspace{0.15cm}
+
+    En 1\textsuperscript{re} année hepia, les évaluations d'algorithmique sont \textbf{individuelles et sans assistance}.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Ce qui reste autorisé --- et comment c'est vérifié}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{Autorisé}
+        \begin{itemize}
+          \item MDN, doc Express, manuel MySQL
+          \item Moteurs de recherche, Stack Overflow \textit{(si tu sais expliquer)}
+          \item L'entraide, si chacun écrit son code
+          \item Prettier, ESLint, correcteur
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Vérifications}
+        \begin{itemize}
+          \item Extensions IA désinstallées (S1, revérifié aux jalons)
+          \item Historique Git examiné
+          \item Questions orales à chaque jalon
+          \item Contrôle écrit sans réseau (S12)
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{center}
+    \small Cette interdiction porte sur l'\textbf{apprentissage des fondamentaux}, pas sur la pratique professionnelle : on en reparle en semaine 20.
+  \end{center}
 \end{frame}
 
 % ===============================================================
@@ -624,9 +924,10 @@ git pull                    # recuperer les changements
         \begin{itemize}
           \item Le web = client + serveur + HTTP
           \item URL, DNS, codes de statut
-          \item Statique vs dynamique
+          \item Statique et dynamique
           \item HTML / CSS / JS côté client
-          \item La stack MiniForum
+          \item Node.js côté serveur
+          \item Git et le \texttt{.gitignore}
         \end{itemize}
       \end{block}
     \end{column}
@@ -634,7 +935,8 @@ git pull                    # recuperer les changements
       \begin{alertblock}{À faire pour la semaine 2}
         \begin{itemize}
           \item Installer les outils (fiche TP)
-          \item Créer son dépôt GitHub
+          \item Désinstaller les extensions IA
+          \item Créer le dépôt \texttt{miniforum} sur GitHub
           \item Faire le quiz Moodle
         \end{itemize}
       \end{alertblock}

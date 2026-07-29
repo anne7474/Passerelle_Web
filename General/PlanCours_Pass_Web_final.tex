@@ -1,21 +1,23 @@
 % ============================================================
 %  Plan de cours — Développement Web — Classe passerelle
 %  cfpt·i  |  Anne Terrier
+%  Version 2 — 20 semaines × (3h cours + 4h TP) = 140h
 % ============================================================
 \documentclass[a4paper,11pt]{article}
 
 % --- Encodage & langue ---
 \usepackage{iftex}
-\usepackage{hyphenat}
 
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{lmodern}
+  \usepackage[scaled=0.92]{helvet}   % police sans serif, comme les polycopiés
 \else
   \usepackage{fontspec}
-  \setmainfont{Latin Modern Roman}
+  \setsansfont{Latin Modern Sans}
 \fi
+\renewcommand{\familydefault}{\sfdefault}
 
 \usepackage[french]{babel}
 
@@ -28,7 +30,6 @@
 
 % --- Typographie ---
 \usepackage{microtype}
-\usepackage{setspace}
 \usepackage{titlesec}
 
 % --- Couleurs ---
@@ -42,6 +43,9 @@
 \definecolor{weekBg}{HTML}{FAFAFA}
 \definecolor{filrougeYellow}{HTML}{FFF8DC}
 \definecolor{filrougeBorder}{HTML}{F5C400}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+\definecolor{successGreen}{HTML}{1E7145}
 
 % --- Graphiques & images ---
 \usepackage{graphicx}
@@ -55,13 +59,12 @@
 \renewcommand{\headrulewidth}{0pt}
 \usepackage{lastpage}
 
-% En-tête : logo gauche | titre centre | rien droite
 \fancyhead[C]{%
   \color{cfptDarkGrey}\small\textit{Programme d'enseignement — Développement Web — Classe passerelle}%
 }
 
 \fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
-\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize PlanCours\_Pass\_Web.pdf}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize année 2026–2027}
 \fancyfoot[R]{\color{cfptDarkGrey}\footnotesize\thepage{} sur \pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
@@ -75,17 +78,34 @@
   }%
 }
 
+% Variante sans numéro, pour les sections étoilées (table des matières) :
+% sans cela, \tableofcontents affichait « 0    Table des matières ».
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries
+      \hspace{4pt}#1%
+    }%
+  }%
+}
+
 \titleformat{\section}
   {\normalfont}
   {}
   {0pt}
   {\sectionbox}
-  
+
+\titleformat{name=\section,numberless}
+  {\normalfont}
+  {}
+  {0pt}
+  {\sectionboxstar}
+
 \titleformat{\subsection}
   {\color{accentBlue}\normalsize\bfseries}
-  {\rule[-.3ex]{3pt}{1.3em}} % On place le rectangle ici
-  {6pt}                      % C'est l'espace entre le rectangle et le texte
-  {}                         % On laisse vide, LaTeX gère le texte tout seul
+  {\rule[-.3ex]{3pt}{1.3em}}
+  {6pt}
+  {}
 
 \titleformat{\subsubsection}
   {\color{cfptDarkGrey}\normalsize\bfseries}
@@ -113,49 +133,83 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
-\usepackage{multirow}
 \usepackage{colortbl}
-\renewcommand{\arraystretch}{1.35}
+\renewcommand{\arraystretch}{1.3}
+% Colonnes X centrées verticalement : sans cela, les en-têtes des colonnes X
+% se décalent vers le bas par rapport aux colonnes l et c.
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+
+% --- Évite qu'un bandeau de semaine soit orphelin en bas de page ---
+\usepackage{needspace}
 
 % --- Boîtes colorées ---
 \usepackage[most]{tcolorbox}
 
-% Boîte fil rouge
 \tcbset{
   filrouge/.style={
     colback=filrougeYellow,
     colframe=filrougeBorder,
     fonttitle=\bfseries\small,
     title={\textcolor{cfptBlack}{Fil rouge --- MiniForum : #1}},
-    boxrule=1pt,
-    arc=3pt,
+    boxrule=1pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt,
   }
 }
 
-% Boîte objectifs
 \tcbset{
   objectifs/.style={
     colback=lightBlue!40,
     colframe=accentBlue,
-    fonttitle=\bfseries\small\color{accentBlue},
+    fonttitle=\bfseries\small,
+    coltitle=white,   % le titre était bleu sur bandeau bleu, donc invisible
     title={Objectifs pédagogiques},
-    boxrule=0.8pt,
-    arc=3pt,
+    boxrule=0.8pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt,
   }
 }
 
-% Boîte semaine
 \tcbset{
   semaine/.style={
     colback=weekBg,
     colframe=accentBlue!30,
-    boxrule=0.5pt,
-    arc=3pt,
+    boxrule=0.5pt, arc=3pt,
     left=8pt, right=8pt, top=6pt, bottom=6pt,
+  }
+}
+
+\tcbset{
+  jalon/.style={
+    colback=successGreen!8,
+    colframe=successGreen,
+    fonttitle=\bfseries\small,
+    coltitle=white,
+    title={Jalon évalué},
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt,
+  }
+}
+
+\tcbset{
+  alerte/.style={
+    colback=alertBg,
+    colframe=alertRed,
+    fonttitle=\bfseries\small,
+    coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt,
+  }
+}
+
+\tcbset{
+  intro/.style={
+    colback=accentBlue!8,
+    colframe=accentBlue,
+    boxrule=0.6pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
   }
 }
 
@@ -167,33 +221,37 @@
   pdfsubject={Plan de cours de développement web},
   pdfcreator={LaTeX}
 }
-\usepackage{bookmark}
 
 % --- Commandes utilitaires ---
-\newcommand{\module}[2]{%
-  \subsection*{\colorbox{accentBlue!10}{\color{accentBlue}\textbf{Module #1}~—~#2}}%
-}
-
-\newcommand{\semainetitre}[3]{%
-  % #1 numéro, #2 titre, #3 heures
-  \vspace{6pt}
+% Bandeau de semaine : pleine largeur, badge horaire aligné à droite.
+% (Un noeud TikZ nu débordait dans la marge sur les titres longs.)
+\newcommand{\semainetitre}[4]{%
+  % #1 numéro, #2 titre, #3 heures, #4 lettre de module
+  \needspace{9\baselineskip}% le bandeau ne doit jamais rester seul en bas de page
+  \vspace{8pt}
   \noindent
-  \begin{tikzpicture}
-    \node[fill=cfptBlack, text=white, rounded corners=3pt,
-          inner xsep=8pt, inner ysep=4pt, font=\bfseries\small]
-      (s) {Semaine~#1~—~#2};
-    \node[fill=cfptYellow, text=cfptBlack, rounded corners=3pt,
-          inner xsep=6pt, inner ysep=4pt, font=\small,
-          right=4pt of s]
-      {#3};
-  \end{tikzpicture}
-  \vspace{4pt}
+  \begin{tcolorbox}[
+    enhanced, colback=cfptBlack, colframe=cfptBlack,
+    boxrule=0pt, arc=3pt, boxsep=0pt,
+    left=8pt, right=90pt, top=4pt, bottom=4pt,
+    overlay={%
+      \node[anchor=east, fill=cfptYellow, text=cfptBlack,
+            rounded corners=2pt, inner xsep=6pt, inner ysep=3pt,
+            font=\scriptsize\bfseries]
+        at ([xshift=-6pt]frame.east) {#3};}
+  ]
+  \color{white}\bfseries\small Semaine~#1 \quad\textcolor{cfptYellow}{[#4]}\quad #2
+  \end{tcolorbox}
+  \vspace{-4pt}
 }
 
 \newcommand{\contenutitre}[1]{%
   \vspace{4pt}
   \noindent{\small\color{accentBlue}\textbf{#1}}\vspace{2pt}
 }
+
+% --- supprime le retrait de paragraphe ---
+\setlength{\parindent}{0pt}
 
 % ============================================================
 \begin{document}
@@ -226,22 +284,25 @@
   }
 \end{center}
 
-\vspace{2.8cm}
+\vspace{2.2cm}
 
 \begin{center}
 \begin{tabular}{ll}
   \color{cfptDarkGrey}\textbf{Enseignante}    & Anne Terrier \\[4pt]
-  \color{cfptDarkGrey}\textbf{Volume horaire} & 60h cours + 60h travaux pratiques (120h) \\[4pt]
-  \color{cfptDarkGrey}\textbf{Public}         & Etudiants souhaitant intégrer la 1\textsuperscript{re} année hepia \\[4pt]
+  \color{cfptDarkGrey}\textbf{Durée}          & 20 semaines \\[4pt]
+  \color{cfptDarkGrey}\textbf{Volume horaire} & 3h théorie + 4h pratique par semaine \\[4pt]
+                                              & soit 60h cours + 80h TP = \textbf{140h} \\[4pt]
+  \color{cfptDarkGrey}\textbf{Public}         & Étudiant·e·s souhaitant intégrer la 1\textsuperscript{re} année hepia, filière ISC \\[4pt]
   \color{cfptDarkGrey}\textbf{Prérequis}      & Aucun prérequis en informatique \\[4pt]
   \color{cfptDarkGrey}\textbf{Stack}          & HTML5 · CSS · JavaScript · Node.js / Express · MySQL \\[4pt]
-  \color{cfptDarkGrey}\textbf{Fil rouge}      & Projet MiniForum (forum simplifié) \\
+  \color{cfptDarkGrey}\textbf{Fil rouge}      & Projet MiniForum (forum simplifié) \\[4pt]
+  \color{cfptDarkGrey}\textbf{Version}        & année académique 2026--2027 \\
 \end{tabular}
 \end{center}
 
-\vspace{1.5cm}
+\vspace{1.2cm}
 \begin{center}
-  \color{cfptDarkGrey}\small Cours donné en parallèle d'un module de POO (C\#) et d'un module Linux/Bash
+  \color{cfptDarkGrey}\small Cours donné en parallèle d'un module de POO (C\#) et d'un module Linux / Bash
 \end{center}
 
 \newpage
@@ -254,19 +315,112 @@
 \section{Présentation générale}
 % ============================================================
 
-Ce cours constitue le volet \textbf{développement web} du programme de la classe passerelle. Il a pour objectif de faire acquérir aux étudiant·e·s les compétences nécessaires à la réalisation d'une application web dynamique complète, de la mise en forme d'une page HTML jusqu'à la persistance des données en base de données relationnelle.
+Ce cours constitue le volet \textbf{développement web} du programme de la classe passerelle. Il vise l'acquisition des compétences nécessaires à la réalisation d'une application web dynamique complète, de la mise en forme d'une page HTML jusqu'à la persistance des données en base relationnelle.
 
-Le public visé est composé de titulaires d'un baccalauréat général français, pour la grande majorité sans expérience préalable en informatique. La progression est construite en conséquence : les concepts fondamentaux (variables, conditions, boucles, fonctions) sont introduits progressivement, le retour visuel immédiat dans le navigateur servant de moteur de motivation en début de parcours.
+Le public est composé d'étudiant·e·s souhaitant intégrer la 1\textsuperscript{re} année hepia, filière ISC, dans leur grande majorité sans expérience préalable en informatique. La progression est construite en conséquence : les concepts fondamentaux (variables, conditions, boucles, fonctions) sont introduits progressivement, le retour visuel immédiat dans le navigateur servant de moteur de motivation en début de parcours.
 
 \medskip
-\noindent\textbf{Cours parallèles à prendre en compte :}
+\noindent\textbf{Cours parallèles à prendre en compte}
+
 \begin{itemize}
-  \item \textbf{Programmation orientée objet (C\#)} — les concepts de variable, boucle, fonction et structure de contrôle y sont couverts ; ce cours peut donc s'appuyer sur ces acquis pour accélérer la partie algorithmique en JavaScript.
-  \item \textbf{Linux / programmation Bash} — les étudiant·e·s sont à l'aise dans un terminal ; cela rend l'environnement Node.js naturel et cohérent.
+  \item \textbf{Programmation orientée objet (C\#)} — les concepts de variable, boucle, fonction et structure de contrôle y sont couverts.
+  \item \textbf{Linux / programmation Bash} — les étudiant·e·s sont à l'aise dans un terminal, ce qui rend l'environnement Node.js naturel et cohérent.
 \end{itemize}
 
+\begin{tcolorbox}[alerte, title={Coordination nécessaire avec le module de POO}]
+\small
+Ce plan suppose que les \textbf{structures de contrôle et les fonctions} aient été traitées en POO (C\#) \textbf{avant la semaine 6}. Les deux modules étant donnés en parallèle et non en séquence, cette condition doit être confirmée avec le collègue en début d'année. À défaut, la semaine 6 doit être allongée d'une séance au détriment de la semaine 17 (intégration), tenue en réserve à cet effet.
+\end{tcolorbox}
+
 \medskip
-\noindent\textbf{Choix de stack :} JavaScript est utilisé à la fois côté client (navigateur) et côté serveur (Node.js / Express), ce qui réduit la charge cognitive liée à l'apprentissage simultané de deux langages. MySQL/MariaDB est utilisé comme SGBDR. Aucun framework front-end n'est introduit : HTML, CSS et JavaScript vanilla uniquement, afin de garantir la compréhension des mécanismes fondamentaux.
+\noindent\textbf{Choix de stack.} JavaScript est utilisé à la fois côté client (navigateur) et côté serveur (Node.js / Express), ce qui réduit la charge cognitive liée à l'apprentissage simultané de deux langages. MySQL / MariaDB sert de SGBDR. \textbf{Aucun framework front-end n'est introduit} : HTML, CSS et JavaScript standard uniquement. Ce choix est délibéré : l'objectif est la compréhension des mécanismes sous-jacents, pas la maîtrise d'un outil dont la durée de vie est inférieure à celle du cursus.
+
+\medskip
+\noindent\textbf{Travail personnel attendu.} Environ 2 à 3 heures par semaine hors présentiel : reprise des notions vues en cours, finalisation des travaux pratiques, préparation des jalons.
+
+% ============================================================
+\section{Alignement avec la 1\textsuperscript{re} année hepia}
+% ============================================================
+
+La classe passerelle prépare l'entrée en filière \textbf{Informatique et systèmes de communication (ISC)} de hepia. Il importe de situer honnêtement l'apport de ce cours dans ce cursus.
+
+\medskip
+\noindent\textbf{Le développement web n'est pas enseigné en 1\textsuperscript{re} année hepia.} Il apparaît au semestre 4, dans le module \texttt{ISC\_L42 — Développement Web} de l'orientation Informatique logicielle. La valeur de ce cours ne réside donc pas dans une avance de programme, mais dans les \textbf{fondamentaux transférables} qu'il installe, et dans le fait qu'il donne très tôt une représentation concrète du métier.
+
+\medskip
+\noindent Les acquis de ce cours alimentent directement les modules suivants :
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lXX}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Module hepia} &
+  \color{white}\textbf{Intitulé} &
+  \color{white}\textbf{Apport de ce cours} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  \texttt{ISC\_14} & Algorithmique et programmation (S1--S2) & Variables, conditions, boucles, fonctions, tableaux et parcours de collections, écrits et débogués des dizaines de fois \\
+  \texttt{ISC\_15} & Fondements des réseaux et sécurité (S1--S2) & Modèle client/serveur, HTTP, hachage de mots de passe, notion de vulnérabilité applicative \\
+  \rowcolor{cfptGrey}
+  \texttt{ISC\_331} & Programmation orientée objet (S3) & Manipulation d'objets et de collections d'objets (conjointement avec le module C\#) \\
+  \texttt{ISC\_431} & Systèmes de bases de données (S4) & Modèle relationnel, clés, jointures, SQL \\
+  \rowcolor{cfptGrey}
+  \texttt{ISC\_L42} & Développement Web (S4, orientation logicielle) & Ensemble du cours \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+\noindent\textbf{Cohérence pédagogique.} hepia privilégie l'apprentissage par problèmes et par projet. Le fil rouge MiniForum, mené sur vingt semaines, prépare directement à cette forme de travail : périmètre à tenir, incréments successifs, défense orale du résultat.
+
+\medskip
+\noindent\textbf{Conséquence sur les priorités de ce cours.} Puisque la première année hepia porte massivement sur l'algorithmique et la programmation séquentielle, c'est la \textbf{partie algorithmique} de ce cours qui est la plus transférable. Elle est traitée en conséquence : deux semaines pleines sur le cœur de JavaScript, et un refus assumé des raccourcis qui masqueraient la logique sous une abstraction.
+
+\newpage
+
+% ============================================================
+\section{Répartition horaire}
+% ============================================================
+
+Le cours se déroule sur \textbf{20 semaines}, à raison de \textbf{3 heures de théorie et 4 heures de pratique} par semaine.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lXccc>{\bfseries}c}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Mod.} &
+  \color{white}\textbf{Thème} &
+  \color{white}\textbf{Sem.} &
+  \color{white}\textbf{Cours} &
+  \color{white}\textbf{TP} &
+  \color{white}\textbf{Total} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  A & Fondamentaux du web \& environnement & 1     & 3h  & 4h  & 7h \\
+  B & HTML5 — structure, formulaires, accessibilité & 2--3  & 6h  & 8h  & 14h \\
+  \rowcolor{cfptGrey}
+  C & CSS moderne — Flexbox, Grid, responsive & 4--5  & 6h  & 8h  & 14h \\
+  D & JavaScript — logique, DOM \& événements & 6--7  & 6h  & 8h  & 14h \\
+  \rowcolor{cfptGrey}
+  E & Bases de données \& SQL & 8--11 & 12h & 16h & 28h \\
+  F & JavaScript asynchrone \& Express & 12--13 & 6h  & 8h  & 14h \\
+  \rowcolor{cfptGrey}
+  G & Node.js / MySQL \& CRUD complet & 14--15 & 6h  & 8h  & 14h \\
+  H & Intégration front / back \& robustesse & 16--17 & 6h  & 8h  & 14h \\
+  \rowcolor{cfptGrey}
+  I & Authentification \& sécurité applicative & 18--19 & 6h  & 8h  & 14h \\
+  J & Finalisation \& soutenance & 20    & 3h  & 4h  & 7h \\
+  \midrule
+  \rowcolor{accentBlue!15}
+  & \textbf{Total} & \textbf{20} & \textbf{60h} & \textbf{80h} & \textbf{140h} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+\noindent{\small Le module E (bases de données) reçoit quatre semaines : c'est la partie la plus abstraite du cours pour un public débutant, et la modélisation ne s'acquiert que par répétition sur des cas variés.}
+
+\newpage
 
 % ============================================================
 \section{Compétences visées}
@@ -274,54 +428,45 @@ Le public visé est composé de titulaires d'un baccalauréat général françai
 
 À l'issue de ce cours, les étudiant·e·s seront capables de :
 
-\begin{itemize}
-  \item Structurer une page web sémantique en HTML5 et la mettre en forme avec CSS (Flexbox, responsive design)
-  \item Écrire des scripts JavaScript (ES6+) pour manipuler le DOM et réagir aux événements utilisateur
-  \item Consommer une API REST depuis le navigateur avec \texttt{fetch} et le format JSON
-  \item Concevoir un modèle de données relationnel (MCD → MLD) à partir d'un besoin métier
-  \item Écrire des requêtes SQL incluant jointures, agrégations et sous-requêtes
-  \item Construire un serveur web avec Node.js / Express exposant des routes REST
-  \item Connecter un serveur Node.js à une base MySQL via des requêtes paramétrées
-  \item Implémenter un CRUD complet (Create, Read, Update, Delete) côté serveur
-  \item Mettre en œuvre une authentification sécurisée (hashage de mots de passe, sessions)
-  \item Protéger une application contre les injections SQL et le XSS de base
-  \item Présenter oralement un projet technique avec démonstration fonctionnelle
-\end{itemize}
-
-% ============================================================
-\section{Répartition horaire}
-% ============================================================
-
 \begin{center}
-\begin{tabularx}{\linewidth}{lXcc>{\bfseries}c}
+\begin{tabularx}{\linewidth}{cXcc}
   \toprule
   \rowcolor{accentBlue}
+  \color{white}\textbf{N\textsuperscript{o}} &
+  \color{white}\textbf{Compétence} &
   \color{white}\textbf{Mod.} &
-  \color{white}\textbf{Thème} &
-  \color{white}\textbf{Cours} &
-  \color{white}\textbf{TP} &
-  \color{white}\textbf{Total} \\
+  \color{white}\textbf{Évaluation} \\
   \midrule
   \rowcolor{cfptGrey}
-  A & Fondamentaux du web \& environnement & 6h & 2h & 8h \\
-  B & HTML5 & 4h & 6h & 10h \\
+  C1 & Structurer une page web sémantique et accessible en HTML5 & B & J1, P \\
+  C2 & Mettre en forme une interface responsive avec CSS (Flexbox, Grid) & C & J1, P \\
   \rowcolor{cfptGrey}
-  C & CSS moderne & 6h & 8h & 14h \\
-  D & JavaScript — logique \& DOM & 10h & 10h & 20h \\
+  C3 & Écrire des scripts JavaScript (ES6+) : variables, fonctions, tableaux, objets & D & J1, E \\
+  C4 & Manipuler le DOM et réagir aux événements utilisateur & D & J1, P \\
   \rowcolor{cfptGrey}
-  E & Bases de données \& SQL & 8h & 8h & 16h \\
-  F & Node.js / Express — logique \& routes & 8h & 8h & 16h \\
+  C5 & Concevoir un modèle de données relationnel (UML → MLD) & E & J2, E \\
+  C6 & Écrire des requêtes SQL avec jointures, agrégations et sous-requêtes & E & J2, E \\
   \rowcolor{cfptGrey}
-  G & Node.js / Express — CRUD \& BD & 8h & 10h & 18h \\
-  H & Sécurité \& authentification & 6h & 6h & 12h \\
+  C7 & Écrire du code asynchrone lisible avec \texttt{async}/\texttt{await} & F & J3, E \\
+  C8 & Construire un serveur Express exposant une API REST & F, G & J3, P \\
   \rowcolor{cfptGrey}
-  I & Projet fil rouge — finalisation \& soutenance & 4h & 2h & 6h \\
-  \midrule
-  \rowcolor{accentBlue!15}
-  & \textbf{Total} & \textbf{60h} & \textbf{60h} & \textbf{120h} \\
+  C9 & Connecter Node.js à MySQL via des requêtes paramétrées & G & J3, P \\
+  C10 & Implémenter un CRUD complet de bout en bout & G, H & J3, P \\
+  \rowcolor{cfptGrey}
+  C11 & Consommer une API depuis le navigateur avec \texttt{fetch} et gérer les erreurs & H & P \\
+  C12 & Mettre en œuvre une authentification par session avec hachage & I & P \\
+  \rowcolor{cfptGrey}
+  C13 & Prévenir les injections SQL et les failles XSS de base & I & P, S \\
+  C14 & Présenter oralement un projet technique avec démonstration & J & S \\
   \bottomrule
 \end{tabularx}
 \end{center}
+
+\medskip
+\noindent{\small \textbf{Mod.} — lettre du module correspondant dans le tableau de répartition horaire (section 3, A à J).\\
+\textbf{Évaluation} — J1, J2, J3 : jalons intermédiaires · E : contrôle écrit · P : projet final · S : soutenance orale}
+
+\newpage
 
 % ============================================================
 \section{Le projet fil rouge : MiniForum}
@@ -334,25 +479,169 @@ Ce périmètre fonctionnel est volontairement restreint, mais suffisamment riche
 \subsection{Progression en quatre phases}
 
 \begin{center}
-\begin{tabularx}{\linewidth}{clXc}
+\begin{tabularx}{\linewidth}{clXcc}
   \toprule
   \rowcolor{accentBlue}
   \color{white}\textbf{Phase} &
-  \color{white}\textbf{Semaines} &
+  \color{white}\textbf{Sem.} &
   \color{white}\textbf{Thème} &
-  \color{white}\textbf{Volume} \\
+  \color{white}\textbf{Volume} &
+  \color{white}\textbf{Jalon} \\
   \midrule
   \rowcolor{cfptGrey}
-  1 & 1–5  & HTML/CSS/JS — affichage statique, données en mémoire & 40h \\
-  2 & 6–8  & SQL — modélisation et requêtes sur base pré-remplie & 24h \\
+  1 & 1--7   & HTML / CSS / JS — interface interactive, données en mémoire & 49h & J1 (S7) \\
+  2 & 8--11  & SQL — modélisation et requêtes sur base réelle & 28h & J2 (S11) \\
   \rowcolor{cfptGrey}
-  3 & 9–13 & Node.js/Express — API REST branchée sur MySQL & 40h \\
-  4 & 14–15 & Authentification, sécurité, soutenance & 16h \\
+  3 & 12--17 & Node.js / Express — API REST branchée sur MySQL & 42h & J3 (S17) \\
+  4 & 18--20 & Authentification, sécurité, soutenance & 21h & Soutenance \\
+  \midrule
+  \rowcolor{accentBlue!15}
+  & & \textbf{Total} & \textbf{140h} & \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
 La \textbf{frustration volontaire} de la phase 1 — les données disparaissent au rafraîchissement — est le principal levier de motivation pour l'introduction de la persistance en base de données.
+
+\subsection{Dépôts de référence et rattrapage}
+
+\begin{tcolorbox}[intro]
+\small
+Un projet filé sur vingt semaines expose à un risque simple : un·e étudiant·e bloqué·e en semaine 4 ne rattrape plus jamais son retard et décroche pour le reste du cours.
+
+Pour l'éviter, un \textbf{dépôt de référence} est fourni par l'enseignante à la fin de chaque phase (semaines 7, 11 et 17). Il contient un MiniForum conforme à l'état attendu. Tout·e étudiant·e peut repartir de ce dépôt au début de la phase suivante, sans pénalité sur les jalons ultérieurs.
+
+Ce filet est annoncé aux étudiant·e·s dès la première séance : le but n'est pas de sanctionner un retard, mais d'éviter qu'il ne se transforme en abandon.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Modalités d'évaluation}
+% ============================================================
+
+L'évaluation combine un contrôle continu adossé au fil rouge, une épreuve écrite individuelle et une soutenance orale.
+
+\subsection{Pondération}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{lXcc}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Épreuve} &
+  \color{white}\textbf{Objet} &
+  \color{white}\textbf{Sem.} &
+  \color{white}\textbf{Poids} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  Jalon 1 & Interface MiniForum interactive (HTML / CSS / JS) & 7 & 10\% \\
+  Jalon 2 & Modèle de données et requêtes SQL & 11 & 10\% \\
+  \rowcolor{cfptGrey}
+  Contrôle écrit & HTML, CSS, JavaScript, SQL --- individuel, sur machine & 12 & 25\% \\
+  Jalon 3 & API Express connectée à MySQL & 17 & 10\% \\
+  \rowcolor{cfptGrey}
+  Projet final & MiniForum complet : code, fonctionnement, qualité & 20 & 30\% \\
+  Soutenance & Présentation orale et démonstration en direct & 20 & 15\% \\
+  \midrule
+  \rowcolor{accentBlue!15}
+  & \textbf{Total} & & \textbf{100\%} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+\noindent{\small Les pondérations sont indicatives et doivent être validées au regard du règlement de promotion en vigueur.}
+
+\subsection{Grille d'évaluation du projet final}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{Xc}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Critère} &
+  \color{white}\textbf{Poids} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  Front-end : HTML sémantique, CSS responsive, accessibilité de base & 20\% \\
+  JavaScript client : manipulation du DOM, \texttt{fetch}, gestion des erreurs & 20\% \\
+  \rowcolor{cfptGrey}
+  Modèle de données et requêtes SQL & 15\% \\
+  API Express : routes REST, CRUD complet, codes de statut & 20\% \\
+  \rowcolor{cfptGrey}
+  Sécurité : hachage des mots de passe, requêtes paramétrées, protection XSS & 15\% \\
+  Qualité du code et historique Git (commits réguliers et lisibles) & 10\% \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Grille d'évaluation de la soutenance}
+
+Chaque étudiant·e dispose de 10 minutes de présentation suivies de 5 minutes de questions.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{Xc}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Critère} &
+  \color{white}\textbf{Poids} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  Démonstration : l'application fonctionne, le parcours est cohérent & 30\% \\
+  Explication du code : l'étudiant·e sait dire ce que fait chaque partie et pourquoi & 30\% \\
+  \rowcolor{cfptGrey}
+  Réponses aux questions techniques du jury & 25\% \\
+  Clarté de la présentation et gestion du temps & 15\% \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[jalon, title={Nature des jalons}]
+\small
+Les jalons 1, 2 et 3 sont des points de contrôle courts (une demi-séance) : démonstration de l'état du projet et quelques questions orales sur le code produit. Leur fonction première est \textbf{formative} — repérer tôt les difficultés et y remédier — ce qui justifie leur faible poids dans la note finale. Un jalon manqué n'empêche pas de poursuivre le cours, grâce aux dépôts de référence (section 5.2).
+\end{tcolorbox}
+
+% ============================================================
+\section{Usage de l'intelligence artificielle générative}
+% ============================================================
+
+\begin{tcolorbox}[alerte, title={Les assistants de génération de code sont interdits dans ce cours}]
+\small
+L'usage de GitHub Copilot, ChatGPT, Claude, Gemini ou de tout autre assistant générant du code est \textbf{interdit} pour l'ensemble des travaux remis dans le cadre de ce cours : travaux pratiques, jalons, projet final et contrôle écrit.
+\end{tcolorbox}
+
+\subsection{Pourquoi}
+
+Ce cours a un objectif unique : que des personnes n'ayant jamais programmé sachent programmer à la fin de l'année. Cette compétence s'acquiert en écrivant du code, en le voyant échouer et en comprenant pourquoi. Un assistant qui produit une réponse correcte immédiatement supprime précisément l'étape où l'apprentissage se produit.
+
+L'enjeu est concret : en 1\textsuperscript{re} année hepia, les évaluations d'algorithmique et de programmation sont individuelles et sans assistance. Un·e étudiant·e qui aurait laissé un assistant écrire son MiniForum arriverait avec un projet réussi et aucune des compétences correspondantes.
+
+\subsection{Ce qui reste autorisé}
+
+\begin{itemize}
+  \item La documentation officielle : MDN Web Docs, documentation Express, manuel MySQL
+  \item Les moteurs de recherche et les forums techniques (Stack Overflow), à condition de comprendre et de savoir expliquer tout code repris
+  \item L'entraide entre étudiant·e·s, à condition que chacun·e écrive son propre code
+  \item Les outils d'aide à l'écriture non générateurs de code : correcteur orthographique, formateur automatique (Prettier), analyseur statique (ESLint)
+\end{itemize}
+
+\subsection{Modalités de contrôle}
+
+\begin{itemize}
+  \item Les extensions d'assistance IA sont désinstallées de Visual Studio Code en semaine 1 et leur absence est vérifiée aux jalons
+  \item L'historique Git est examiné à chaque jalon : un projet qui apparaît en un seul commit massif fait l'objet d'un entretien
+  \item Chaque jalon comporte des questions orales sur le code remis
+  \item Le contrôle écrit de la semaine 12 se déroule sur machine, sans accès au réseau
+\end{itemize}
+
+\medskip
+\noindent Le manquement à cette règle est traité selon le règlement de l'établissement en matière de fraude.
+
+\begin{tcolorbox}[intro]
+\small
+\textbf{Note de transparence.} Aucun dispositif technique ne détecte l'usage d'un assistant IA de manière fiable. Le contrôle réel de cette règle repose sur les échanges oraux : un·e étudiant·e qui a écrit son code sait l'expliquer, celui ou celle qui l'a fait écrire ne le sait pas. C'est la raison pour laquelle chaque jalon comporte une part orale, et pourquoi la soutenance finale évalue l'explication du code autant que son fonctionnement.
+
+Cette interdiction porte sur la période d'apprentissage des fondamentaux, non sur la pratique professionnelle. Les usages en contexte professionnel sont abordés en semaine 20, dans le bilan de fin de cours.
+\end{tcolorbox}
 
 \newpage
 
@@ -361,15 +650,14 @@ La \textbf{frustration volontaire} de la phase 1 — les données disparaissent 
 % ============================================================
 
 % ---- PHASE 1 ----
-\subsection{Phase 1 — HTML, CSS \& JavaScript front-end (semaines 1 à 5)}
+\subsection{Phase 1 --- HTML, CSS \& JavaScript front-end (semaines 1 à 7)}
 
-\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
-\small Les modules A, B, C et D couvrent les fondamentaux du web côté client. Le fil rouge progresse d'une page HTML statique vers un forum interactif en JavaScript pur, avant de butter sur la limite de la mémoire volatile.
+\begin{tcolorbox}[intro]
+\small Les modules A à D couvrent les fondamentaux du web côté client. Le fil rouge progresse d'une page HTML statique vers un forum interactif en JavaScript, avant de buter sur la limite de la mémoire volatile. Le cœur de JavaScript reçoit deux semaines pleines : c'est la partie la plus difficile pour un public débutant et la plus utile pour la suite du cursus.
 \end{tcolorbox}
-\vspace{6pt}
 
 % S1
-\semainetitre{1}{Fondamentaux du web \& environnement}{4h cours / 4h TP}
+\semainetitre{1}{Fondamentaux du web \& environnement}{3h cours / 4h TP}{A}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
@@ -382,61 +670,86 @@ La \textbf{frustration volontaire} de la phase 1 — les données disparaissent 
 \contenutitre{Cours}
 \begin{itemize}
   \item Fonctionnement du web : navigateurs, serveurs, requêtes HTTP/HTTPS
-  \item Vocabulaire fondamental : URL, DNS, protocole, statique vs dynamique
+  \item Vocabulaire fondamental : URL, DNS, protocole, statique et dynamique
   \item Tour d'horizon de la stack : HTML, CSS, JavaScript, Node.js, SQL
-  \item Installation : VS Code, extensions utiles, Node.js, terminal
-  \item Git : init, add, commit, push — mise en place du dépôt du projet fil rouge
+  \item Installation : VS Code, extensions, Node.js, terminal
+  \item Git : \texttt{init}, \texttt{add}, \texttt{commit}, \texttt{push} et \textbf{rôle du \texttt{.gitignore}}
+  \item Règles du cours : fil rouge, jalons, interdiction des assistants IA
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Configuration complète de l'environnement de développement
-  \item Création du dépôt Git du projet MiniForum, première structure de fichiers
+  \item Configuration complète de l'environnement, désinstallation des extensions d'assistance IA
+  \item Création du dépôt Git MiniForum avec un \texttt{.gitignore} correct dès le premier commit
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Mise en place du projet}]
-\small Création de la structure \texttt{miniforum/} (index.html, style.css, app.js) et premier commit Git. Les étudiant·e·s ouvrent leur projet dans le navigateur pour la première fois.
+\small Création de la structure \texttt{miniforum/} (\texttt{index.html}, \texttt{style.css}, \texttt{app.js}) et premier commit Git. Les étudiant·e·s ouvrent leur projet dans le navigateur pour la première fois.
 \end{tcolorbox}
 
-\vspace{8pt}
-\clearpage
 % S2
-\semainetitre{2}{HTML5 — Structure \& sémantique}{4h cours / 4h TP}
+\semainetitre{2}{HTML5 --- Structure \& sémantique}{3h cours / 4h TP}{B}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
   \item Écrire une page HTML5 valide et sémantique
   \item Structurer le contenu avec les éléments appropriés
-  \item Créer des formulaires fonctionnels avec les types d'input HTML5
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Structure d'un document HTML5 : \texttt{doctype}, \texttt{head}, \texttt{body}
+  \item Structure d'un document : \texttt{doctype}, \texttt{head}, \texttt{body}, métadonnées
   \item Éléments sémantiques : \texttt{header}, \texttt{nav}, \texttt{main}, \texttt{section}, \texttt{article}, \texttt{footer}
   \item Texte, liens, images, listes, tableaux
-  \item Formulaires : \texttt{input} (text, email, password, number), \texttt{textarea}, \texttt{select}, \texttt{button}
-  \item Notions d'accessibilité : attribut \texttt{alt}, labels, hiérarchie des titres
+  \item Hiérarchie des titres et structure du document
+  \item Validation W3C et lecture des messages d'erreur
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Squelette HTML du MiniForum : en-tête, liste de sujets (statique), formulaire d'ajout de message
+  \item Squelette HTML du MiniForum : en-tête, navigation, liste de sujets statique, pied de page
+  \item Page de détail d'un sujet avec une liste de messages codée en dur
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Structure HTML du forum}]
-\small La page d'accueil du MiniForum prend forme en HTML pur : une liste de sujets codée en dur, un formulaire de création de sujet, un pied de page. Aucun style encore — c'est voulu.
+\small Les deux pages du MiniForum prennent forme en HTML pur. Aucun style : c'est voulu, la structure doit tenir debout seule.
 \end{tcolorbox}
 
-\vspace{8pt}
-
 % S3
-\semainetitre{3}{CSS — Mise en forme \& Flexbox}{4h cours / 4h TP}
+\semainetitre{3}{HTML5 --- Formulaires \& accessibilité}{3h cours / 4h TP}{B}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Appliquer des styles CSS en comprenant la cascade et la spécificité
-  \item Construire des mises en page avec Flexbox
-  \item Utiliser les variables CSS pour un code maintenable
+  \item Créer des formulaires complets avec les types d'\texttt{input} HTML5
+  \item Appliquer les principes de base de l'accessibilité web
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item \texttt{form}, \texttt{input} (text, email, password, number, date), \texttt{textarea}, \texttt{select}
+  \item Attributs \texttt{name}, \texttt{required}, \texttt{placeholder}, \texttt{pattern}, \texttt{maxlength}
+  \item Validation native du navigateur et ses limites
+  \item Accessibilité : \texttt{label}, attribut \texttt{alt}, contraste, navigation au clavier
+  \item Aperçu : à quoi servira \texttt{name} lorsque le serveur recevra les données (semaine 15)
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Formulaire de création de sujet et formulaire de réponse
+  \item Formulaires d'inscription et de connexion (structure seule, sans traitement)
+  \item Passage du site au vérificateur d'accessibilité des DevTools
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Tous les formulaires en place}]
+\small Le MiniForum contient l'intégralité de ses formulaires. Ils ne font encore rien, mais leur structure ne changera plus jusqu'à la fin du cours.
+\end{tcolorbox}
+
+% S4
+\semainetitre{4}{CSS --- Cascade, modèle de boîte \& Flexbox}{3h cours / 4h TP}{C}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Appliquer des styles en comprenant la cascade et la spécificité
+  \item Construire des mises en page unidimensionnelles avec Flexbox
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
@@ -445,296 +758,369 @@ La \textbf{frustration volontaire} de la phase 1 — les données disparaissent 
   \item Sélecteurs, cascade, spécificité, héritage
   \item Modèle de boîte : \texttt{margin}, \texttt{padding}, \texttt{border}, \texttt{box-sizing}
   \item Flexbox : \texttt{display:flex}, axes, alignement, \texttt{flex-wrap}, \texttt{gap}
-  \item Variables CSS (\texttt{--custom-property}) et thèmes de couleur
-  \item Pseudo-classes (\texttt{:hover}, \texttt{:focus}, \texttt{:nth-child})
+  \item Pseudo-classes : \texttt{:hover}, \texttt{:focus}, \texttt{:nth-child}
+  \item Inspection et modification des styles dans les DevTools
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Mise en forme complète du MiniForum : palette de couleurs, typographie, layout Flexbox
-  \item Stylisation du formulaire et des cartes de sujet
+  \item Mise en forme du MiniForum : typographie, couleurs, espacements
+  \item Barre de navigation et cartes de sujet en Flexbox
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Le forum prend forme visuellement}]
-\small Le MiniForum adopte une identité visuelle cohérente. Les étudiant·e·s définissent leurs variables CSS (\texttt{--color-primary}, etc.) qui seront conservées jusqu'à la fin du projet.
+\small Le MiniForum devient présentable. C'est généralement la séance où le projet cesse d'être un exercice et devient « leur » site.
 \end{tcolorbox}
 
-\vspace{8pt}
-
-% S4
-\semainetitre{4}{CSS — Responsive design \& Grid}{4h cours / 4h TP}
+% S5
+\semainetitre{5}{CSS --- Responsive, Grid \& variables}{3h cours / 4h TP}{C}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
   \item Adapter une mise en page à différentes tailles d'écran
   \item Utiliser CSS Grid pour des mises en page bidimensionnelles
-  \item Appliquer une approche mobile-first
+  \item Structurer sa feuille de style avec des variables CSS
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Media queries et approche mobile-first
+  \item Media queries et approche \textit{mobile-first}
   \item CSS Grid : \texttt{grid-template-columns}, \texttt{grid-template-rows}, \texttt{gap}, \texttt{grid-area}
-  \item Unités relatives : \texttt{rem}, \texttt{em}, \texttt{\%}, \texttt{vw}/\texttt{vh}
-  \item Images responsive (\texttt{max-width: 100\%}, \texttt{object-fit})
+  \item Unités relatives : \texttt{rem}, \texttt{em}, \texttt{\%}, \texttt{vw} / \texttt{vh}
+  \item Variables CSS (\texttt{--custom-property}) et thème de couleurs
+  \item Images responsive : \texttt{max-width}, \texttt{object-fit}
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Adaptation responsive du MiniForum (mobile, tablette, desktop)
-  \item Exercices de mise en page Grid sur cas variés
+  \item Extraction de la palette du MiniForum en variables CSS
+  \item Adaptation responsive : mobile, tablette, ordinateur
+  \item Page de détail en Grid : messages à gauche, informations du sujet à droite sur grand écran
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={MiniForum responsive}]
-\small Le forum s'affiche correctement sur mobile. Un layout Grid est introduit pour la page de détail d'un sujet (liste de messages à gauche, infos du sujet à droite sur desktop).
+\small Le forum s'affiche correctement du téléphone à l'écran large. Les variables CSS définies ici sont conservées jusqu'à la soutenance.
 \end{tcolorbox}
 
-\vspace{8pt}
-\newpage
-
-% S5
-\semainetitre{5}{JavaScript — Logique, DOM \& événements}{6h cours / 6h TP}
+% S6
+\semainetitre{6}{JavaScript --- Logique, tableaux \& objets}{3h cours / 4h TP}{D}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Écrire des scripts JavaScript ES6+ (variables, fonctions, tableaux, objets)
-  \item Manipuler dynamiquement le DOM depuis JavaScript
-  \item Réagir aux événements utilisateur et valider un formulaire côté client
+  \item Écrire des scripts JavaScript ES6+ structurés en fonctions
+  \item Manipuler des tableaux d'objets avec les méthodes de parcours
+  \item Déboguer un script avec la console et les points d'arrêt
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Variables (\texttt{let}, \texttt{const}), types, opérateurs, conditions, boucles — rapide (déjà vu en C\#)
-  \item Fonctions classiques et fléchées ; portée et closures (introduction)
-  \item Tableaux d'objets : \texttt{map}, \texttt{filter}, \texttt{find}, \texttt{sort}
-  \item DOM : \texttt{querySelector}, \texttt{createElement}, \texttt{innerHTML}, \texttt{addEventListener}
-  \item Validation de formulaire côté client
+  \item Variables (\texttt{let}, \texttt{const}), types, opérateurs, conditions, boucles
+  \item Fonctions classiques et fléchées, paramètres, valeur de retour, portée
+  \item Objets littéraux : propriétés, accès, imbrication
+  \item Tableaux d'objets : \texttt{map}, \texttt{filter}, \texttt{find}, \texttt{sort}, \texttt{forEach}
+  \item Débogage : \texttt{console.log}, points d'arrêt, inspection des variables
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Affichage dynamique de la liste de sujets depuis un tableau JS en dur
-  \item Formulaire d'ajout de sujet : ajout en mémoire + mise à jour du DOM
-  \item Validation des champs avec affichage de messages d'erreur
+  \item Exercices d'algorithmique sur des tableaux de données du forum
+  \item Construction du jeu de données \texttt{topics} et \texttt{posts} en JavaScript
+  \item Fonctions de tri et de filtrage des sujets, testées dans la console
 \end{itemize}
 \end{tcolorbox}
-\begin{tcolorbox}[filrouge={Forum interactif… mais volatile}]
-\small Les sujets s'ajoutent dynamiquement. Constat collectif en fin de séance : tout disparaît au rafraîchissement. Cette frustration est le déclencheur naturel de l'introduction aux bases de données.
+\begin{tcolorbox}[filrouge={Les données du forum en mémoire}]
+\small Les sujets et messages existent sous forme de tableaux d'objets, avec les fonctions qui les trient et les filtrent. Rien n'est encore affiché : la logique est isolée de l'interface, et c'est un choix de conception qu'il faut savoir justifier.
+\end{tcolorbox}
+
+% S7
+\semainetitre{7}{JavaScript --- DOM, événements \& validation}{3h cours / 4h TP}{D}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Manipuler dynamiquement le DOM depuis JavaScript
+  \item Réagir aux événements utilisateur
+  \item Valider un formulaire côté client et afficher des messages d'erreur
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item DOM : \texttt{querySelector}, \texttt{querySelectorAll}, navigation dans l'arbre
+  \item Création et insertion d'éléments : \texttt{createElement}, \texttt{append}, \texttt{remove}
+  \item \textbf{\texttt{textContent} plutôt que \texttt{innerHTML}} pour tout contenu saisi par un utilisateur --- la raison complète sera vue en semaine 19, la règle s'applique dès maintenant
+  \item Événements : \texttt{addEventListener}, objet \texttt{event}, \texttt{preventDefault}
+  \item Validation de formulaire en JavaScript et affichage des erreurs
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Affichage dynamique de la liste des sujets depuis le tableau JavaScript
+  \item Ajout d'un sujet : lecture du formulaire, ajout en mémoire, mise à jour de l'affichage
+  \item Validation des champs avec messages d'erreur sous chaque champ
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Forum interactif\dots mais volatile}]
+\small Les sujets s'ajoutent et s'affichent. Constat collectif en fin de séance : tout disparaît au rafraîchissement. Cette frustration déclenche la phase suivante.
+\end{tcolorbox}
+
+\begin{tcolorbox}[jalon, title={Jalon 1 --- fin de semaine 7 (10\%)}]
+\small
+\textbf{Attendu} : un MiniForum en HTML/CSS/JS fonctionnant entièrement dans le navigateur --- structure sémantique, mise en forme responsive, affichage dynamique de la liste des sujets depuis un tableau JavaScript, ajout d'un sujet avec validation.
+
+\textbf{Modalité} : démonstration de 10 minutes et questions orales sur le code. Un dépôt de référence est publié à l'issue du jalon.
 \end{tcolorbox}
 
 \newpage
 
 % ---- PHASE 2 ----
-\subsection{Phase 2 — Bases de données \& SQL (semaines 6 à 8)}
+\subsection{Phase 2 --- Bases de données \& SQL (semaines 8 à 11)}
 
-\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
-\small Avant d'introduire le serveur, les étudiant·e·s acquièrent les bases du modèle relationnel et de SQL sur une base pré-remplie fournie par l'enseignante. L'objectif est de maîtriser les requêtes avant de les écrire dans du code.
+\begin{tcolorbox}[intro]
+\small Avant d'introduire le serveur, les étudiant·e·s acquièrent les bases du modèle relationnel et de SQL sur une base pré-remplie fournie par l'enseignante. L'objectif est de maîtriser les requêtes avant d'avoir à les écrire dans du code. C'est la partie la plus abstraite du cours, d'où les quatre semaines.
 \end{tcolorbox}
-\vspace{6pt}
 
-% S6
-\semainetitre{6}{Modélisation relationnelle (MCD / MLD)}{4h cours / 4h TP}
+% S8
+\semainetitre{8}{Modélisation relationnelle (UML $\rightarrow$ MLD)}{3h cours / 4h TP}{E}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
   \item Identifier entités, attributs et relations d'un système d'information
-  \item Construire un diagramme de classes UML et le transformer en MLD
-  \item Distinguer relations one-to-many et many-to-many afin de comprendre la table de liaison
+  \item Construire un diagramme de classes et le transformer en modèle logique
+  \item Distinguer relations \textit{one-to-many} et \textit{many-to-many}
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Notions de SGBDR, table, ligne, colonne, clé primaire, clé étrangère
+  \item SGBDR, table, ligne, colonne, clé primaire, clé étrangère
   \item Notation UML : multiplicités \texttt{1}, \texttt{0..1}, \texttt{1..*}, \texttt{0..*}
-  \item Relation one-to-many (\texttt{1..*}) : un utilisateur a plusieurs messages
-  \item Relation many-to-many (\texttt{0..*} / \texttt{0..*}) : un message peut être aimé par plusieurs utilisateurs
-  \item Du diagramme UML au MLD : règles de transformation, tables de liaison
-  \item Introduction à MySQL/MariaDB : installation, phpMyAdmin ou client terminal
+  \item \textit{One-to-many} : un utilisateur a plusieurs messages
+  \item \textit{Many-to-many} : un message peut être aimé par plusieurs utilisateurs
+  \item Du diagramme au MLD : règles de transformation, tables de liaison
+  \item Types de données MySQL et contraintes d'intégrité
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Construction collective du diagramme de classes UML du MiniForum
-  \item Transformation en MLD : identification des tables de liaison
-  \item Création des tables dans MySQL à partir du MLD
+  \item Modélisation de deux ou trois cas courts (bibliothèque, réservation de salles)
+  \item Construction collective du diagramme de classes du MiniForum
+  \item Transformation en MLD et création des tables en SQL
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Schéma officiel du forum}]
-\small Le diagramme de classes UML du MiniForum est construit collectivement, puis transformé en MLD avec sa table de liaison \texttt{likes}. Ce schéma \texttt{users / topics / posts / likes} sera
-la référence jusqu'à la fin du cours. Les étudiant·e·s créent eux-mêmes
-les tables dans MySQL.
+\small Le schéma \texttt{users / topics / posts / likes} est établi collectivement et sert de référence jusqu'à la fin du cours. Les étudiant·e·s créent eux-mêmes les tables.
 \end{tcolorbox}
-\vspace{8pt}
+
+\begin{tcolorbox}[alerte, title={Point d'organisation --- installation de MySQL}]
+\small
+L'installation de MySQL sur les postes de la classe consomme facilement une séance entière de TP. Trois options, à trancher avant la rentrée : une base hébergée sur un serveur de l'école (le plus simple pour les étudiant·e·s), un conteneur Docker fourni clé en main (cohérent avec le module Linux, et utile pour la suite), ou une installation locale guidée réalisée en travail personnel avant la semaine 8. La troisième option est la moins fiable.
+\end{tcolorbox}
 
 \newpage
 
-% S7
-\semainetitre{7}{SQL — Interrogation \& jointures}{4h cours / 4h TP}
+% S9
+\semainetitre{9}{SQL --- Interrogation, filtres \& agrégations}{3h cours / 4h TP}{E}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Écrire des requêtes SQL de lecture avec filtres, tris et agrégations
-  \item Utiliser \texttt{INNER JOIN} et \texttt{LEFT JOIN} pour croiser plusieurs tables
+  \item Écrire des requêtes de lecture avec filtres et tris
+  \item Utiliser les fonctions d'agrégation et le regroupement
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item \texttt{SELECT}, \texttt{WHERE}, \texttt{ORDER BY}, \texttt{LIMIT}
-  \item Fonctions d'agrégation : \texttt{COUNT}, \texttt{SUM}, \texttt{AVG}, \texttt{GROUP BY}, \texttt{HAVING}
-  \item \texttt{INNER JOIN} et \texttt{LEFT JOIN} avec alias de table
-  \item Bonnes pratiques de lisibilité SQL
+  \item \texttt{SELECT}, \texttt{WHERE}, opérateurs de comparaison et logiques
+  \item \texttt{ORDER BY}, \texttt{LIMIT}, \texttt{DISTINCT}
+  \item \texttt{LIKE}, \texttt{IN}, \texttt{BETWEEN}, gestion de \texttt{NULL}
+  \item Agrégation : \texttt{COUNT}, \texttt{SUM}, \texttt{AVG}, \texttt{MIN}, \texttt{MAX}
+  \item \texttt{GROUP BY} et \texttt{HAVING}, distinction avec \texttt{WHERE}
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Requêtes progressives sur la base MiniForum pré-remplie (phpMyAdmin ou terminal)
-  \item Lister les sujets les plus récents, compter les messages par utilisateur, retrouver les messages d'un sujet avec l'auteur
+  \item Requêtes progressives sur la base MiniForum pré-remplie
+  \item Sujets les plus récents, nombre de messages par sujet, activité par utilisateur
 \end{itemize}
 \end{tcolorbox}
-\begin{tcolorbox}[filrouge={Interroger les vraies données du forum}]
-\small La base MiniForum contient 10 utilisateurs, 20 sujets et 80 messages fictifs. Les étudiant·e·s écrivent des requêtes qui retourneraient exactement ce qu'afficherait leur page d'accueil — la passerelle vers la phase suivante est évidente.
+\begin{tcolorbox}[filrouge={Interroger les vraies données}]
+\small La base fournie contient 10 utilisateurs, 20 sujets et 80 messages. Les étudiant·e·s écrivent des requêtes qui produisent exactement ce qu'affiche leur page d'accueil.
 \end{tcolorbox}
 
-\vspace{8pt}
-
-% S8
-\semainetitre{8}{SQL — CRUD \& requêtes avancées}{4h cours / 4h TP}
+% S10
+\semainetitre{10}{SQL --- Jointures}{3h cours / 4h TP}{E}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Écrire des requêtes d'écriture (\texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE})
-  \item Utiliser des sous-requêtes et des agrégations combinées
-  \item Comprendre les injections SQL et les requêtes paramétrées (concept)
+  \item Croiser plusieurs tables avec \texttt{INNER JOIN} et \texttt{LEFT JOIN}
+  \item Interroger une relation \textit{many-to-many} via sa table de liaison
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item \texttt{INSERT INTO}, \texttt{UPDATE … SET … WHERE}, \texttt{DELETE FROM … WHERE}
-  \item Sous-requêtes simples dans le \texttt{WHERE} et le \texttt{FROM}
-  \item Agrégations avancées : top contributeurs, sujets les plus actifs
-  \item Introduction aux injections SQL : démonstration et principe de prévention
+  \item Principe de la jointure : reconstituer l'information éclatée entre les tables
+  \item \texttt{INNER JOIN} et alias de table
+  \item \texttt{LEFT JOIN} : les cas sans correspondance, et pourquoi ils comptent
+  \item Jointures multiples et jointure sur une table de liaison
+  \item Combinaison jointure et agrégation
+  \item Lisibilité : indentation, alias explicites, ordre des clauses
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Messages d'un sujet avec le nom de leur auteur
+  \item Sujets sans aucune réponse (cas typique du \texttt{LEFT JOIN})
+  \item Nombre de \textit{likes} par message via la table de liaison
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Toutes les vues du forum en SQL}]
+\small Chaque écran du MiniForum a désormais sa requête. Ce sont exactement celles qui seront placées dans le serveur Express en semaine 14.
+\end{tcolorbox}
+
+% S11
+\semainetitre{11}{SQL --- Écriture, sous-requêtes \& injections}{3h cours / 4h TP}{E}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Écrire des requêtes de modification des données
+  \item Utiliser des sous-requêtes
+  \item Comprendre le principe d'une injection SQL
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item \texttt{INSERT INTO}, \texttt{UPDATE \dots SET \dots WHERE}, \texttt{DELETE FROM \dots WHERE}
+  \item Le \texttt{WHERE} oublié : démonstration et conséquences
+  \item Sous-requêtes dans le \texttt{WHERE} et dans le \texttt{FROM}
+  \item Suppression et intégrité référentielle : \texttt{ON DELETE CASCADE}
+  \item Injections SQL : démonstration d'une requête concaténée, et principe de la requête paramétrée
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
   \item Exercices CRUD complets sur la base MiniForum
-  \item Requêtes d'analyse : utilisateurs les plus actifs, sujets sans réponse, etc.
+  \item Requêtes d'analyse : contributeurs les plus actifs, sujets sans réponse
+  \item Exploitation d'une faille d'injection sur une page de démonstration fournie
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Le forum a une vraie mémoire}]
-\small Les étudiant·e·s peuvent désormais ajouter, modifier et supprimer des données directement en SQL. Ils comprennent que leur front-end JavaScript a besoin d'un intermédiaire pour faire ces mêmes opérations — introduction naturelle à Node.js.
+\small Les données du MiniForum se créent, se modifient et se suppriment en SQL. Il manque encore l'intermédiaire entre le navigateur et la base : c'est l'objet de la phase 3.
+\end{tcolorbox}
+
+\begin{tcolorbox}[jalon, title={Jalon 2 --- fin de semaine 11 (10\%)}]
+\small
+\textbf{Attendu} : le modèle de données du MiniForum (diagramme de classes et MLD), le script de création des tables, et un jeu d'une dizaine de requêtes couvrant filtres, agrégations, jointures et écriture.
+
+\textbf{Modalité} : remise du script SQL et entretien de 10 minutes sur les choix de modélisation.
 \end{tcolorbox}
 
 \newpage
+
 % ---- PHASE 3 ----
-\subsection{Phase 3 — Node.js / Express \& API REST (semaines 9 à 13)}
+\subsection{Phase 3 --- Node.js / Express \& API REST (semaines 12 à 17)}
 
-\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
-\small C'est la phase la plus dense techniquement. Les étudiant·e·s construisent le serveur qui manquait depuis la phase 1, et branchent progressivement leur front-end dessus. Le JavaScript appris en semaine 5 est immédiatement réutilisable côté serveur.
+\begin{tcolorbox}[intro]
+\small C'est la phase la plus dense techniquement. Les étudiant·e·s construisent le serveur qui manquait depuis la phase 1 et y branchent progressivement leur front-end. Le JavaScript des semaines 6 et 7 est immédiatement réinvesti côté serveur. La semaine 17 est délibérément tenue en réserve : elle sert de rattrapage si la classe a pris du retard.
 \end{tcolorbox}
-\vspace{6pt}
 
-% S9
-\semainetitre{9}{JavaScript asynchrone \& Node.js}{4h cours / 4h TP}
+% S12
+\semainetitre{12}{JavaScript asynchrone \& Node.js}{3h cours / 4h TP}{F}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Comprendre la nature asynchrone de JavaScript et son modèle d'exécution
-  \item Écrire du code asynchrone lisible avec \texttt{async}/\texttt{await}
-  \item Exécuter JavaScript hors navigateur avec Node.js
+  \item Comprendre le modèle d'exécution asynchrone de JavaScript
+  \item Écrire du code asynchrone lisible avec \texttt{async} / \texttt{await}
+  \item Exécuter JavaScript hors du navigateur avec Node.js
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Synchrone vs asynchrone : pourquoi JavaScript a besoin de Promises
-  \item Promises : états (\textit{pending}, \textit{fulfilled}, \textit{rejected}), \texttt{then}/\texttt{catch}
-  \item Syntaxe \texttt{async}/\texttt{await} et équivalence avec les Promises
-  \item Gestion des erreurs : \texttt{try}/\texttt{catch} en contexte asynchrone
-  \item Node.js : installation, \texttt{npm init}, \texttt{npm install}, scripts \texttt{package.json}
+  \item Réactivation express du JavaScript des semaines 6--7 (trois semaines de SQL se sont écoulées)
+  \item Synchrone et asynchrone : pourquoi JavaScript a besoin des \textit{Promises}
+  \item \textit{Promises} : états, \texttt{then} / \texttt{catch}
+  \item \texttt{async} / \texttt{await} et équivalence avec les \textit{Promises}
+  \item Gestion des erreurs : \texttt{try} / \texttt{catch} en contexte asynchrone
+  \item Node.js : \texttt{npm init}, \texttt{npm install}, scripts du \texttt{package.json}
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Simulation de délai avec \texttt{setTimeout} encapsulé dans une Promise
-  \item Réécriture du même traitement en \texttt{then/catch} puis \texttt{async/await}
-  \item Premier script Node.js exécuté dans le terminal
+  \item \textbf{Contrôle écrit (2h)} : HTML, CSS, JavaScript et SQL, sur machine, sans réseau
+  \item Premier script Node.js et fonction asynchrone simulant un délai serveur
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Simuler l'appel serveur}]
-\small Une fonction asynchrone fictive retourne les données du forum après un délai simulé. Le front-end est adapté pour attendre cette réponse avec \texttt{await} — syntaxe identique à ce qu'il utilisera avec \texttt{fetch} la semaine suivante.
+\small Une fonction asynchrone fictive retourne les données du forum après un délai. Le front-end est adapté pour l'attendre avec \texttt{await} --- syntaxe identique à celle qu'il utilisera avec \texttt{fetch} en semaine 16.
 \end{tcolorbox}
 
-\vspace{8pt}
-
-\newpage
-
-% S10
-\semainetitre{10}{Express — Premiers pas \& routes GET}{4h cours / 4h TP}
+% S13
+\semainetitre{13}{Express --- Premiers pas \& routes GET}{3h cours / 4h TP}{F}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Mettre en place un serveur HTTP minimal avec Express
-  \item Définir des routes GET renvoyant des données JSON
+  \item Mettre en place un serveur HTTP avec Express
+  \item Définir des routes GET renvoyant du JSON
   \item Comprendre les principes d'une API REST
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Express : installation, structure d'une application, \texttt{app.listen}
-  \item Routes et paramètres d'URL (\texttt{:id}), \texttt{req} et \texttt{res}
+  \item Express : structure d'une application, \texttt{app.listen}, cycle d'une requête
+  \item Routes et paramètres d'URL (\texttt{:id}), objets \texttt{req} et \texttt{res}
   \item Principes REST : ressources, verbes HTTP, codes de statut (200, 201, 400, 404, 500)
-  \item Middleware : \texttt{express.json()}, \texttt{express.static()}, \texttt{cors}
-  \item Organisation du code : séparation routes / logique métier
+  \item \textit{Middleware} : \texttt{express.json()}, \texttt{express.static()}
+  \item Organisation du code : séparation des routes et de la logique métier
+  \item Lecture d'une documentation de version : différences Express 4 et 5
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Serveur Express renvoyant des données statiques JSON sur \texttt{GET /topics}
-  \item Routes \texttt{GET /topics} et \texttt{GET /topics/:id} avec données en dur
+  \item Serveur Express servant le front-end statique et exposant \texttt{GET /api/topics}
+  \item Routes \texttt{GET /api/topics} et \texttt{GET /api/topics/:id} avec données codées en dur
+  \item Test des routes avec l'extension REST Client de VS Code
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Le serveur du MiniForum démarre}]
-\small Le front-end est modifié pour appeler \texttt{fetch('/api/topics')} au lieu de lire le tableau en dur. Les données arrivent du serveur — même si elles sont encore codées en dur côté Express.
+\small Le front-end est servi par Express et récupère ses données via \texttt{fetch('/api/topics')} au lieu du tableau en dur. Les données restent codées en dur côté serveur : la base arrive la semaine suivante.
 \end{tcolorbox}
 
-\vspace{8pt}
+\begin{tcolorbox}[alerte, title={Express 5 et les tutoriels en ligne}]
+\small
+\texttt{npm install express} installe désormais Express 5, alors que la quasi-totalité des tutoriels que les étudiant·e·s consulteront sont écrits pour Express 4. La différence la plus piégeuse : \texttt{req.body} vaut \texttt{undefined} au lieu de \texttt{\{\}} lorsque \texttt{express.json()} n'est pas déclaré, ce qui produit une erreur qu'un débutant ne sait pas interpréter. La version est donc \textbf{figée dans le \texttt{package.json} fourni}, et le point est traité explicitement en cours.
+\end{tcolorbox}
 
-% S11
-\semainetitre{11}{Node.js — Connexion MySQL \& requêtes paramétrées}{4h cours / 4h TP}
+% S14
+\semainetitre{14}{Node.js --- Connexion MySQL \& requêtes paramétrées}{3h cours / 4h TP}{G}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Connecter un serveur Node.js à une base MySQL avec \texttt{mysql2}
-  \item Écrire des requêtes SQL paramétrées pour prévenir les injections
-  \item Exposer les résultats de requêtes SQL dans des réponses JSON
+  \item Connecter un serveur Node.js à MySQL avec \texttt{mysql2}
+  \item Écrire des requêtes paramétrées pour prévenir les injections
+  \item Exposer des résultats SQL dans des réponses JSON
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Pilote \texttt{mysql2} : installation, configuration du pool de connexions
-  \item Requêtes paramétrées avec \texttt{?} — comparaison avec et sans paramètre
+  \item Pilote \texttt{mysql2} : pool de connexions et API \textit{promise}
+  \item Requêtes paramétrées avec \texttt{?} : comparaison directe avec la concaténation
   \item Transformation des résultats SQL en objets JSON cohérents
-  \item Variables d'environnement (\texttt{.env}, \texttt{dotenv}) pour les identifiants de BD
+  \item Variables d'environnement : \texttt{.env}, \texttt{dotenv} --- et rappel du \texttt{.gitignore}
   \item Gestion des erreurs de connexion et de requête côté serveur
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Connexion du serveur Express à la base MySQL MiniForum
-  \item Routes \texttt{GET /api/topics} et \texttt{GET /api/topics/:id/posts} avec vraies requêtes SQL et jointure sur \texttt{users}
+  \item Connexion du serveur Express à la base MiniForum
+  \item Réutilisation des requêtes écrites en semaine 10 dans les routes GET
+  \item Vérification que \texttt{.env} n'est pas suivi par Git
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Les vraies données arrivent dans le navigateur}]
-\small Le front-end affiche désormais les données réelles de la base de données MySQL. Les modifications faites directement en SQL (via phpMyAdmin) apparaissent dans l'interface — le circuit complet est visible pour la première fois.
+\small Le front-end affiche les données réelles de MySQL. Une modification faite directement en SQL apparaît dans l'interface après rafraîchissement : le circuit complet devient visible pour la première fois.
 \end{tcolorbox}
 
-\vspace{8pt}
-
-% S12
-\semainetitre{12}{Express — Routes POST, PUT, DELETE (CRUD complet)}{4h cours / 4h TP}
+% S15
+\semainetitre{15}{Express --- CRUD complet (POST, PUT, DELETE)}{3h cours / 4h TP}{G}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Implémenter les routes d'écriture (\texttt{POST}, \texttt{PUT}, \texttt{DELETE}) dans Express
+  \item Implémenter les routes d'écriture dans Express
   \item Valider les données entrantes côté serveur
   \item Renvoyer les codes de statut HTTP appropriés
 \end{itemize}
@@ -742,146 +1128,270 @@ les tables dans MySQL.
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Récupération du corps de requête : \texttt{req.body} avec \texttt{express.json()}
-  \item \texttt{POST} (création), \texttt{PUT}/\texttt{PATCH} (mise à jour), \texttt{DELETE} (suppression)
-  \item Validation basique : champs requis, types, longueur maximale
-  \item Codes de statut HTTP et messages d'erreur cohérents
+  \item Corps de requête : \texttt{req.body} et \texttt{express.json()}
+  \item \texttt{POST} (création), \texttt{PUT} / \texttt{PATCH} (mise à jour), \texttt{DELETE} (suppression)
+  \item Validation côté serveur : champs requis, types, longueurs --- et pourquoi la validation client ne suffit jamais
+  \item Codes de statut et format d'erreur cohérent
+  \item Récupération de l'identifiant créé (\texttt{insertId}) et réponse 201
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
   \item Routes \texttt{POST /api/topics} et \texttt{POST /api/topics/:id/posts}
-  \item Route \texttt{DELETE /api/posts/:id} avec gestion des cas 404
-  \item Branchement du formulaire front-end sur ces nouvelles routes
+  \item Routes \texttt{PUT /api/posts/:id} et \texttt{DELETE /api/posts/:id} avec gestion du 404
+  \item Test complet de l'API au REST Client avant tout branchement du front
 \end{itemize}
 \end{tcolorbox}
-\begin{tcolorbox}[filrouge={Le forum est fonctionnel de bout en bout}]
-\small Un visiteur peut créer un sujet, y répondre, et supprimer son message — tout persiste en base de données. Le circuit complet HTML → JS → fetch → Express → MySQL → JSON → DOM est opérationnel.
+\begin{tcolorbox}[filrouge={Une API complète}]
+\small Le MiniForum dispose d'une API REST couvrant l'ensemble des opérations. Elle est testée hors navigateur : le front-end ne sait pas encore s'en servir.
 \end{tcolorbox}
 
-\vspace{8pt}
-
-\newpage
-
-% S13
-\semainetitre{13}{Fetch côté client \& gestion des erreurs}{4h cours / 4h TP}
+% S16
+\semainetitre{16}{Fetch côté client \& gestion des erreurs}{3h cours / 4h TP}{H}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Effectuer des requêtes \texttt{fetch} POST, PUT, DELETE depuis le navigateur
+  \item Effectuer des requêtes \texttt{fetch} POST, PUT et DELETE depuis le navigateur
   \item Gérer les erreurs réseau et les réponses d'erreur du serveur
-  \item Synchroniser l'interface avec l'état réel de la base de données
+  \item Synchroniser l'interface avec l'état réel de la base
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
   \item \texttt{fetch} avec options : méthode, en-têtes, corps JSON
-  \item Distinction erreur réseau / erreur HTTP (\texttt{response.ok})
-  \item Affichage de retours utilisateur : chargement, succès, erreur
-  \item Mise à jour optimiste vs mise à jour après confirmation serveur
+  \item Distinction entre erreur réseau et erreur HTTP (\texttt{response.ok})
+  \item Retours utilisateur : état de chargement, succès, échec
+  \item Mise à jour optimiste et mise à jour après confirmation du serveur
+  \item Onglet Réseau des DevTools : lire une requête et sa réponse
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Complétion du front-end MiniForum : tous les formulaires branchés sur l'API
+  \item Branchement de tous les formulaires du MiniForum sur l'API
   \item Affichage de messages d'erreur cohérents en cas d'échec serveur
+  \item Test du comportement de l'interface serveur arrêté
 \end{itemize}
 \end{tcolorbox}
-\begin{tcolorbox}[filrouge={Interface robuste et réactive}]
-\small L'interface du MiniForum gère les cas d'erreur : message de chargement, alerte si le serveur ne répond pas, rechargement de la liste après ajout. L'UX correspond à ce qu'un utilisateur attendrait d'un vrai forum.
+\begin{tcolorbox}[filrouge={Le forum est fonctionnel de bout en bout}]
+\small Créer un sujet, y répondre, supprimer un message : tout persiste. Le circuit HTML $\rightarrow$ JS $\rightarrow$ \texttt{fetch} $\rightarrow$ Express $\rightarrow$ MySQL $\rightarrow$ JSON $\rightarrow$ DOM est opérationnel.
 \end{tcolorbox}
 
-% ---- PHASE 4 ----
-\subsection{Phase 4 — Authentification, sécurité \& soutenance (semaines 14 à 15)}
-
-\begin{tcolorbox}[colback=accentBlue!8, colframe=accentBlue, boxrule=0.6pt, arc=3pt]
-\small Phase courte et intense : les concepts de sécurité sont introduits et immédiatement appliqués sur le MiniForum. La dernière séance est dédiée à la finalisation et à la soutenance orale.
+% S17
+\semainetitre{17}{Intégration, refactoring \& débogage}{3h cours / 4h TP}{H}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Diagnostiquer méthodiquement une panne dans une application complète
+  \item Réorganiser un code devenu difficile à lire
+\end{itemize}
 \end{tcolorbox}
-\vspace{6pt}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Méthode de diagnostic : isoler la couche fautive (navigateur, réseau, serveur, base)
+  \item Lecture d'une trace d'erreur Node.js
+  \item Refactoring : extraction de fonctions, nommage, suppression des répétitions
+  \item Structuration d'un projet Express : dossiers \texttt{routes}, \texttt{db}, \texttt{public}
+  \item Revue de code croisée : lire le projet d'un·e camarade et formuler un retour
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Réorganisation du projet MiniForum selon la structure vue en cours
+  \item Revue de code en binôme, avec restitution
+  \item \textit{Séance de réserve} : si la classe a pris du retard, cette semaine sert au rattrapage
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Un projet propre et lisible}]
+\small Le MiniForum est réorganisé, les fonctions sont nommées, les fichiers sont séparés. C'est l'état sur lequel se greffera l'authentification.
+\end{tcolorbox}
+
+\begin{tcolorbox}[jalon, title={Jalon 3 --- fin de semaine 17 (10\%)}]
+\small
+\textbf{Attendu} : un MiniForum complet sans authentification --- API Express connectée à MySQL, CRUD fonctionnel de bout en bout, requêtes paramétrées, gestion des erreurs côté client, code organisé en fichiers.
+
+\textbf{Modalité} : démonstration et questions sur le code. Dernier dépôt de référence publié à l'issue du jalon.
+\end{tcolorbox}
 
 \newpage
 
-% S14
-\semainetitre{14}{Authentification — Inscription, connexion \& sessions}{6h cours / 6h TP}
+% ---- PHASE 4 ----
+\subsection{Phase 4 --- Authentification, sécurité \& soutenance (semaines 18 à 20)}
+
+\begin{tcolorbox}[intro]
+\small Phase courte et intense : les concepts de sécurité sont introduits et immédiatement appliqués au MiniForum. La dernière semaine est consacrée à la finalisation et aux soutenances.
+\end{tcolorbox}
+
+% S18
+\semainetitre{18}{Authentification --- Inscription, connexion \& sessions}{3h cours / 4h TP}{I}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Implémenter l'inscription avec hashage de mot de passe (\texttt{bcrypt})
-  \item Mettre en œuvre une authentification par session côté serveur
+  \item Implémenter une inscription avec hachage de mot de passe
+  \item Mettre en œuvre une authentification par session
   \item Protéger des routes aux seuls utilisateurs connectés
-  \item Comprendre les risques XSS et injections SQL et comment les prévenir
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Risques liés au stockage de mots de passe en clair — exemples réels
-  \item Hashage avec salage : principe de \texttt{bcrypt} et mise en œuvre
+  \item Stockage des mots de passe en clair : cas réels et conséquences
+  \item Hachage et salage : principe, et pourquoi un hachage n'est pas un chiffrement
+  \item Mise en œuvre avec \texttt{bcryptjs}
   \item Sessions côté serveur : \texttt{express-session}, cookies, durée de vie
-  \item Middleware d'authentification pour protéger des routes
-  \item XSS : principe, démonstration, prévention (\texttt{textContent} vs \texttt{innerHTML})
-  \item Rappel injections SQL : requêtes paramétrées (déjà vu en semaine 11)
+  \item \textit{Middleware} d'authentification et protection de routes
+  \item Aperçu des alternatives (jetons JWT) sans mise en œuvre
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Routes \texttt{POST /register} (hashage bcrypt) et \texttt{POST /login} (vérification + session)
-  \item Route \texttt{POST /logout} et middleware de protection
-  \item Protection des routes POST du forum aux seuls utilisateurs connectés
+  \item Routes \texttt{POST /api/register} et \texttt{POST /api/login}
+  \item Route \texttt{POST /api/logout} et \textit{middleware} de protection
+  \item Restriction des routes d'écriture aux utilisateurs connectés
+  \item Affichage conditionnel côté client selon l'état de connexion
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Seuls les membres peuvent poster}]
-\small Le MiniForum dispose d'une vraie inscription et d'une vraie connexion. Seuls les utilisateurs authentifiés peuvent créer un sujet ou répondre. Chaque message affiche le nom de son auteur récupéré depuis la session.
+\small Le MiniForum dispose d'une inscription et d'une connexion réelles. Chaque message affiche l'auteur issu de la session. Les mots de passe ne sont jamais lisibles en base.
 \end{tcolorbox}
 
-\vspace{8pt}
+\begin{tcolorbox}[intro]
+\small
+\textbf{Pourquoi \texttt{bcryptjs} et non \texttt{bcrypt}.} Le paquet \texttt{bcrypt} est un module natif dont la compilation échoue régulièrement selon la machine et la version de Node. \texttt{bcryptjs}, écrit en JavaScript pur, s'installe partout sans outil de compilation. L'écart de performance est sans importance à cette échelle, et la séance ne se transforme pas en dépannage collectif.
+\end{tcolorbox}
 
-% S15
-\semainetitre{15}{Finalisation \& soutenance}{4h cours / 2h TP}
+\newpage
+
+% S19
+\semainetitre{19}{Sécurité applicative \& finalisation}{3h cours / 4h TP}{I}
 \begin{tcolorbox}[semaine]
 \begin{tcolorbox}[objectifs]
 \begin{itemize}
-  \item Consolider et déboguer le projet MiniForum
-  \item Préparer et réaliser une présentation orale technique avec démonstration
+  \item Identifier et corriger les vulnérabilités courantes d'une application web
+  \item Finaliser et fiabiliser le projet
 \end{itemize}
 \end{tcolorbox}
 \vspace{4pt}
 \contenutitre{Cours}
 \begin{itemize}
-  \item Retour collectif sur les difficultés rencontrées et bonnes pratiques
-  \item Méthodologie de soutenance technique : structure, démonstration live, anticipation des questions
-  \item Bilan de la stack apprise et perspectives (frameworks, déploiement, tests)
+  \item XSS : démonstration d'une injection de script dans un message de forum
+  \item Prévention : \texttt{textContent} plutôt que \texttt{innerHTML}, échappement --- retour sur la règle posée en semaine 7
+  \item Injections SQL : audit du projet, vérification que toutes les requêtes sont paramétrées
+  \item Contrôle d'autorisation : distinguer authentification et permission (supprimer \textbf{son} message)
+  \item Ce qu'on ne stocke pas, ce qu'on ne renvoie pas dans une réponse JSON
+  \item Panorama des vulnérabilités web courantes et ressources pour aller plus loin
 \end{itemize}
 \contenutitre{Travaux pratiques}
 \begin{itemize}
-  \item Finalisation individuelle du projet (corrections de bugs, améliorations mineures)
-  \item Soutenances individuelles : 8 à 10 minutes par étudiant·e, démonstration + questions
+  \item Audit de sécurité croisé : chercher une faille dans le projet d'un·e camarade
+  \item Correction des vulnérabilités trouvées dans son propre projet
+  \item Finalisation : correction des bugs restants, rédaction du \texttt{README}
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}[filrouge={Un forum qui tient debout}]
+\small Le MiniForum résiste aux injections de script et de SQL, et n'autorise chaque utilisateur qu'à modifier ses propres contenus. Le projet est prêt pour la soutenance.
+\end{tcolorbox}
+
+% S20
+\semainetitre{20}{Finalisation \& soutenances}{3h cours / 4h TP}{J}
+\begin{tcolorbox}[semaine]
+\begin{tcolorbox}[objectifs]
+\begin{itemize}
+  \item Présenter oralement un projet technique avec démonstration
+  \item Situer les acquis du cours dans la suite du parcours
+\end{itemize}
+\end{tcolorbox}
+\vspace{4pt}
+\contenutitre{Cours}
+\begin{itemize}
+  \item Méthodologie de soutenance : structure, démonstration en direct, anticipation des questions
+  \item Retour collectif sur les difficultés rencontrées durant les vingt semaines
+  \item Bilan de la stack apprise et perspectives : frameworks, tests, déploiement
+  \item Lien avec la 1\textsuperscript{re} année hepia : ce qui sera réutilisé et sous quelle forme
+  \item Usage professionnel des assistants IA : ce qu'ils permettent une fois les fondamentaux acquis, et pourquoi ils étaient interdits jusqu'ici
+\end{itemize}
+\contenutitre{Travaux pratiques}
+\begin{itemize}
+  \item Derniers ajustements et préparation de la démonstration
+  \item Soutenances individuelles : 10 minutes de présentation, 5 minutes de questions
 \end{itemize}
 \end{tcolorbox}
 \begin{tcolorbox}[filrouge={Soutenance du MiniForum complet}]
-\small Chaque étudiant·e présente et fait fonctionner en direct son MiniForum : interface HTML/CSS responsive, JavaScript front-end, API Express, base MySQL, authentification. Questions sur les choix de conception et les points de difficulté rencontrés.
+\small Chaque étudiant·e présente et fait fonctionner son MiniForum : interface responsive, JavaScript client, API Express, base MySQL, authentification et sécurité. Les questions portent sur les choix de conception et les difficultés rencontrées.
 \end{tcolorbox}
+
+\newpage
 
 % ============================================================
 \section{Environnement technique}
 % ============================================================
 
+\begin{center}
+\begin{tabularx}{\linewidth}{lX}
+  \toprule
+  \rowcolor{accentBlue}
+  \color{white}\textbf{Élément} &
+  \color{white}\textbf{Choix retenu} \\
+  \midrule
+  \rowcolor{cfptGrey}
+  Éditeur & Visual Studio Code, extensions ESLint, Prettier, REST Client, SQLTools \\
+  Navigateur & Firefox ou Chrome, avec les outils de développement \\
+  \rowcolor{cfptGrey}
+  Runtime serveur & \textbf{Node.js 24 LTS} \\
+  Gestionnaire de paquets & npm \\
+  \rowcolor{cfptGrey}
+  Framework serveur & \textbf{Express 5} (version figée dans le \texttt{package.json} fourni) \\
+  Base de données & MySQL 8 ou MariaDB \\
+  \rowcolor{cfptGrey}
+  Client SQL & SQLTools dans VS Code, ou DBeaver \\
+  Gestion de version & Git + GitHub \\
+  \rowcolor{cfptGrey}
+  Paquets npm & \texttt{express}, \texttt{mysql2}, \texttt{bcryptjs}, \texttt{express-session}, \texttt{dotenv} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+\noindent\textbf{Notes de version.} Node.js 24 est la version LTS active en 2026 ; Node 20 est en fin de vie et ne doit plus être utilisée. Express 5 est désormais installé par défaut par npm, ce qui crée un décalage avec la documentation en ligne : la version est donc figée et le point est traité en cours (semaine 13).
+
+\medskip
+\noindent\textbf{Git comme fil transversal.} Le dépôt Git n'est pas un exercice de la semaine 1 : il est alimenté à chaque séance et son historique fait partie de l'évaluation du projet final. Un projet livré en un commit unique n'est pas conforme.
+
+% ============================================================
+\section{Ressources}
+% ============================================================
+
+\subsection{Documentation de référence}
+
 \begin{itemize}
-  \item \textbf{Éditeur} : Visual Studio Code avec extensions ESLint, Prettier, REST Client
-  \item \textbf{Navigateur} : Chrome ou Firefox avec outils de développement (DevTools)
-  \item \textbf{Runtime serveur} : Node.js LTS (v20+)
-  \item \textbf{Gestionnaire de paquets} : npm
-  \item \textbf{Framework serveur} : Express.js
-  \item \textbf{Base de données} : MySQL ou MariaDB (installation locale)
-  \item \textbf{Client SQL} : phpMyAdmin ou terminal mysql
-  \item \textbf{Gestion de version} : Git + GitHub
-  \item \textbf{Paquets npm clés} : \texttt{express}, \texttt{mysql2}, \texttt{bcrypt}, \texttt{express-session}, \texttt{dotenv}, \texttt{cors}
+  \item \textbf{MDN Web Docs} --- \texttt{developer.mozilla.org} --- référence pour HTML, CSS et JavaScript ; c'est la source à consulter en premier, et son usage est enseigné dès la semaine 1
+  \item \textbf{Documentation Express} --- \texttt{expressjs.com} --- en veillant à consulter la section correspondant à la version 5
+  \item \textbf{Manuel MySQL} --- \texttt{dev.mysql.com/doc} --- pour la syntaxe SQL et les types de données
+  \item \textbf{Documentation Node.js} --- \texttt{nodejs.org/docs} --- pour l'API standard
 \end{itemize}
 
-\vspace{1cm}
+\subsection{Ressources d'appui}
+
+\begin{itemize}
+  \item \textbf{Flexbox Froggy} et \textbf{Grid Garden} --- jeux courts pour ancrer Flexbox et Grid (semaines 4 et 5)
+  \item \textbf{SQLZoo} --- exercices SQL progressifs et autocorrigés (semaines 9 à 11)
+  \item \textbf{Can I use} --- \texttt{caniuse.com} --- compatibilité des fonctionnalités selon les navigateurs
+  \item \textbf{OWASP Top Ten} --- panorama des vulnérabilités web (semaine 19)
+\end{itemize}
+
+\subsection{Documents fournis par l'enseignante}
+
+\begin{itemize}
+  \item Un polycopié par semaine, avec exercices et corrigés
+  \item La base MiniForum pré-remplie (script SQL de création et de peuplement)
+  \item Un dépôt de référence à l'issue de chaque phase (semaines 7, 11 et 17)
+  \item Le \texttt{package.json} du projet, avec les versions figées
+\end{itemize}
+
+\vspace{0.8cm}
 \noindent\rule{\linewidth}{0.4pt}
 \begin{center}
   \small\color{cfptDarkGrey}
-  Document rédigé par Anne Terrier — cfpt·i Informatique, Genève\\
-  Cours Développement Web — Classe passerelle hepia
+  Document rédigé par Anne Terrier --- cfpt·i Informatique, Genève\\
+  Cours Développement Web --- Classe passerelle hepia\\
+  année académique 2026--2027
 \end{center}
 
 \end{document}

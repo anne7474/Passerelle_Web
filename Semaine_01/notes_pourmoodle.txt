@@ -1,0 +1,2 @@
+mettre en lien la ref vers la documentation MSDN
+mettre un lien permettant aux étudiants d'indiquer le dépôt git
