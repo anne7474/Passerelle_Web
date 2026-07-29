@@ -1,0 +1,908 @@
+% ============================================================
+%  Semaine 4 — Fiche TP — La mise en forme du MiniForum  [Module C]
+%  cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final et sur S04_polycop
+%  (S4 : première feuille de style — typographie, couleurs, espacements,
+%   puis en-tête et cartes de sujet en Flexbox.
+%   Le responsive, Grid et les variables CSS arrivent en semaine 5.)
+%
+%  Images attendues dans ./images/ : cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+% ---------------------------------------------------------------
+% Compatibilité babel-french — deux garde-fous
+%  1. babel-french redéfinit la mise en page des listes, ce qui entre en
+%     conflit avec enumitem (erreurs « perhaps a missing \item », surtout
+%     sur les listes imbriquées). StandardLists=true rend la main à enumitem.
+%  2. Le français rend ( : ; ! ? ) actifs. La bibliothèque babel de TikZ,
+%     chargée plus bas, les neutralise dans les tikzpicture (les maquettes).
+% Sans effet si la cause est ailleurs.
+% ---------------------------------------------------------------
+\ifdefined\frenchsetup
+  \frenchsetup{StandardLists=true}
+\else
+  \ifdefined\frenchbsetup\frenchbsetup{StandardLists=true}\fi
+\fi
+
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+% Neutralise les caractères actifs du français à l'intérieur des tikzpicture.
+% À charger après babel. Sans effet si la langue n'a pas de raccourcis actifs.
+\usetikzlibrary{babel}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Images : insertion robuste
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \capture[largeur]{chemin}{légende}
+\newcommand{\capture}[3][0.72\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][2.8cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ capture à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% Maquettes : barre de fenêtre de navigateur
+% \browserbar{noeud}{nom du fichier}
+% ---------------------------------------------------------------
+\newcommand{\browserbar}[2]{%
+  \fill[cfptGrey] ([yshift=-0.02cm]#1.north west) rectangle ([yshift=-0.62cm]#1.north east);
+  \draw[cfptDarkGrey!45] ([yshift=-0.62cm]#1.north west) -- ([yshift=-0.62cm]#1.north east);
+  \foreach \bx in {0.28,0.5,0.72} \fill[cfptDarkGrey!35] ([xshift=\bx cm, yshift=-0.32cm]#1.north west) circle (0.055cm);
+  \fill[white, draw=cfptDarkGrey!35] ([xshift=1.05cm, yshift=-0.17cm]#1.north west) rectangle ([xshift=5cm, yshift=-0.47cm]#1.north west);
+  \node[anchor=west, font=\scriptsize\ttfamily, text=cfptDarkGrey] at ([xshift=1.15cm, yshift=-0.32cm]#1.north west) {#2};
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Fiche TP --- Semaine 4}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize La mise en forme du MiniForum}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
+\setlist[enumerate]{itemsep=6pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible.
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
+  numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, p, a, img, figure, figcaption, ul, ol, li,
+    table, caption, thead, tbody, tr, th, td, form, fieldset, legend, input,
+    textarea, select, option, label, button, div, span, meta, title, link,
+    script, strong, em, br, hr, time},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% Coloration adaptée au CSS.
+% alsoletter={-} est indispensable : sans cela, listings coupe les noms
+% de propriétés au tiret et « background-color » n'est jamais reconnu.
+\lstdefinelanguage{CSS3}{
+  alsoletter={-},
+  morekeywords={color, background, background-color, font, font-family,
+    font-size, font-weight, font-style, line-height, letter-spacing,
+    text-align, text-decoration, text-transform,
+    margin, margin-top, margin-right, margin-bottom, margin-left,
+    padding, padding-top, padding-right, padding-bottom, padding-left,
+    border, border-top, border-bottom, border-left, border-right,
+    border-radius, border-color, border-width, border-style,
+    box-sizing, box-shadow, width, height, max-width, min-width,
+    max-height, min-height, display, overflow, opacity, cursor,
+    list-style, outline, outline-offset, transition, resize,
+    flex, flex-direction, flex-wrap, flex-grow, flex-shrink, flex-basis,
+    justify-content, align-items, align-self, align-content, order,
+    gap, row-gap, column-gap},
+  sensitive=false,
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ---------------------------------------------------------------
+% Styles communs aux maquettes
+% ---------------------------------------------------------------
+\tikzset{
+  mkbrowser/.style={draw=cfptDarkGrey!50, thick, rounded corners=3pt},
+  mkzone/.style={draw=accentBlue!55, thin, dashed, rounded corners=2pt},
+  mkzoneb/.style={draw=successGreen!60, thin, dashed, rounded corners=2pt},
+  mkcard/.style={draw=cfptDarkGrey!40, fill=white, rounded corners=3pt,
+                 anchor=north west},
+  mkfield/.style={draw=cfptDarkGrey!45, fill=white, rounded corners=1pt,
+                  anchor=north west, minimum height=0.42cm},
+  mklab/.style={anchor=north west, font=\footnotesize\bfseries, text=cfptBlack},
+  mkhint/.style={anchor=north west, font=\scriptsize\itshape, text=cfptDarkGrey!80},
+  mktag/.style={font=\ttfamily\scriptsize, anchor=west},
+  mkbtn/.style={draw=accentBlue, fill=accentBlue, text=white, rounded corners=2pt,
+                anchor=north west, font=\footnotesize\bfseries,
+                inner xsep=8pt, inner ysep=4pt},
+  mklegend/.style={anchor=west, fill=white, font=\footnotesize\bfseries,
+                   text=accentBlue, inner sep=2pt},
+  mkaxis/.style={-{Stealth[length=5pt]}, very thick}
+}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.72\linewidth}
+    {\color{cfptYellow}\Large\bfseries Fiche TP --- Semaine 4}\\[4pt]
+    {\color{white}\Large\bfseries La mise en forme du MiniForum}\\[4pt]
+    {\color{lightBlue}\normalsize Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Durée & \color{white}\small 4h \\
+      \color{lightBlue}\small Rendu & \color{white}\small avant S5 \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={Objectif du TP}]
+Écrire la \textbf{première feuille de style} du MiniForum : typographie, palette de couleurs et espacements pour l'ensemble du site, puis construire l'en-tête et la liste des sujets avec \textbf{Flexbox}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Avant de commencer}]
+Ce TP suppose que les notions du polycopié \textit{S04\_polycop} (sélecteurs, cascade et spécificité, héritage, modèle de boîte, \texttt{box-sizing}, Flexbox, pseudo-classes) ont été vues en cours. Garde-le à portée de main.\\[3pt]
+Tu travailles dans le dépôt \texttt{miniforum}, avec les quatre pages produites en semaines 2 et 3 : \texttt{index.html}, \texttt{sujet.html}, \texttt{inscription.html}, \texttt{connexion.html}.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{tcolorbox}[attention, title={Comment lire cette fiche}]
+Comme les semaines précédentes, cette fiche ne donne pas le code à recopier. Elle décrit le \textbf{rendu attendu} sous forme de maquette et précise ce qu'il faut produire. Les quelques extraits de CSS présents sont des \textbf{points de départ} à compléter, pas des solutions.\\[4pt]
+Les couleurs et les tailles indiquées sont des propositions : tu peux les changer, à condition de respecter les contraintes de contraste de l'étape 7.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{6.6cm}Xc}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Étape} & \hdr{Ce que tu produis} & \hdrc{Temps} \\
+  \midrule
+  \rowcolor{uniPaper}
+  1--2 \quad Brancher et poser les fondations & un site déjà lisible & 50 min \\
+  3 \quad\; Poser les classes dans le HTML & un HTML prêt à styler & 25 min \\
+  \rowcolor{uniPaper}
+  4 \quad\; L'en-tête en Flexbox & une vraie barre de navigation & 45 min \\
+  5 \quad\; Les cartes de sujet en Flexbox & la page d'accueil du forum & 50 min \\
+  \rowcolor{uniPaper}
+  6 \quad\; Les formulaires & quatre pages cohérentes & 35 min \\
+  7 \quad\; États, focus et contrastes & un site utilisable par tous & 30 min \\
+  \rowcolor{uniPaper}
+  8 \quad\; Relecture, validation et envoi & un dépôt propre & 25 min \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Brancher la feuille de style}
+% ============================================================
+
+\begin{enumerate}
+  \item Ouvrir le dossier \texttt{miniforum} dans VS Code et récupérer les éventuelles mises à jour :
+\begin{lstlisting}[language=bash, numbers=none]
+git pull
+\end{lstlisting}
+  \item Vérifier que le fichier \texttt{style.css} créé en semaine 1 est bien là, à la racine du projet. S'il a disparu, le recréer, vide.
+  \item Dans le \texttt{<head>} des \textbf{quatre} pages, ajouter la liaison :
+\begin{lstlisting}[language=HTML5, numbers=none]
+<link rel="stylesheet" href="style.css">
+\end{lstlisting}
+  \item Écrire une règle de test dans \texttt{style.css}, par exemple \texttt{body \{ background-color: pink; \}}, ouvrir les quatre pages avec \textit{Live Server} et vérifier qu'elles rosissent toutes.
+  \item Supprimer la règle de test.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Si rien ne change}]
+Trois causes, dans l'ordre de fréquence :
+\begin{itemize}
+  \item le \texttt{href} ne pointe pas au bon endroit --- \texttt{style.css} est-il bien à côté du fichier HTML ?
+  \item le \texttt{<link>} est en dehors du \texttt{<head>} ;
+  \item le navigateur sert une ancienne version du fichier : recharge avec \texttt{Ctrl + Maj + R}.
+\end{itemize}
+L'onglet \textit{Réseau} des outils de développement tranche en deux secondes : si \texttt{style.css} apparaît en \texttt{404}, c'est le chemin.
+\end{tcolorbox}
+
+% ============================================================
+\section{Poser les fondations}
+% ============================================================
+
+Cette étape ne touche à aucun élément en particulier : elle définit le socle dont tout le reste héritera.
+
+\subsection{Le squelette du fichier}
+
+Avant d'écrire la moindre règle, structure \texttt{style.css} en six sections commentées. Tu écriras chaque règle \textbf{dans la bonne section}, du début à la fin du TP.
+
+\begin{lstlisting}[language=CSS3, caption={À placer tel quel en tête de \texttt{style.css}}]
+/* === 1. Reglages generaux ============================ */
+
+/* === 2. En-tete et navigation ======================== */
+
+/* === 3. Contenu principal ============================ */
+
+/* === 4. Cartes de sujet ============================== */
+
+/* === 5. Formulaires ================================== */
+
+/* === 6. Pied de page ================================= */
+\end{lstlisting}
+
+\subsection{Les réglages généraux}
+
+\begin{tcolorbox}[definition, title={À produire dans la section 1}]
+\begin{itemize}
+  \item la règle universelle \texttt{*\{ box-sizing: border-box; \}} ;
+  \item sur \texttt{body} : une pile de polices sans empattement, une taille de \texttt{16px}, un \texttt{line-height} de \texttt{1.6}, une couleur de texte foncée et une couleur de fond claire ;
+  \item une remise à zéro de la marge par défaut du \texttt{body} ;
+  \item sur \texttt{main} : une largeur maximale d'environ \texttt{900px}, centrée par \texttt{margin: 0 auto}, et un \texttt{padding} intérieur.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Choisis ta palette maintenant, note-la en commentaire}]
+Quatre à cinq couleurs suffisent, et il vaut mieux les fixer une fois que les improviser règle après règle. Une proposition, à reprendre ou à remplacer :
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{0.94\linewidth}{p{2.6cm}p{2.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Rôle} & \hdr{Valeur} & \hdr{Employée pour} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Texte & \texttt{\#1A1A1A} & le texte courant \\
+  Accent & \texttt{\#1D4E89} & liens, boutons, titres \\
+  \rowcolor{uniPaper}
+  Fond de page & \texttt{\#F2F2F2} & le \texttt{body} \\
+  Fond de carte & \texttt{\#FFFFFF} & cartes et formulaires \\
+  \rowcolor{uniPaper}
+  Bordure & \texttt{\#DDDDDD} & traits et séparateurs \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+Note-les en commentaire en haut du fichier. En \textbf{semaine 5}, ces cinq lignes deviendront des variables CSS et ne seront plus jamais recopiées.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Regarde la page maintenant}]
+Avec une dizaine de déclarations, le site est déjà plus lisible qu'il ne l'a jamais été : texte aéré, colonne de largeur raisonnable, contraste correct.
+
+\vspace{3pt}
+C'est le meilleur rapport effort/résultat de tout le cours, et c'est la raison pour laquelle on part du général avant de traiter le moindre composant.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Point d'étape}]
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "Feuille de style branchee, reglages generaux"
+\end{lstlisting}
+\end{tcolorbox}
+
+% ============================================================
+\section{Poser les classes dans le HTML}
+% ============================================================
+
+C'est la \textbf{seule} retouche du HTML de la semaine, et elle n'ajoute aucune balise : uniquement des attributs \texttt{class} sur des éléments qui existent déjà.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.6cm}p{3.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Classe} & \hdr{Sur quel élément} & \hdr{Dans quelle page} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{entete} & le \texttt{<header>} & les quatre \\
+  \texttt{liste-sujets} & la liste des sujets & \texttt{index.html} \\
+  \rowcolor{uniPaper}
+  \texttt{carte-sujet} & chaque sujet de la liste & \texttt{index.html} \\
+  \texttt{carte-message} & chaque message affiché & \texttt{sujet.html} \\
+  \rowcolor{uniPaper}
+  \texttt{bouton} & chaque \texttt{<button type="submit">} & les quatre \\
+  \texttt{pied} & le \texttt{<footer>} & les quatre \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire}]
+Les six classes ci-dessus placées dans les quatre fichiers HTML. Aucune balise ajoutée, aucune balise supprimée, aucun attribut \texttt{style}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Nommer par le rôle, pas par l'apparence}]
+\texttt{carte-sujet} dit ce qu'est l'élément. \texttt{boite-blanche} dirait à quoi il ressemble aujourd'hui --- et deviendrait faux à la première modification.
+
+\vspace{3pt}
+Minuscules, tiret entre les mots, pas d'accent. Ces noms te suivront jusqu'à la soutenance : JavaScript s'en servira dès la semaine 7 pour retrouver les éléments.
+\end{tcolorbox}
+
+\begin{tcolorbox}[interdit, title={Ne remplace pas tes balises sémantiques par des \texttt{<div>}}]
+Il peut être tentant de « simplifier » le HTML pour styler plus facilement. Le \texttt{<header>}, le \texttt{<nav>}, le \texttt{<main>}, les \texttt{<article>} et le \texttt{<footer>} de la semaine 2 restent en place : une classe s'ajoute \textbf{sur} la balise sémantique, elle ne la remplace pas.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{L'en-tête et la navigation en Flexbox}
+% ============================================================
+
+Le titre du site à gauche, le menu à droite, le tout centré verticalement et sur une seule ligne : c'est le cas d'école de Flexbox.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=6.5cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{index.html}
+  \begin{scope}[shift={([xshift=0.7cm, yshift=-1.05cm]win.north west)}]
+
+    % ---- header ----
+    \fill[cfptBlack!92, rounded corners=2pt] (0,0) rectangle (10.6,-1.0);
+    \node[anchor=west, font=\bfseries, text=white] at (0.3,-0.5) {MiniForum};
+    \node[anchor=west, font=\footnotesize, text=cfptGrey]   at (5.05,-0.5) {Accueil};
+    \node[anchor=west, font=\footnotesize, text=cfptGrey]   at (6.35,-0.5) {Sujets};
+    \node[anchor=west, font=\footnotesize, text=cfptGrey]   at (7.45,-0.5) {Inscription};
+    \node[anchor=west, font=\footnotesize, text=cfptYellow] at (8.85,-0.5) {Connexion};
+
+    % ---- axe secondaire ----
+    \draw[mkaxis, uniTeal] (-0.3,-0.1) -- (-0.3,-0.9);
+    \node[mktag, color=successGreen, anchor=south, rotate=90] at (-0.45,-0.5) {align-items};
+
+    % ---- annotation du conteneur ----
+    \node[mktag, color=accentBlue, anchor=north west] at (0,-1.25)
+      {.entete \{ display: flex;};
+    \node[mktag, color=accentBlue, anchor=north west] at (0.55,-1.6)
+      {justify-content: space-between; align-items: center; \}};
+
+    % ---- axe principal ----
+    \draw[mkaxis, uniGold] (0.3,-2.2) -- (10.3,-2.2);
+    \node[mktag, color=warningOrange, anchor=north] at (5.3,-2.5)
+      {axe principal --- space-between};
+
+    % ---- zoom sur le <ul> du <nav> ----
+    \node[mkzoneb, minimum width=5.9cm, minimum height=1.05cm, anchor=north west] (n) at (4.4,-3.05) {};
+    \node[mklegend, text=successGreen] at ([xshift=0.35cm]n.north west) {le \texttt{<ul>} du \texttt{<nav>}};
+    \node[anchor=west, font=\footnotesize] at (4.7,-3.6) {Accueil};
+    \node[anchor=west, font=\footnotesize] at (6.3,-3.6) {Sujets};
+    \node[anchor=west, font=\footnotesize] at (7.6,-3.6) {Inscription};
+    \draw[{Stealth[length=3pt]}-{Stealth[length=3pt]}, uniTeal] (5.9,-3.6) -- (6.22,-3.6);
+    \node[mktag, color=successGreen, anchor=north west] at (4.4,-4.35)
+      {nav ul \{ display: flex; gap: 20px;};
+    \node[mktag, color=successGreen, anchor=north west] at (4.95,-4.7)
+      {list-style: none; margin: 0; padding: 0; \}};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans la section 2 de \texttt{style.css}}]
+\begin{itemize}
+  \item sur \texttt{.entete} : \texttt{display: flex}, le titre et le menu écartés aux deux extrémités, un alignement vertical centré, un fond sombre, un texte clair et un \texttt{padding} confortable ;
+  \item sur le \texttt{<ul>} du \texttt{<nav>} : \texttt{display: flex}, un \texttt{gap} d'environ \texttt{20px}, les puces retirées, et les \texttt{margin} / \texttt{padding} par défaut du navigateur remis à zéro ;
+  \item sur les liens de la navigation : couleur claire, soulignement retiré ;
+  \item sur \texttt{.pied} : un fond discret, un texte centré et un \texttt{padding} vertical.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Le \texttt{<ul>} a des marges que tu n'as pas écrites}]
+Tout navigateur applique au \texttt{<ul>} une marge verticale et un \texttt{padding} gauche par défaut, qui décalent le menu et cassent l'alignement.
+
+\vspace{3pt}
+C'est le cas typique où \texttt{margin: 0; padding: 0;} est nécessaire --- non pas pour « faire joli », mais pour reprendre la main sur un style que tu n'as pas choisi. Les outils de développement le montrent : la règle apparaît comme provenant de la feuille de style de l'agent utilisateur.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Vérifie que tu utilises bien Flexbox}]
+Un menu peut sembler correct pour de mauvaises raisons --- des \texttt{<li>} passés en \texttt{inline-block}, par exemple. Dans les outils de développement, un badge \texttt{flex} apparaît à côté de tout élément dont le \texttt{display} vaut \texttt{flex}. Clique dessus : le navigateur dessine les axes et les espacements sur la page.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Point d'étape}]
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "En-tete et navigation en Flexbox"
+\end{lstlisting}
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Les cartes de sujet en Flexbox}
+% ============================================================
+
+La liste des sujets de \texttt{index.html} devient une série de cartes de largeur souple, qui passent à la ligne quand la place manque.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=8.2cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{index.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries\large] at (0,0) {Sujets récents};
+    \node[mktag, color=accentBlue] at (7.9,-0.2) {<h2>};
+
+    % conteneur
+    \node[mkzone, minimum width=10.7cm, minimum height=5.5cm, anchor=north west] (c) at (0,-0.75) {};
+    \node[mklegend] at ([xshift=0.35cm]c.north west) {.liste-sujets};
+
+    % rangee 1
+    \foreach \i/\x in {1/0.3, 2/3.75, 3/7.2}{
+      \node[mkcard, minimum width=3.1cm, minimum height=2.1cm] (k\i) at (\x,-1.2) {};
+    }
+    \node[anchor=north west, font=\footnotesize\bfseries] at (0.45,-1.35) {Installer Node};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (0.45,-1.75) {par alice --- 12 messages};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (0.45,-2.15) {Général};
+    \node[anchor=north west, font=\footnotesize\bfseries] at (3.9,-1.35) {Erreur 404};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (3.9,-1.75) {par bob --- 3 messages};
+    \node[anchor=north west, font=\footnotesize\bfseries] at (7.35,-1.35) {Projet de fin};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (7.35,-1.75) {par chloe --- 8 messages};
+
+    % rangee 2
+    \foreach \i/\x in {4/0.3, 5/3.75}{
+      \node[mkcard, minimum width=3.1cm, minimum height=2.1cm] (k\i) at (\x,-3.6) {};
+    }
+    \node[anchor=north west, font=\footnotesize\bfseries] at (0.45,-3.75) {Flexbox ou Grid};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (0.45,-4.15) {par dan --- 1 message};
+    \node[anchor=north west, font=\footnotesize\bfseries] at (3.9,-3.75) {Git : annuler};
+    \node[anchor=north west, font=\scriptsize, text=cfptDarkGrey] at (3.9,-4.15) {par eve --- 5 messages};
+
+    % annotations
+    \draw[{Stealth[length=3pt]}-{Stealth[length=3pt]}, uniTeal] (3.4,-2.25) -- (3.75,-2.25);
+    \draw[{Stealth[length=3pt]}-{Stealth[length=3pt]}, uniTeal] (8.75,-3.3) -- (8.75,-3.6);
+    \node[mktag, color=successGreen, anchor=west] at (8.95,-3.45) {gap: 16px};
+
+    \node[mktag, color=warningOrange, anchor=north west] at (0,-5.6)
+      {.liste-sujets \{ display: flex; flex-wrap: wrap; gap: 16px; \}};
+    \node[mktag, color=accentBlue, anchor=north west] at (0,-6.05)
+      {.carte-sujet \{ flex: 1 1 280px; padding: 16px; border-radius: 8px; \}};
+    \node[anchor=north west, font=\scriptsize\itshape, text=cfptDarkGrey] at (0,-6.5)
+      {la 5\textsuperscript{e} carte passe à la ligne toute seule : aucune media query n'a été écrite};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans la section 4 de \texttt{style.css}}]
+\begin{itemize}
+  \item sur \texttt{.liste-sujets} : \texttt{display: flex}, le passage à la ligne autorisé, un \texttt{gap} d'environ \texttt{16px}, et --- si la liste est un \texttt{<ul>} --- les puces et les marges par défaut retirées ;
+  \item sur \texttt{.carte-sujet} : \texttt{flex: 1 1 280px}, un fond blanc, une bordure fine, des coins arrondis et un \texttt{padding} intérieur ;
+  \item à l'intérieur d'une carte : un titre plus grand et coloré, des métadonnées (auteur, nombre de messages) plus petites et grises ;
+  \item sur \texttt{.carte-message} dans \texttt{sujet.html} : la même présentation de carte, empilée verticalement.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Le test à faire immédiatement}]
+Réduis la largeur de la fenêtre progressivement. Les cartes doivent \textbf{rétrécir}, puis \textbf{passer à la ligne} vers 280 pixels de large, sans jamais déborder ni provoquer de barre de défilement horizontale.
+
+\vspace{3pt}
+Si elles débordent : il manque \texttt{flex-wrap: wrap}, ou \texttt{box-sizing: border-box} n'a pas été posé au début du fichier.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Comprendre \texttt{flex: 1 1 280px}}]
+Les trois valeurs sont \texttt{flex-grow}, \texttt{flex-shrink} et \texttt{flex-basis} : la carte \textbf{part} de 280 pixels, \textbf{peut grandir} pour remplir la ligne, et \textbf{peut rétrécir} si nécessaire.
+
+\vspace{3pt}
+Essaie \texttt{flex: 0 0 280px} pour comparer : les cartes gardent alors une largeur fixe et laissent un vide à droite. Regarde les deux, puis choisis en connaissance de cause.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Point d'étape}]
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "Cartes de sujet en Flexbox"
+\end{lstlisting}
+\end{tcolorbox}
+
+% ============================================================
+\section{Les formulaires}
+% ============================================================
+
+Les quatre formulaires de la semaine 3 sont fonctionnels et illisibles : champs collés, largeurs inégales, police différente du reste du site.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=6.9cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{connexion.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries\large] at (0,0) {Connexion};
+
+    \node[mkcard, minimum width=7.2cm, minimum height=3.9cm] (f) at (0,-0.7) {};
+    \node[mklegend] at ([xshift=0.35cm]f.north west) {Vos identifiants};
+
+    \node[mklab] at (0.35,-1.15) {Pseudo ou adresse e-mail};
+    \node[mkfield, minimum width=6.5cm] at (0.35,-1.5) {};
+    \node[mktag, color=warningOrange, anchor=north west] at (7.45,-1.5) {width: 100\%};
+
+    \node[mklab] at (0.35,-2.2) {Mot de passe};
+    \node[mkfield, minimum width=6.5cm] at (0.35,-2.55) {};
+    \node[mktag, color=warningOrange, anchor=north west] at (7.45,-2.55) {padding: 8px};
+
+    \draw[cfptDarkGrey!70, fill=white] (0.4,-3.2) rectangle (0.62,-3.42);
+    \node[anchor=north west, font=\footnotesize] at (0.75,-3.15) {Rester connecté sur cet appareil};
+
+    \node[mkbtn] at (0.35,-3.95) {Se connecter};
+    \node[mktag, color=accentBlue, anchor=north west] at (2.7,-3.95) {.bouton};
+
+    \node[mktag, color=successGreen, anchor=north west] at (0,-4.75)
+      {label \{ display: block; margin-bottom: 4px; \}};
+    \node[anchor=north west, font=\scriptsize\itshape, text=cfptDarkGrey] at (0,-5.15)
+      {un \texttt{<label>} en bloc passe au-dessus de son champ, sans toucher au HTML};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans la section 5 de \texttt{style.css}}]
+\begin{itemize}
+  \item rendre la police héritée aux champs : \texttt{input, textarea, select, button \{ font-family: inherit; \}} ;
+  \item passer les \texttt{<label>} en \texttt{display: block}, avec une petite marge sous chacun ;
+  \item donner aux champs une largeur de \texttt{100\%}, un \texttt{padding} d'environ \texttt{8px}, une bordure fine et des coins légèrement arrondis ;
+  \item espacer les \texttt{<fieldset>} entre eux et leur donner un fond de carte ;
+  \item styler \texttt{.bouton} : fond de couleur d'accent, texte blanc, pas de bordure, \texttt{padding} généreux, coins arrondis, \texttt{cursor: pointer}.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={\texttt{width: 100\%} sur un champ, sans \texttt{border-box}}]
+Un \texttt{<input>} à \texttt{width: 100\%} avec un \texttt{padding} et une bordure déborde de son \texttt{<fieldset>} --- sauf si \texttt{box-sizing: border-box} a été posé en première ligne du fichier.
+
+\vspace{3pt}
+Si un champ dépasse, ne cherche pas une largeur en \texttt{98\%} : remonte vérifier la section 1.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Le \texttt{<textarea>} se redimensionne}]
+Ajoute \texttt{resize: vertical} au \texttt{<textarea>} du formulaire de réponse : l'utilisateur peut l'agrandir en hauteur, mais plus en largeur --- ce qui évite qu'il ne défonce la mise en page.
+\end{tcolorbox}
+
+% ============================================================
+\section{États, focus et contrastes}
+% ============================================================
+
+Le site est habillé. Reste à vérifier qu'il reste utilisable par tout le monde --- cette étape compte autant que les précédentes.
+
+\subsection{Les états interactifs}
+
+\begin{tcolorbox}[definition, title={À produire}]
+Pour \textbf{chaque} élément interactif du site --- liens de navigation, liens dans le texte, boutons, champs de formulaire :
+\begin{itemize}
+  \item un état \texttt{:hover} visible (changement de couleur, de fond ou de soulignement) ;
+  \item un état \texttt{:focus-visible} au moins aussi visible, réalisé avec \texttt{outline} et \texttt{outline-offset} ;
+  \item pour les champs : un \texttt{:focus} qui change la couleur de la bordure.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[interdit, title={Aucun \texttt{outline: none} dans le fichier}]
+Cherche cette chaîne dans \texttt{style.css} (\texttt{Ctrl + F}) : elle ne doit apparaître nulle part. Si un contour par défaut ne te plaît pas, \textbf{remplace-le} par le tien, plus visible --- ne le supprime pas.
+
+\vspace{3pt}
+Un site sans contour de focus est inutilisable au clavier, et le point est vérifié au jalon 1.
+\end{tcolorbox}
+
+\subsection{Le test des trente secondes, version CSS}
+
+\begin{enumerate}
+  \item Cliquer dans la barre d'adresse, puis \textbf{lâcher la souris}.
+  \item Parcourir chaque page avec \texttt{Tab}, du début à la fin.
+  \item À chaque arrêt, vérifier que l'élément actif est \textbf{clairement identifiable} --- sans deviner.
+  \item Vérifier que l'ordre suit toujours la lecture naturelle : le CSS de cette semaine ne doit pas l'avoir modifié.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Ce que le CSS peut casser}]
+Trois pratiques déplacent l'ordre visuel sans déplacer l'ordre du clavier, et rendent la navigation incohérente : \texttt{order} dans un conteneur flex, \texttt{flex-direction: row-reverse}, et le positionnement absolu (vu plus tard).
+
+\vspace{3pt}
+Aucune n'est nécessaire cette semaine. Si l'ordre doit changer, change le HTML.
+\end{tcolorbox}
+
+\subsection{Les contrastes}
+
+\begin{enumerate}
+  \item Ouvrir les outils de développement, onglet \textit{Accessibilité}, et lire le rapport de contraste de chaque couple texte / fond.
+  \item Vérifier le seuil \textbf{AA} : \texttt{4.5:1} pour le texte courant, \texttt{3:1} pour les grands titres.
+  \item Contrôler en particulier : le texte gris des métadonnées sur fond blanc, les liens de la navigation sur fond sombre, et le texte du bouton sur sa couleur d'accent.
+\end{enumerate}
+
+\begin{tcolorbox}[astuce, title={Le sélecteur de couleur des DevTools calcule le contraste}]
+Clique sur le carré de couleur à côté d'une déclaration \texttt{color} : le sélecteur affiche le rapport de contraste et trace une ligne au-delà de laquelle le seuil AA n'est plus respecté. Il suffit de remonter au-dessus de cette ligne.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Relire, valider et sauvegarder}
+% ============================================================
+
+\subsection{Relire sa feuille de style}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{À chercher dans \texttt{style.css}} & \hdr{Pourquoi} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{!important} & Interdit dans le projet : trouve la vraie cause du conflit \\
+  \texttt{outline: none} & Rend le site inutilisable au clavier \\
+  \rowcolor{uniPaper}
+  \texttt{\#} en début de sélecteur & Le style passe par les classes, pas par les \texttt{id} \\
+  Règles en double & Deux règles pour le même sélecteur : fusionne-les \\
+  \rowcolor{uniPaper}
+  Règles hors section & Chaque règle appartient à l'une des six sections \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Et dans les fichiers HTML}]
+Cherche \texttt{style=} dans les quatre pages : il ne doit y avoir \textbf{aucun} attribut \texttt{style}. Toute mise en forme vit dans \texttt{style.css}.
+\end{tcolorbox}
+
+\subsection{Valider}
+
+\begin{enumerate}
+  \item Passer \texttt{style.css} au validateur CSS du W3C : \texttt{jigsaw.w3.org/css-validator}, onglet \textit{Par upload de fichier}.
+  \item Repasser les quatre pages à \texttt{validator.w3.org} --- l'ajout des classes ne doit avoir introduit aucune erreur.
+  \item Ouvrir la console des outils de développement : aucun message d'erreur, en particulier aucun \texttt{404} sur \texttt{style.css}.
+\end{enumerate}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{6.1cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Symptôme fréquent cette semaine} & \hdr{Cause la plus probable} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Une règle ne s'applique pas & Une règle plus spécifique gagne : regarde la déclaration \textbf{barrée} dans \textit{Styles} \\
+  Le \texttt{<link>} ne charge rien & Chemin incorrect : l'onglet \textit{Réseau} affiche un \texttt{404} \\
+  \rowcolor{uniPaper}
+  La déclaration apparaît en grisé & Nom de propriété ou valeur mal orthographié \\
+  Deux blocs à 50\,\% ne tiennent pas côte à côte & \texttt{box-sizing: border-box} absent \\
+  \rowcolor{uniPaper}
+  La hauteur d'un lien ne change pas & Un \texttt{<a>} est \texttt{inline} : passer en \texttt{inline-block} \\
+  L'espacement vertical est plus petit que prévu & Fusion des marges verticales : c'est normal \\
+  \rowcolor{uniPaper}
+  Le menu est décalé vers la droite & Le \texttt{padding} par défaut du \texttt{<ul>} \\
+  Rien ne change après modification & Cache du navigateur : \texttt{Ctrl + Maj + R} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Envoyer sur GitHub}
+
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "Formulaires, etats interactifs et contrastes"
+git push
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Vérifier que c'est bien parti}]
+Sur \texttt{github.com}, ton dépôt doit contenir \texttt{style.css} en plus des quatre fichiers HTML, et l'onglet \textit{Commits} doit montrer \textbf{plusieurs} commits pour cette séance --- un par étape, pas un seul en fin de TP.
+\end{tcolorbox}
+
+% ============================================================
+\section{Pour aller plus loin (optionnel)}
+% ============================================================
+
+Si tu as terminé en avance :
+
+\begin{itemize}
+  \item Ajouter une ombre légère aux cartes (\texttt{box-shadow}) et une transition douce au survol (\texttt{transition: box-shadow 0.2s}). Compare avec et sans : l'effet est-il utile ou seulement joli ?
+  \item Colorer une ligne de message sur deux avec \texttt{:nth-child(even)} dans \texttt{sujet.html}.
+  \item Styler les états de validation d'un champ avec \texttt{:invalid} --- et vérifier que la couleur n'est \textbf{jamais} le seul signal d'erreur (semaine 3).
+  \item Mettre en évidence la page courante dans le menu avec une classe \texttt{.lien-actif}, et calculer la spécificité de ta règle pour comprendre pourquoi elle gagne (ou pas).
+  \item Passer le \texttt{<footer>} en Flexbox avec trois zones, et essayer successivement \texttt{space-between}, \texttt{space-around} et \texttt{space-evenly} pour voir la différence.
+  \item Reconstruire la même page d'accueil avec \texttt{flex-direction: column} : quelles propriétés change-t-on, et laquelle agit désormais verticalement ?
+\end{itemize}
+
+% ============================================================
+\section{Points de contrôle}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Auto-évaluation}]
+\begin{itemize}
+  \item[$\square$] \texttt{style.css} existe et est relié aux \textbf{quatre} pages par un \texttt{<link>} dans le \texttt{<head>}
+  \item[$\square$] Le fichier est organisé en six sections commentées, et chaque règle est dans la bonne
+  \item[$\square$] \texttt{*\{ box-sizing: border-box; \}} figure en tête du fichier
+  \item[$\square$] La typographie et les couleurs sont posées sur \texttt{body} et héritées partout
+  \item[$\square$] Le \texttt{<main>} a une largeur maximale et est centré par \texttt{margin: 0 auto}
+  \item[$\square$] Les six classes prévues sont posées dans le HTML, nommées par leur rôle
+  \item[$\square$] Aucune balise sémantique n'a été remplacée par un \texttt{<div>}
+  \item[$\square$] L'en-tête est en Flexbox : titre à gauche, menu à droite, alignés verticalement
+  \item[$\square$] Le menu est un \texttt{<ul>} en Flexbox, espacé par \texttt{gap}, sans puces
+  \item[$\square$] La liste des sujets est en Flexbox avec \texttt{flex-wrap: wrap} et un \texttt{gap}
+  \item[$\square$] Les cartes rétrécissent puis passent à la ligne, sans jamais déborder
+  \item[$\square$] Les champs de formulaire héritent de la police du site
+  \item[$\square$] Chaque \texttt{<label>} est en \texttt{display: block} au-dessus de son champ
+  \item[$\square$] Chaque élément interactif a un \texttt{:hover} \textbf{et} un \texttt{:focus-visible}
+  \item[$\square$] Le fichier ne contient ni \texttt{!important}, ni \texttt{outline: none}
+  \item[$\square$] Aucun attribut \texttt{style} dans les quatre pages HTML
+  \item[$\square$] Tous les contrastes atteignent le seuil AA (4.5:1, ou 3:1 pour les grands titres)
+  \item[$\square$] Chaque page se parcourt entièrement au clavier, avec un focus visible
+  \item[$\square$] \texttt{style.css} passe le validateur CSS du W3C, et les quatre pages passent \texttt{validator.w3.org}
+  \item[$\square$] Le travail est poussé sur GitHub, en \textbf{plusieurs} commits au message clair
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[attention, title={À rendre avant la semaine 5}]
+Le dépôt GitHub \texttt{miniforum} à jour, avec \texttt{style.css} et les quatre pages validées, contrastées et navigables au clavier.\\[4pt]
+La semaine 5 ouvre le \textbf{responsive} : media queries, CSS Grid, unités relatives et variables CSS. La palette que tu viens de fixer deviendra un jeu de variables, et la mise en page s'adaptera du téléphone à l'écran large --- toujours sans toucher au HTML.
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[astuce, title={Bloqué ?}]
+Si une étape résiste plus de dix minutes, ouvre les outils de développement \textbf{avant} de demander : la déclaration barrée du panneau \textit{Styles} répond à la majorité des questions de ce TP. Le polycopié \textit{S04\_polycop} contient le reste.
+\end{tcolorbox}
+
+\end{document}

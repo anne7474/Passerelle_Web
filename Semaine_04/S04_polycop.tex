@@ -1,0 +1,1341 @@
+% ============================================================
+%  Semaine 4 — CSS : cascade, modèle de boîte & Flexbox  [Module C]
+%  Polycopié étudiant — cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final (20 semaines, 3h cours + 4h TP)
+%
+%  Images attendues dans le sous-dossier ./images/ :
+%    cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+% ---------------------------------------------------------------
+% Compatibilité babel-french — deux garde-fous
+%  1. babel-french redéfinit la mise en page des listes, ce qui entre en
+%     conflit avec enumitem (erreurs « perhaps a missing \item »).
+%     StandardLists=true rend la main à enumitem.
+%  2. Le français rend ( : ; ! ? ) actifs. La bibliothèque babel de TikZ,
+%     chargée plus bas, les neutralise dans les tikzpicture.
+% Sans effet si la cause est ailleurs.
+% ---------------------------------------------------------------
+\ifdefined\frenchsetup
+  \frenchsetup{StandardLists=true}
+\else
+  \ifdefined\frenchbsetup\frenchbsetup{StandardLists=true}\fi
+\fi
+
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, fit, backgrounds, decorations.pathreplacing, calc}
+% Neutralise les caractères actifs du français dans les tikzpicture.
+% À charger après babel.
+\usetikzlibrary{babel}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+\definecolor{filrougeYellow}{HTML}{FFF8DC}
+
+% Couleurs propres au schéma du modèle de boîte
+\definecolor{boxContent}{HTML}{BFD8EF}
+\definecolor{boxPadding}{HTML}{CDE8CE}
+\definecolor{boxBorder}{HTML}{F6DFA6}
+\definecolor{boxMargin}{HTML}{F5CDB6}
+
+% Alias utilisés dans le corps du document
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Images : insertion robuste (cadre de réservation si absente)
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \imagefig[largeur]{chemin}{légende}
+\newcommand{\imagefig}[3][0.80\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.2cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ image à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 4 --- Module C}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize CSS --- Cascade, modèle de boîte \& Flexbox}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section : bandeau pleine largeur
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
+\setlist[enumerate]{itemsep=4pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible.
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  corrige/.style={
+    colback=cfptGrey, colframe=cfptDarkGrey,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  filrouge/.style={
+    colback=filrougeYellow, colframe=cfptYellow,
+    fonttitle=\bfseries\small, coltitle=cfptBlack,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
+  numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  % Les caractères accentués doivent être déclarés explicitement,
+  % sinon les commentaires français cassent la compilation.
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+% Coloration adaptée au HTML (balises)
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, h5, h6, p, a, img, figure, figcaption,
+    ul, ol, li, table, caption, thead, tbody, tr, th, td, form, fieldset,
+    legend, input, textarea, select, option, label, button, div, span,
+    meta, title, link, script, strong, em, br, hr, time},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% Coloration adaptée au CSS.
+% alsoletter={-} est indispensable : sans cela, listings coupe les noms
+% de propriétés au tiret et « background-color » n'est jamais reconnu.
+\lstdefinelanguage{CSS3}{
+  alsoletter={-},
+  morekeywords={color, background, background-color, background-image,
+    font, font-family, font-size, font-weight, font-style, line-height,
+    letter-spacing, text-align, text-decoration, text-transform,
+    margin, margin-top, margin-right, margin-bottom, margin-left,
+    padding, padding-top, padding-right, padding-bottom, padding-left,
+    border, border-top, border-bottom, border-left, border-right,
+    border-radius, border-color, border-width, border-style,
+    box-sizing, box-shadow, width, height, max-width, min-width,
+    max-height, min-height, display, position, top, right, bottom, left,
+    overflow, opacity, cursor, list-style, outline, outline-offset,
+    transition, visibility, z-index, content, vertical-align,
+    flex, flex-direction, flex-wrap, flex-flow, flex-grow, flex-shrink,
+    flex-basis, justify-content, align-items, align-self, align-content,
+    order, gap, row-gap, column-gap},
+  sensitive=false,
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% (voir polycopié S01 pour le détail du problème corrigé ici)
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.70\linewidth}
+    {\color{cfptYellow}\Large\bfseries Semaine 4 \quad\textbar\quad Module C}\\[4pt]
+    {\color{white}\Large\bfseries CSS --- Cascade, modèle de boîte \& Flexbox}\\[4pt]
+    {\color{lightBlue}\normalsize Anne Terrier --- Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Cours & \color{white}\small 3h \\
+      \color{lightBlue}\small TP    & \color{white}\small 4h \\
+      \color{lightBlue}\small Fil rouge & \color{white}\small MiniForum \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={Objectifs de la semaine}]
+\begin{itemize}
+  \item Brancher une feuille de style externe et écrire des règles CSS valides
+  \item Choisir le sélecteur adapté à ce que l'on veut atteindre
+  \item Savoir quelle règle l'emporte en cas de conflit : cascade, spécificité, héritage
+  \item Comprendre le modèle de boîte et le rôle décisif de \texttt{box-sizing}
+  \item Construire une mise en page unidimensionnelle avec Flexbox
+  \item Réagir à l'état d'un élément avec les pseudo-classes (\texttt{:hover}, \texttt{:focus}, \texttt{:nth-child})
+  \item Inspecter et modifier des styles dans les outils de développement
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{tcolorbox}[astuce, title={Où en sommes-nous ?}]
+Trois semaines de HTML : le MiniForum a une structure complète, sémantique, validée et navigable au clavier --- et il est laid. C'était voulu.
+
+\vspace{3pt}
+À partir de cette semaine, on ne touche presque plus au HTML. Tout le travail se fait dans un fichier séparé, \texttt{style.css}, qui vient se poser \textbf{par-dessus} la structure existante. C'est le moment où l'on mesure ce qu'un HTML bien écrit rapporte : une page structurée n'importe comment est un enfer à styler.
+
+\vspace{3pt}
+Cette semaine couvre les fondations : sélectionner, comprendre qui gagne, mesurer les boîtes, aligner en une dimension. La semaine 5 ajoute la deuxième dimension (Grid), l'adaptation aux écrans (\textit{responsive}) et les variables CSS.
+\end{tcolorbox}
+
+% ============================================================
+\section{Le rôle du CSS}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Définition --- CSS}]
+\textbf{CSS} (\textit{Cascading Style Sheets}, « feuilles de style en cascade ») est le langage qui décrit la \textbf{présentation} d'un document HTML : couleurs, polices, tailles, espacements, positions.
+
+\vspace{3pt}
+Le HTML dit \textit{ce que sont} les éléments. Le CSS dit \textit{à quoi ils ressemblent}.
+\end{tcolorbox}
+
+\subsection{Pourquoi séparer structure et présentation}
+
+Les deux langages pourraient être mélangés --- et l'étaient, dans les années 1990. On les sépare pour trois raisons très concrètes :
+
+\begin{itemize}
+  \item \textbf{Une seule feuille pour tout le site.} Changer la couleur des boutons du MiniForum se fait à un endroit, pas dans quatre fichiers HTML.
+  \item \textbf{Le HTML reste lisible.} Un fichier où la structure disparaît sous les instructions de mise en forme n'est plus maintenable.
+  \item \textbf{Une même structure, plusieurs présentations.} Écran large, téléphone, impression : le HTML ne change pas, seul le CSS s'adapte. C'est tout le sujet de la semaine 5.
+\end{itemize}
+
+\subsection{Anatomie d'une règle}
+
+\begin{lstlisting}[language=CSS3, caption={Une règle CSS et son vocabulaire}]
+h1 {
+  color: #1D4E89;
+  font-size: 32px;
+}
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Terme} & \hdr{Ce que c'est} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Sélecteur & \texttt{h1} --- désigne les éléments visés \\
+  Bloc de déclarations & Ce qui se trouve entre les accolades \\
+  \rowcolor{uniPaper}
+  Déclaration & \texttt{color: \#1D4E89;} --- une propriété et sa valeur \\
+  Propriété & \texttt{color} --- ce que l'on modifie \\
+  \rowcolor{uniPaper}
+  Valeur & \texttt{\#1D4E89} --- comment on le modifie \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Le point-virgule et les deux-points}]
+Une déclaration s'écrit \texttt{propriété\,:\,valeur\,;}. Le \textbf{deux-points} sépare les deux, le \textbf{point-virgule} termine la déclaration.
+
+\vspace{3pt}
+Un point-virgule oublié invalide la déclaration suivante --- et souvent elle seule, ce qui rend l'erreur difficile à repérer. Le CSS ne signale rien : il ignore silencieusement ce qu'il ne comprend pas et continue. C'est la différence majeure avec les langages que tu verras en POO.
+\end{tcolorbox}
+
+\subsection{Trois façons de brancher du CSS}
+
+\begin{lstlisting}[language=HTML5, caption={Les trois emplacements possibles}]
+<!-- 1. Attribut style : sur un seul element -->
+<p style="color: red;">Alerte</p>
+
+<!-- 2. Balise <style> : dans le <head> de cette page -->
+<style>
+  p { color: red; }
+</style>
+
+<!-- 3. Fichier externe : dans le <head>, valable pour tout le site -->
+<link rel="stylesheet" href="style.css">
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3cm}Xp{2.6cm}}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Méthode} & \hdr{Portée et usage} & \hdr{Dans ce cours} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Attribut \texttt{style} & Un seul élément. Illisible et impossible à réutiliser & à éviter \\
+  Balise \texttt{<style>} & Une seule page. Acceptable pour un essai rapide & essais seulement \\
+  \rowcolor{uniPaper}
+  Fichier \texttt{.css} & Tout le site, mis en cache par le navigateur & \textbf{la règle} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[interdit, title={L'attribut \texttt{style} est proscrit dans le MiniForum}]
+Il ramène la présentation dans le HTML, exactement ce que la séparation cherche à éviter. Pire : il possède une spécificité si élevée (section 3) qu'aucune règle de la feuille de style ne peut le contredire, ce qui produit des heures de « pourquoi mon CSS ne s'applique pas ».
+
+\vspace{3pt}
+Une seule exception, plus tard dans l'année : quand JavaScript modifie l'apparence d'un élément à la volée (semaine 7).
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Le \texttt{<link>} va dans le \texttt{<head>}}]
+\texttt{<link rel="stylesheet" href="style.css">} se place dans le \texttt{<head>}, avant tout contenu. Placé plus bas, le navigateur affiche brièvement la page non stylée avant de la repeindre --- ce clignotement porte un nom, le \textit{flash of unstyled content}, et il est visible.
+
+\vspace{3pt}
+Si rien ne change après l'ajout du \texttt{<link>} : vérifie le chemin du fichier (semaine 2), et recharge en forçant le cache avec \texttt{Ctrl + Maj + R}.
+\end{tcolorbox}
+
+\subsection{Commentaires et lisibilité}
+
+\begin{lstlisting}[language=CSS3, caption={Le seul commentaire du CSS}]
+/* Barre de navigation ------------------------------- */
+
+nav {
+  background-color: #1A1A1A;   /* fond sombre */
+}
+\end{lstlisting}
+
+Le CSS ne connaît qu'une forme de commentaire, \texttt{/*\ldots*/}, sur une ou plusieurs lignes. Le \texttt{//} de JavaScript n'existe pas ici : écrit dans un fichier CSS, il casse la règle qui suit.
+
+% ============================================================
+\section{Les sélecteurs}
+% ============================================================
+
+Un sélecteur répond à une question : \textit{à quels éléments cette règle s'applique-t-elle ?}
+
+\subsection{Les sélecteurs de base}
+
+\begin{lstlisting}[language=CSS3, caption={Type, classe, identifiant, universel}]
+/* Type : tous les <p> du site */
+p { line-height: 1.6; }
+
+/* Classe : tous les elements avec class="carte-sujet" */
+.carte-sujet { background-color: #FFFFFF; }
+
+/* Identifiant : l'unique element avec id="menu-principal" */
+#menu-principal { background-color: #1A1A1A; }
+
+/* Universel : absolument tout */
+* { box-sizing: border-box; }
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.4cm}p{3cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Sélecteur} & \hdr{Écriture} & \hdr{Vise} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Type & \texttt{p}, \texttt{h2}, \texttt{nav} & tous les éléments de ce nom \\
+  Classe & \texttt{.carte-sujet} & tous les éléments portant cette \texttt{class} \\
+  \rowcolor{uniPaper}
+  Identifiant & \texttt{\#menu-principal} & l'unique élément portant cet \texttt{id} \\
+  Universel & \texttt{*} & tous les éléments \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+Côté HTML, la classe s'ajoute avec l'attribut \texttt{class}, et un élément peut en porter plusieurs, séparées par une espace :
+
+\begin{lstlisting}[language=HTML5, caption={Un élément, deux classes}]
+<article class="carte-sujet carte-epinglee">
+  <h3>Comment installer Node ?</h3>
+</article>
+\end{lstlisting}
+
+\begin{tcolorbox}[attention, title={Classe ou identifiant ? La classe, presque toujours}]
+Les deux fonctionnent pour styler. Mais l'\texttt{id} doit rester \textbf{unique dans la page} (semaine 2), ce qui interdit de réutiliser la règle ailleurs ; et sa spécificité écrasante rend toute correction ultérieure pénible.
+
+\vspace{3pt}
+Dans ce cours : l'\texttt{id} sert au \texttt{<label for>}, aux ancres et --- dès la semaine 7 --- à JavaScript. Le \textbf{style passe par les classes}.
+\end{tcolorbox}
+
+\subsection{Les combinateurs}
+
+On peut viser un élément selon sa position dans l'arbre du document.
+
+\begin{lstlisting}[language=CSS3, caption={Quatre façons de combiner}]
+/* Descendant : tous les <a> situes quelque part dans <nav> */
+nav a { color: white; }
+
+/* Enfant direct : les <li> enfants immediats de <ul> */
+ul > li { margin-bottom: 8px; }
+
+/* Frere adjacent : le <p> qui suit immediatement un <h2> */
+h2 + p { font-weight: bold; }
+
+/* Groupe : la meme regle pour plusieurs selecteurs */
+h1, h2, h3 { font-family: Georgia, serif; }
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.6cm}p{2.6cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Combinateur} & \hdr{Exemple} & \hdr{Lecture} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Espace & \texttt{nav a} & un \texttt{<a>} \textbf{quelque part dans} un \texttt{<nav>} \\
+  \texttt{>} & \texttt{ul > li} & un \texttt{<li>} \textbf{enfant direct} d'un \texttt{<ul>} \\
+  \rowcolor{uniPaper}
+  \texttt{+} & \texttt{h2 + p} & le \texttt{<p>} \textbf{juste après} un \texttt{<h2>} \\
+  Virgule & \texttt{h1, h2} & les \texttt{<h1>} \textbf{et} les \texttt{<h2>} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={L'espace et la virgule ne sont pas interchangeables}]
+\texttt{nav a} vise les liens \textbf{à l'intérieur} de la navigation.
+
+\vspace{3pt}
+\texttt{nav, a} vise la navigation \textbf{et} tous les liens de la page, y compris ceux du pied de page.
+
+\vspace{3pt}
+Une virgule oubliée ou ajoutée par erreur change complètement la portée d'une règle, sans provoquer la moindre erreur. Relis toujours tes sélecteurs à voix haute.
+\end{tcolorbox}
+
+\subsection{Nommer ses classes}
+
+\begin{tcolorbox}[astuce, title={Nommer par le rôle, jamais par l'apparence}]
+\texttt{.carte-sujet} décrit \textbf{ce qu'est} l'élément. \texttt{.boite-bleue} décrit ce à quoi il ressemble aujourd'hui.
+
+\vspace{3pt}
+Le jour où les cartes passent au gris, la première classe reste juste et la seconde devient un mensonge que personne n'ose corriger. Convention du cours : en minuscules, mots séparés par un tiret, sans accent --- \texttt{.carte-sujet}, \texttt{.bouton-primaire}, \texttt{.message-erreur}.
+\end{tcolorbox}
+
+% ============================================================
+\section{La cascade, la spécificité, l'héritage}
+% ============================================================
+
+C'est le cœur du CSS, et la source de la quasi-totalité des « ça ne marche pas » de la semaine. Deux règles peuvent viser le même élément et dire le contraire. Il faut donc un arbitrage.
+
+\subsection{Trois questions, dans cet ordre}
+
+\vspace{6pt}
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  et/.style={draw, rounded corners=2pt, minimum width=3.4cm,
+             minimum height=1.5cm, align=center, inner sep=3pt},
+  fl/.style={-{Stealth[length=5pt]}, thick, uniGrey!70}]
+
+\node[et, draw=uniNavy, fill=uniNavy!10] (a) at (0,0)
+  {\textbf{1. Origine}\\D'où vient la règle ?};
+\node[et, draw=uniGold, fill=uniGold!10, right=0.8cm of a] (b)
+  {\textbf{2. Spécificité}\\Quel sélecteur\\est le plus précis ?};
+\node[et, draw=uniTeal, fill=uniTeal!10, right=0.8cm of b] (c)
+  {\textbf{3. Ordre}\\Laquelle est\\écrite en dernier ?};
+
+\draw[fl] (a) -- (b);
+\draw[fl] (b) -- (c);
+
+\node[below=0.15cm of a, font=\scriptsize\itshape, text=uniGrey] {navigateur, puis auteur};
+\node[below=0.15cm of b, font=\scriptsize\itshape, text=uniGrey] {le critère décisif};
+\node[below=0.15cm of c, font=\scriptsize\itshape, text=uniGrey] {en cas d'égalité};
+\end{tikzpicture}
+\end{center}
+\vspace{4pt}
+
+Le navigateur applique ces trois critères \textbf{dans l'ordre} et s'arrête dès qu'un départage a lieu. En pratique, dans ce cours, tout se joue sur les critères 2 et 3.
+
+\subsection{Calculer une spécificité}
+
+La spécificité se lit comme un score à trois chiffres : \textbf{(identifiants, classes, types)}. On compte, dans le sélecteur, combien il y a de chaque, puis on compare de gauche à droite.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5cm}cX}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Sélecteur} & \hdrc{Score} & \hdr{Lecture} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{*} & 0\,--\,0\,--\,0 & le sélecteur universel ne compte pas \\
+  \texttt{p} & 0\,--\,0\,--\,1 & un type \\
+  \rowcolor{uniPaper}
+  \texttt{nav a} & 0\,--\,0\,--\,2 & deux types \\
+  \texttt{.carte-sujet} & 0\,--\,1\,--\,0 & une classe \\
+  \rowcolor{uniPaper}
+  \texttt{a:hover} & 0\,--\,1\,--\,1 & une pseudo-classe compte comme une classe \\
+  \texttt{nav a.actif} & 0\,--\,1\,--\,2 & deux types et une classe \\
+  \rowcolor{uniPaper}
+  \texttt{\#menu-principal} & 1\,--\,0\,--\,0 & un identifiant \\
+  \texttt{style="\ldots"} & \textit{hors concours} & bat tout sélecteur \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[corrige, title={Exemple --- qui gagne ?}]
+\begin{lstlisting}[language=CSS3, numbers=none]
+nav a          { color: white; }   /* 0-0-2 */
+.lien-actif    { color: yellow; }  /* 0-1-0 */
+\end{lstlisting}
+
+\vspace{3pt}
+Pour un lien \texttt{<a class="lien-actif">} placé dans la navigation, les deux règles s'appliquent. On compare de gauche à droite : les identifiants sont à égalité (0), puis \textbf{1 classe l'emporte sur 0}. Le lien est \textbf{jaune}.
+
+\vspace{3pt}
+Le nombre de types (2 contre 0) n'est jamais examiné : la comparaison s'arrête à la première colonne qui départage. Cent sélecteurs de type ne battront jamais une seule classe.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={À spécificité égale, le dernier écrit gagne}]
+\begin{lstlisting}[language=CSS3, numbers=none]
+.bouton { background-color: blue; }
+.bouton { background-color: green; }
+\end{lstlisting}
+
+\vspace{3pt}
+Même score (0\,--\,1\,--\,0) : c'est l'ordre du fichier qui tranche, le bouton est \textbf{vert}. C'est aussi pour cette raison qu'une feuille de style se lit du général vers le particulier : les règles générales en haut, les exceptions en bas.
+\end{tcolorbox}
+
+\subsection{\texttt{!important} : la sortie de secours à ne pas prendre}
+
+\begin{tcolorbox}[interdit, title={\texttt{!important} est interdit dans le MiniForum}]
+Ajouter \texttt{!important} à une déclaration la fait passer devant tout le reste, spécificité comprise :
+
+\vspace{3pt}
+\texttt{\small color: red !important;}
+
+\vspace{4pt}
+C'est efficace, et c'est exactement le problème : la règle devient impossible à contredire autrement qu'avec un second \texttt{!important}, puis un troisième. Une feuille de style qui en contient est une feuille dont plus personne ne contrôle le résultat.
+
+\vspace{4pt}
+Quand tu es tenté d'en écrire un, c'est presque toujours qu'une règle plus spécifique existe ailleurs --- souvent un \texttt{\#id} ou un attribut \texttt{style}. Trouve-la dans les outils de développement et corrige la cause.
+\end{tcolorbox}
+
+\subsection{L'héritage}
+
+\begin{tcolorbox}[definition, title={Définition --- Héritage}]
+Certaines propriétés se transmettent automatiquement d'un élément à ses descendants. Une couleur définie sur \texttt{<body>} descend dans tous les paragraphes de la page, sans qu'aucune règle ne les vise.
+\end{tcolorbox}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{S'hérite} & \hdr{Ne s'hérite pas} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{color}, \texttt{font-family}, \texttt{font-size}, \texttt{font-weight}, \texttt{line-height}, \texttt{text-align} & \texttt{margin}, \texttt{padding}, \texttt{border}, \texttt{background}, \texttt{width}, \texttt{height}, \texttt{display} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\medskip
+La logique est simple : ce qui concerne le \textbf{texte} s'hérite, ce qui concerne la \textbf{boîte} ne s'hérite pas. Une bordure héritée par tous les descendants serait absurde.
+
+\begin{lstlisting}[language=CSS3, caption={Poser la typographie une seule fois}]
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1A1A1A;
+}
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Le réglage le plus rentable de la semaine}]
+Ces quatre déclarations sur \texttt{body} habillent la totalité du texte du site. Toute règle plus précise écrite ensuite viendra simplement les surcharger là où c'est nécessaire.
+
+\vspace{3pt}
+Un \texttt{line-height} de \texttt{1.6} (sans unité) est l'un des rares réglages qui améliore la lisibilité d'un site en une ligne. Sans unité, il se recalcule correctement pour chaque taille de police héritée.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Les champs de formulaire n'héritent pas de la police}]
+\texttt{<input>}, \texttt{<textarea>}, \texttt{<select>} et \texttt{<button>} conservent la police par défaut du système, même si \texttt{body} en impose une autre. Il faut la leur redonner explicitement :
+
+\vspace{3pt}
+\texttt{\small input, textarea, select, button \{ font-family: inherit; \}}
+
+\vspace{3pt}
+Sans cette ligne, les formulaires du MiniForum resteront visuellement étrangers au reste du site. La valeur \texttt{inherit} force une propriété à reprendre celle du parent.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Le modèle de boîte}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Définition --- Modèle de boîte}]
+Chaque élément d'une page est une \textbf{boîte rectangulaire}, composée de quatre couches emboîtées : le contenu, l'espace intérieur (\texttt{padding}), la bordure (\texttt{border}) et l'espace extérieur (\texttt{margin}).
+\end{tcolorbox}
+
+\subsection{Les quatre couches}
+
+\vspace{8pt}
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize]
+  % marge
+  \fill[boxMargin] (0,0) rectangle (10,6);
+  \draw[cfptDarkGrey!50, dashed] (0,0) rectangle (10,6);
+  % bordure
+  \fill[boxBorder] (1.3,0.9) rectangle (8.7,5.1);
+  \draw[cfptDarkGrey!50] (1.3,0.9) rectangle (8.7,5.1);
+  % padding
+  \fill[boxPadding] (1.9,1.35) rectangle (8.1,4.65);
+  \draw[cfptDarkGrey!50] (1.9,1.35) rectangle (8.1,4.65);
+  % contenu
+  \fill[boxContent] (3.2,2.1) rectangle (6.8,3.9);
+  \draw[cfptDarkGrey!50] (3.2,2.1) rectangle (6.8,3.9);
+
+  \node[font=\small\bfseries] at (5,3.0) {content};
+  \node[font=\scriptsize, text=cfptDarkGrey] at (5,2.55) {le texte, l'image};
+
+  \node[font=\small\bfseries] at (5,4.35) {padding};
+  \node[font=\small\bfseries] at (5,5.6) {margin};
+  \node[font=\small\bfseries, anchor=west] at (1.45,3.0) {border};
+
+  % cotes
+  \draw[{Stealth[length=4pt]}-{Stealth[length=4pt]}, uniNavy]
+    (6.8,3.0) -- node[above, font=\scriptsize, text=uniNavy, pos=0.5] {} (8.1,3.0);
+  \node[font=\scriptsize, text=uniNavy] at (7.45,3.28) {padding};
+  \draw[{Stealth[length=4pt]}-{Stealth[length=4pt]}, uniGold]
+    (8.7,3.0) -- (10,3.0);
+  \node[font=\scriptsize, text=uniGold] at (9.35,3.28) {margin};
+\end{tikzpicture}
+\end{center}
+\vspace{4pt}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Couche} & \hdr{Rôle} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{content} & Le contenu lui-même : texte, image. Ses dimensions sont \texttt{width} et \texttt{height} \\
+  \texttt{padding} & L'espace \textbf{intérieur}, entre le contenu et la bordure. Il prend la couleur de fond \\
+  \rowcolor{uniPaper}
+  \texttt{border} & Le trait qui entoure la boîte : épaisseur, style, couleur \\
+  \texttt{margin} & L'espace \textbf{extérieur}, qui écarte la boîte de ses voisines. Toujours transparent \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={\texttt{padding} ou \texttt{margin} ? La question du fond}]
+Les deux créent de l'espace, mais le \texttt{padding} est \textbf{dans} la boîte : il prend la couleur de fond et agrandit la zone cliquable. Le \texttt{margin} est \textbf{hors} de la boîte : il reste transparent.
+
+\vspace{3pt}
+Pour aérer le texte à l'intérieur d'une carte de sujet : \texttt{padding}. Pour écarter deux cartes l'une de l'autre : \texttt{margin} --- ou mieux, \texttt{gap} si le parent est en Flexbox (section 5).
+\end{tcolorbox}
+
+\subsection{Les raccourcis}
+
+\begin{lstlisting}[language=CSS3, caption={De une à quatre valeurs}]
+padding: 16px;                  /* les 4 cotes */
+padding: 16px 24px;             /* haut-bas | gauche-droite */
+padding: 8px 16px 24px;         /* haut | gauche-droite | bas */
+padding: 8px 16px 24px 32px;    /* haut | droite | bas | gauche */
+
+border: 1px solid #CCCCCC;      /* epaisseur | style | couleur */
+border-radius: 8px;             /* coins arrondis */
+
+margin: 0 auto;                 /* centrer horizontalement */
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Quatre valeurs : dans le sens des aiguilles d'une montre}]
+Haut, droite, bas, gauche --- on part du haut et on tourne. La même règle vaut pour \texttt{margin} et pour \texttt{padding}.
+
+\vspace{3pt}
+Avec deux valeurs, la première est le couple haut-bas, la seconde le couple gauche-droite. C'est de très loin la forme la plus utilisée.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={\texttt{margin: 0 auto} pour centrer un bloc}]
+Un bloc de largeur définie se centre horizontalement avec \texttt{auto} sur les marges gauche et droite : le navigateur répartit l'espace restant à parts égales.
+
+\vspace{3pt}
+\texttt{\small main \{ max-width: 900px; margin: 0 auto; \}}
+
+\vspace{3pt}
+C'est la recette du contenu centré dans une page large, et elle sert dans tous les sites. Elle ne fonctionne que sur un élément de type bloc dont la largeur est bornée.
+\end{tcolorbox}
+
+\subsection{\texttt{box-sizing} : la propriété qui change tout}
+
+Par défaut, \texttt{width} désigne la largeur du \textbf{contenu seul}. Le \texttt{padding} et la \texttt{border} viennent s'y ajouter.
+
+\begin{lstlisting}[language=CSS3, caption={Le calcul par défaut, et le piège}]
+.carte {
+  width: 300px;
+  padding: 20px;
+  border: 2px solid black;
+}
+/* Largeur reellement occupee :
+   300 + 20 + 20 + 2 + 2 = 344 px  */
+\end{lstlisting}
+
+\begin{tcolorbox}[attention, title={Deux cartes de 50\,\% ne tiennent pas côte à côte}]
+C'est le grand classique de la semaine : deux blocs à \texttt{width: 50\%} avec un \texttt{padding} passent à la ligne, parce que leur largeur réelle dépasse 50\,\%.
+
+\vspace{3pt}
+On peut soustraire le \texttt{padding} à la main. Personne ne le fait --- on change le mode de calcul.
+\end{tcolorbox}
+
+\begin{lstlisting}[language=CSS3, caption={La première règle de toute feuille de style}]
+* {
+  box-sizing: border-box;
+}
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Valeur} & \hdr{Ce que \texttt{width} désigne alors} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{content-box} & Le contenu seul --- le \texttt{padding} et la \texttt{border} s'ajoutent \textit{(défaut)} \\
+  \texttt{border-box} & La boîte \textbf{bordure comprise} --- le contenu se réduit d'autant \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={À écrire en haut de \texttt{style.css}, une fois pour toutes}]
+Avec \texttt{border-box}, une carte à \texttt{width: 300px} occupe exactement 300 pixels, quel que soit son \texttt{padding}. Les largeurs deviennent prévisibles, et les mises en page cessent de se casser pour deux pixels.
+
+\vspace{3pt}
+La règle universelle \texttt{*\{ box-sizing: border-box; \}} figure en première ligne de la quasi-totalité des feuilles de style professionnelles. Écris-la, et n'y pense plus de l'année.
+\end{tcolorbox}
+
+\subsection{La fusion des marges verticales}
+
+\begin{tcolorbox}[attention, title={Deux marges verticales qui se touchent n'en font qu'une}]
+Un paragraphe avec \texttt{margin-bottom: 30px} suivi d'un titre avec \texttt{margin-top: 20px} ne produit pas 50 pixels d'écart, mais \textbf{30} : la plus grande des deux marges absorbe l'autre.
+
+\vspace{4pt}
+Ce comportement, appelé \textit{fusion des marges} (\textit{margin collapsing}), ne concerne que les marges \textbf{verticales} d'éléments de type bloc. Les marges horizontales, elles, s'additionnent normalement.
+
+\vspace{4pt}
+Il n'y a rien à corriger : c'est voulu, et c'est ce qui évite des espacements doublés partout. Il faut simplement le savoir avant de passer vingt minutes à chercher les pixels manquants. À noter : la fusion ne se produit ni dans un conteneur Flexbox, ni en Grid --- une raison de plus d'utiliser \texttt{gap}.
+\end{tcolorbox}
+
+\subsection{\texttt{display} : le type de boîte}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.8cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Valeur} & \hdr{Comportement} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{block} & Occupe toute la largeur disponible, se place sur une nouvelle ligne. \texttt{width}, \texttt{height} et les marges verticales s'appliquent \\
+  \texttt{inline} & Reste dans le fil du texte. \texttt{width}, \texttt{height} et les marges verticales sont \textbf{ignorées} \\
+  \rowcolor{uniPaper}
+  \texttt{inline-block} & Reste dans le fil du texte, mais accepte les dimensions et les marges \\
+  \texttt{flex} & Fait de l'élément un conteneur Flexbox (section 5) \\
+  \rowcolor{uniPaper}
+  \texttt{none} & L'élément disparaît complètement, sans laisser d'espace \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Pourquoi la hauteur d'un lien ne change pas}]
+Un \texttt{<a>} est \texttt{inline} par défaut : lui donner une \texttt{height} ou un \texttt{margin-top} n'a aucun effet visible. C'est le motif d'étonnement le plus fréquent du TP.
+
+\vspace{3pt}
+Pour qu'un lien devienne un bouton cliquable de bonne taille, il faut d'abord le sortir du mode \texttt{inline} : \texttt{display: inline-block} --- ou en faire un élément d'un conteneur Flexbox, ce qui produit le même résultat.
+\end{tcolorbox}
+
+\begin{tcolorbox}[interdit, title={\texttt{display: none} cache aussi aux lecteurs d'écran}]
+Un élément en \texttt{display: none} n'est pas seulement invisible : il est \textbf{retiré de l'arbre d'accessibilité} et devient inatteignable au clavier.
+
+\vspace{3pt}
+C'est le bon choix pour un contenu réellement hors sujet. C'en est un très mauvais pour du texte que l'on veut réserver aux lecteurs d'écran, ou pour un menu que l'on croit simplement « replié ». On y reviendra en semaine 5 avec le menu mobile.
+\end{tcolorbox}
+
+\subsection{Couleurs, polices et unités}
+
+\begin{lstlisting}[language=CSS3, caption={Écrire une couleur}]
+color: #1D4E89;                    /* hexadecimal : le plus courant */
+color: rgb(29, 78, 137);           /* rouge, vert, bleu de 0 a 255 */
+color: rgba(29, 78, 137, 0.5);     /* avec transparence */
+color: darkslateblue;              /* nom predefini : pour tester */
+\end{lstlisting}
+
+La notation hexadécimale se lit par paires : \texttt{\#RRGGBB}, deux caractères par composante, de \texttt{00} à \texttt{FF}. La forme courte \texttt{\#FFF} équivaut à \texttt{\#FFFFFF}.
+
+\begin{lstlisting}[language=CSS3, caption={Une pile de polices}]
+font-family: Helvetica, Arial, sans-serif;
+\end{lstlisting}
+
+Le navigateur essaie les polices \textbf{de gauche à droite} et retient la première disponible sur la machine. Le dernier terme est toujours une famille générique --- \texttt{sans-serif}, \texttt{serif} ou \texttt{monospace} --- qui garantit un repli correct.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Unité} & \hdr{Signification} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{px} & Pixel. Valeur fixe, simple à raisonner : l'unité de cette semaine \\
+  \texttt{\%} & Pourcentage d'une dimension du parent \\
+  \rowcolor{uniPaper}
+  \texttt{rem}, \texttt{em} & Relatives à une taille de police. \textbf{Semaine 5} \\
+  \texttt{vw}, \texttt{vh} & Pourcentage de la largeur ou de la hauteur de la fenêtre. \textbf{Semaine 5} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Cette semaine, tout en pixels}]
+Les unités relatives sont indispensables pour un site vraiment adaptable, et c'est le sujet de la semaine prochaine. Pour l'instant, raisonner en pixels évite d'ajouter une difficulté à celles de la cascade et du modèle de boîte.
+
+\vspace{3pt}
+Une seule exception, déjà rencontrée : \texttt{line-height} s'écrit \textbf{sans unité}.
+\end{tcolorbox}
+
+% ============================================================
+\section{Flexbox}
+% ============================================================
+
+\subsection{Le problème que Flexbox résout}
+
+Aligner trois blocs côte à côte, de hauteur égale, avec un espacement régulier et un centrage vertical : cela a occupé les développeurs web pendant quinze ans, à coups de \texttt{float} et de bricolages. Flexbox règle la question en trois déclarations.
+
+\begin{tcolorbox}[definition, title={Définition --- Flexbox}]
+\textbf{Flexbox} (\textit{Flexible Box Layout}) est un mode de mise en page \textbf{unidimensionnel} : il distribue des éléments le long d'une seule direction, en ligne \textbf{ou} en colonne, et gère l'espace restant à leur place.
+
+\vspace{3pt}
+Pour une mise en page à deux dimensions --- lignes \textbf{et} colonnes simultanément --- l'outil est CSS Grid, vu en semaine 5.
+\end{tcolorbox}
+
+\subsection{Conteneur, éléments, et deux axes}
+
+Flexbox se déclare sur le \textbf{parent}. Les enfants directs deviennent automatiquement des \textbf{éléments flexibles}.
+
+\begin{lstlisting}[language=CSS3, caption={Trois lignes suffisent}]
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+\end{lstlisting}
+
+\vspace{6pt}
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize]
+  \node[draw=uniNavy, thick, dashed, rounded corners=3pt,
+        minimum width=11cm, minimum height=3.1cm, anchor=north west] (c) at (0,0) {};
+  \node[anchor=north west, font=\scriptsize\bfseries, text=uniNavy] at (0.1,0.45) {conteneur \texttt{display: flex}};
+
+  \foreach \i/\x in {1/0.6, 2/4.1, 3/7.6}{
+    \node[draw=cfptDarkGrey!55, fill=boxContent!60, rounded corners=2pt,
+          minimum width=2.8cm, minimum height=1.5cm, anchor=north west]
+      at (\x,-0.85) {\small élément \i};
+  }
+
+  % axe principal (hors du conteneur, sous la boite)
+  \draw[-{Stealth[length=6pt]}, uniGold, very thick] (0.6,-3.6) -- (10.4,-3.6);
+  \node[font=\scriptsize\bfseries, text=uniGold, anchor=north] at (5.5,-3.8) {axe principal --- \texttt{justify-content}};
+
+  % axe secondaire
+  \draw[-{Stealth[length=6pt]}, uniTeal, very thick] (-0.5,-0.6) -- (-0.5,-2.6);
+  \node[font=\scriptsize\bfseries, text=uniTeal, rotate=90, anchor=south] at (-0.75,-2.55) {axe secondaire --- \texttt{align-items}};
+\end{tikzpicture}
+\end{center}
+\vspace{6pt}
+
+\begin{tcolorbox}[attention, title={La clé de Flexbox : deux axes, deux propriétés}]
+\texttt{justify-content} agit sur l'\textbf{axe principal}. \texttt{align-items} agit sur l'\textbf{axe secondaire}, perpendiculaire.
+
+\vspace{3pt}
+Par défaut, l'axe principal est \textbf{horizontal} : \texttt{justify-content} distribue de gauche à droite, \texttt{align-items} aligne verticalement.
+
+\vspace{3pt}
+\textbf{Avec \texttt{flex-direction: column}, les deux s'inversent} : \texttt{justify-content} agit alors verticalement. Presque toutes les confusions autour de Flexbox viennent de là. La question à se poser n'est jamais « horizontal ou vertical ? » mais « principal ou secondaire ? ».
+\end{tcolorbox}
+
+\subsection{Les propriétés du conteneur}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Propriété} & \hdr{Valeurs utiles} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{display} & \texttt{flex} --- active le mode sur le conteneur \\
+  \texttt{flex-direction} & \texttt{row} \textit{(défaut)}, \texttt{column}, \texttt{row-reverse}, \texttt{column-reverse} \\
+  \rowcolor{uniPaper}
+  \texttt{justify-content} & \texttt{flex-start} \textit{(défaut)}, \texttt{center}, \texttt{flex-end}, \texttt{space-between}, \texttt{space-around}, \texttt{space-evenly} \\
+  \texttt{align-items} & \texttt{stretch} \textit{(défaut)}, \texttt{center}, \texttt{flex-start}, \texttt{flex-end}, \texttt{baseline} \\
+  \rowcolor{uniPaper}
+  \texttt{flex-wrap} & \texttt{nowrap} \textit{(défaut)}, \texttt{wrap} --- autorise le passage à la ligne \\
+  \texttt{gap} & Espace entre les éléments : \texttt{gap: 16px} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={\texttt{gap} plutôt que \texttt{margin}}]
+Avant \texttt{gap}, espacer des éléments imposait une marge sur chacun, puis de retirer celle du dernier avec un sélecteur du genre \texttt{:last-child}. \texttt{gap} pose l'espace \textbf{entre} les éléments et nulle part ailleurs, en une déclaration.
+
+\vspace{3pt}
+Règle du cours : dans un conteneur Flexbox, l'espacement se fait avec \texttt{gap}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={\texttt{align-items: stretch}, le comportement par défaut}]
+Sans instruction contraire, les éléments d'un conteneur Flexbox s'étirent pour atteindre la hauteur du plus grand. C'est ce qui donne gratuitement des cartes de sujet de hauteur égale, alors que leurs textes ont des longueurs différentes.
+
+\vspace{3pt}
+Poser \texttt{align-items: center} annule cet étirement : les éléments reprennent leur hauteur naturelle et se centrent. Utile dans une barre de navigation, indésirable dans une grille de cartes.
+\end{tcolorbox}
+
+\subsection{Les propriétés des éléments}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Propriété} & \hdr{Effet sur un élément} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{flex-grow} & Part de l'espace \textbf{libre} qu'il absorbe. \texttt{0} par défaut \\
+  \texttt{flex-shrink} & Sa capacité à se réduire si la place manque. \texttt{1} par défaut \\
+  \rowcolor{uniPaper}
+  \texttt{flex-basis} & Sa taille de départ avant répartition \\
+  \texttt{flex} & Raccourci des trois : \texttt{flex: 1} est la forme courante \\
+  \rowcolor{uniPaper}
+  \texttt{align-self} & Aligne \textbf{cet} élément seul sur l'axe secondaire \\
+  \texttt{order} & Change l'ordre d'affichage \textbf{sans} toucher au HTML \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}[language=CSS3, caption={Une barre de recherche qui occupe la place restante}]
+.barre-recherche {
+  display: flex;
+  gap: 8px;
+}
+
+.barre-recherche input {
+  flex: 1;         /* prend tout l'espace disponible */
+}
+
+.barre-recherche button {
+  flex: 0;         /* garde sa taille naturelle */
+}
+\end{lstlisting}
+
+\begin{tcolorbox}[interdit, title={\texttt{order} ne réordonne que pour les yeux}]
+\texttt{order} modifie l'ordre \textbf{visuel} des éléments. Il ne modifie ni l'ordre du code, ni celui de la tabulation, ni celui que lit un lecteur d'écran.
+
+\vspace{3pt}
+Un site où l'ordre visuel et l'ordre du clavier divergent devient déroutant, voire inutilisable (rappel du test des trente secondes, semaine 3). Si l'ordre logique doit changer, change le \textbf{HTML}.
+\end{tcolorbox}
+
+\subsection{Deux recettes à connaître par cœur}
+
+\begin{lstlisting}[language=CSS3, caption={Barre de navigation : logo à gauche, menu à droite}]
+.entete {
+  display: flex;
+  justify-content: space-between;  /* ecarte les extremes */
+  align-items: center;             /* centre verticalement */
+  padding: 12px 24px;
+}
+
+.entete nav ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;   /* enleve les puces */
+  margin: 0;
+  padding: 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=CSS3, caption={Liste de cartes qui passent à la ligne}]
+.liste-sujets {
+  display: flex;
+  flex-wrap: wrap;    /* passage a la ligne autorise */
+  gap: 16px;
+}
+
+.carte-sujet {
+  flex: 1 1 280px;    /* grandit, retrecit, part de 280px */
+  padding: 16px;
+  border: 1px solid #DDDDDD;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+}
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={\texttt{flex: 1 1 280px} est déjà presque du responsive}]
+Les cartes visent 280 pixels, s'étirent pour remplir la ligne, et passent à la ligne suivante dès qu'elles ne tiennent plus. Réduis la fenêtre : la mise en page s'adapte sans qu'aucune \textit{media query} ait été écrite.
+
+\vspace{3pt}
+C'est un avant-goût de la semaine 5 --- et la preuve qu'un bon choix de mise en page évite beaucoup de règles conditionnelles.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={\texttt{list-style: none} enlève la puce, pas la sémantique}]
+Un menu de navigation reste un \texttt{<ul>} de liens (semaine 2), même quand les puces sont retirées : le lecteur d'écran annonce toujours « liste de cinq éléments ».
+
+\vspace{3pt}
+Retirer la puce est un choix de présentation ; remplacer le \texttt{<ul>} par une suite de \texttt{<div>} serait une perte d'information.
+\end{tcolorbox}
+
+% ============================================================
+\section{Les pseudo-classes}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Définition --- Pseudo-classe}]
+Une \textbf{pseudo-classe} cible un élément selon son \textbf{état} ou sa \textbf{position}, et non selon ce qu'il est. Elle s'écrit après le sélecteur, précédée de deux-points : \texttt{a:hover}.
+\end{tcolorbox}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Pseudo-classe} & \hdr{S'applique quand} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{:hover} & Le pointeur survole l'élément \\
+  \texttt{:focus} & L'élément a le focus clavier \\
+  \rowcolor{uniPaper}
+  \texttt{:focus-visible} & L'élément a le focus \textbf{et} le navigateur juge utile de le montrer \\
+  \texttt{:active} & L'élément est en cours de clic \\
+  \rowcolor{uniPaper}
+  \texttt{:first-child} / \texttt{:last-child} & C'est le premier / le dernier enfant de son parent \\
+  \texttt{:nth-child(n)} & C'est le n\textsuperscript{e} enfant. Accepte \texttt{even}, \texttt{odd}, \texttt{2n+1} \\
+  \rowcolor{uniPaper}
+  \texttt{:checked} & Une case ou un bouton radio est coché \\
+  \texttt{:invalid} & Un champ ne respecte pas sa contrainte de validation \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}[language=CSS3, caption={Retour visuel sur les liens et lignes alternées}]
+nav a:hover {
+  text-decoration: underline;
+}
+
+nav a:focus-visible {
+  outline: 2px solid #F5C400;
+  outline-offset: 2px;
+}
+
+.liste-messages li:nth-child(even) {
+  background-color: #F7F7F7;   /* une ligne sur deux */
+}
+\end{lstlisting}
+
+\begin{tcolorbox}[interdit, title={\texttt{:hover} seul exclut la moitié des utilisateurs}]
+Le survol n'existe pas sur un écran tactile, et n'existe pas non plus pour qui navigue au clavier. Un menu dont les entrées ne réagissent qu'au \texttt{:hover} ne donne aucun retour à ces personnes.
+
+\vspace{3pt}
+\textbf{Règle du cours} : chaque fois que tu écris un \texttt{:hover}, écris le \texttt{:focus-visible} correspondant. C'est la suite directe du test au clavier de la semaine 3.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Rappel --- ne jamais écrire \texttt{outline: none}}]
+On trouve cette ligne dans une grande partie du CSS copié en ligne : elle supprime le cadre de focus et rend le site inutilisable au clavier.
+
+\vspace{3pt}
+Si le cadre par défaut ne convient pas, on le \textbf{remplace} par un contour visible, comme ci-dessus. On ne l'efface pas.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={\texttt{:nth-child} compte les frères, pas les éléments visés}]
+\texttt{li:nth-child(even)} signifie « un \texttt{<li>} qui est le 2\textsuperscript{e}, 4\textsuperscript{e}, 6\textsuperscript{e}\ldots{} enfant de son parent ». Si le parent contient d'autres balises intercalées, le comptage les inclut --- source d'un décalage inattendu.
+\end{tcolorbox}
+
+% ============================================================
+\section{Inspecter avec les outils de développement}
+% ============================================================
+
+Les outils de développement (\texttt{F12}) sont l'outil de débogage principal du CSS. Sans eux, comprendre pourquoi une règle ne s'applique pas relève de la devinette.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Panneau} & \hdr{Ce qu'il montre} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \textit{Elements} & L'arbre HTML tel que le navigateur l'a construit \\
+  \textit{Styles} & Toutes les règles qui visent l'élément sélectionné, dans l'ordre de priorité \\
+  \rowcolor{uniPaper}
+  \textit{Computed} & La valeur \textbf{finale} de chaque propriété, après arbitrage \\
+  Schéma du modèle de boîte & Les valeurs réelles de \texttt{margin}, \texttt{border}, \texttt{padding} et du contenu \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={La déclaration barrée est la réponse à ta question}]
+Dans le panneau \textit{Styles}, une déclaration \textbf{barrée} a perdu l'arbitrage. Le navigateur affiche juste au-dessus la règle qui l'a emporté, avec le fichier et le numéro de ligne.
+
+\vspace{3pt}
+« Mon CSS ne s'applique pas » se résout presque toujours en trois secondes ici. Les trois causes, par ordre de fréquence : une règle plus spécifique ailleurs, un sélecteur qui ne vise pas l'élément qu'on croit, et une faute de frappe dans le nom de la propriété --- dans ce dernier cas, la déclaration apparaît en grisé avec un avertissement.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Modifier dans les DevTools ne sauvegarde rien}]
+Les valeurs se modifient directement dans le panneau \textit{Styles}, avec un aperçu immédiat : c'est la meilleure façon de chercher la bonne valeur d'un \texttt{padding} ou d'une couleur.
+
+\vspace{3pt}
+Mais tout est perdu au rechargement. Une fois la valeur trouvée, il faut la \textbf{reporter dans \texttt{style.css}}. Beaucoup de travail a disparu faute de ce réflexe.
+\end{tcolorbox}
+
+% ============================================================
+\section{Organiser sa feuille de style}
+% ============================================================
+
+Une feuille de style qui grossit sans plan devient vite impossible à modifier. Trois habitudes suffisent pour l'éviter.
+
+\begin{itemize}
+  \item \textbf{Du général au particulier.} La règle universelle et les styles de \texttt{body} en haut, puis les grandes zones (en-tête, contenu, pied de page), puis les composants (cartes, formulaires, boutons). Cet ordre exploite la cascade au lieu de la subir.
+  \item \textbf{Des commentaires de section.} Une ligne de séparation avant chaque bloc suffit à retrouver son chemin dans trois cents lignes.
+  \item \textbf{Un composant, un endroit.} Tout ce qui concerne la carte de sujet se trouve au même endroit du fichier, pas éparpillé en cinq points.
+\end{itemize}
+
+\begin{lstlisting}[language=CSS3, caption={Le squelette attendu pour le MiniForum}]
+/* === 1. Reglages generaux ============================ */
+* { box-sizing: border-box; }
+body { /* police, couleur, interlignage */ }
+
+/* === 2. En-tete et navigation ======================== */
+
+/* === 3. Contenu principal ============================ */
+
+/* === 4. Cartes de sujet ============================== */
+
+/* === 5. Formulaires ================================== */
+
+/* === 6. Pied de page ================================= */
+\end{lstlisting}
+
+\begin{tcolorbox}[interdit, title={Pas de CSS copié sans être compris}]
+Un extrait trouvé en ligne peut faire exactement ce que tu cherches --- et embarquer un \texttt{outline: none}, un \texttt{!important} ou un \texttt{float} dont tu ne mesures pas les conséquences.
+
+\vspace{3pt}
+La règle du cours vaut ici comme ailleurs : tout code repris doit pouvoir être expliqué ligne par ligne. Et un CSS écrit par un assistant IA est de toute façon interdit dans les travaux remis.
+\end{tcolorbox}
+
+% ============================================================
+\section{Lexique de la semaine}
+% ============================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Terme} & \hdr{Définition} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Règle & Un sélecteur et son bloc de déclarations \\
+  Déclaration & Un couple propriété / valeur, terminé par un point-virgule \\
+  \rowcolor{uniPaper}
+  Sélecteur & Expression désignant les éléments visés par une règle \\
+  Classe & Attribut \texttt{class} du HTML, réutilisable, base du style \\
+  \rowcolor{uniPaper}
+  Cascade & Mécanisme d'arbitrage entre règles concurrentes \\
+  Spécificité & Score du sélecteur, décisif en cas de conflit \\
+  \rowcolor{uniPaper}
+  Héritage & Transmission automatique de certaines propriétés aux descendants \\
+  \texttt{inherit} & Valeur forçant la reprise de la propriété du parent \\
+  \rowcolor{uniPaper}
+  Modèle de boîte & Contenu, \texttt{padding}, \texttt{border}, \texttt{margin} \\
+  \texttt{box-sizing} & Détermine si \texttt{width} inclut ou non \texttt{padding} et \texttt{border} \\
+  \rowcolor{uniPaper}
+  Fusion des marges & Absorption de deux marges verticales adjacentes par la plus grande \\
+  Flexbox & Mise en page unidimensionnelle, en ligne ou en colonne \\
+  \rowcolor{uniPaper}
+  Axe principal & Direction de distribution : \texttt{justify-content} \\
+  Axe secondaire & Direction perpendiculaire : \texttt{align-items} \\
+  \rowcolor{uniPaper}
+  \texttt{gap} & Espace entre les éléments d'un conteneur flex ou grid \\
+  Pseudo-classe & Sélecteur d'état ou de position (\texttt{:hover}, \texttt{:nth-child}) \\
+  \rowcolor{uniPaper}
+  Contour de focus & Cadre signalant l'élément actif au clavier \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section*{Résumé de la semaine}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Ce qu'il faut retenir}]
+\begin{itemize}
+  \item Le CSS vit dans un \textbf{fichier séparé}, relié par \texttt{<link>} dans le \texttt{<head>}
+  \item Le style passe par les \textbf{classes} ; l'\texttt{id} est réservé aux labels, aux ancres et à JavaScript
+  \item En cas de conflit : origine, puis \textbf{spécificité}, puis ordre d'écriture. \texttt{!important} n'est pas une solution
+  \item Ce qui concerne le texte s'hérite, ce qui concerne la boîte ne s'hérite pas
+  \item Toute boîte a quatre couches : contenu, \texttt{padding}, \texttt{border}, \texttt{margin}
+  \item \texttt{*\{ box-sizing: border-box; \}} en première ligne rend les largeurs prévisibles
+  \item Flexbox aligne sur \textbf{un} axe : \texttt{justify-content} sur l'axe principal, \texttt{align-items} sur l'axe secondaire --- et tout s'inverse en \texttt{column}
+  \item L'espacement entre éléments flex se fait avec \texttt{gap}
+  \item Chaque \texttt{:hover} s'accompagne d'un \texttt{:focus-visible} ; on ne supprime jamais le contour de focus
+  \item Les outils de développement disent quelle règle gagne, et pourquoi : la déclaration barrée a perdu
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[filrouge, title={Fil rouge --- MiniForum : le forum prend forme visuellement}]
+Une feuille de style unique, partagée par les quatre pages, donne au MiniForum sa typographie, ses couleurs et ses espacements. La barre de navigation et les cartes de sujet sont construites en Flexbox.
+
+\vspace{4pt}
+C'est généralement la séance où le projet cesse d'être un exercice et devient « leur » site. Et le HTML des trois semaines précédentes n'a pratiquement pas été retouché : c'est précisément ce que permet une structure bien écrite.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[attention, title={Pour la semaine 5}]
+\begin{itemize}
+  \item Le fichier \texttt{style.css} relié aux quatre pages et poussé sur GitHub
+  \item Aucun attribut \texttt{style} et aucun \texttt{!important} dans le projet
+  \item L'en-tête et la liste des sujets construits en Flexbox
+  \item Le site reste parcourable au clavier, avec un contour de focus visible sur chaque élément interactif
+  \item La semaine 5 ouvre le \textbf{responsive} : media queries, CSS Grid, unités relatives et variables CSS. Les couleurs choisies cette semaine deviendront des variables réutilisables jusqu'à la soutenance
+\end{itemize}
+Le détail pas à pas se trouve dans la fiche \textit{S04\_TP}.
+\end{tcolorbox}
+
+\end{document}
