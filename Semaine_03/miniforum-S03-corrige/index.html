@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum - Accueil</title>
+</head>
+<body>
+
+  <header>
+    <h1>MiniForum</h1>
+    <!-- Un menu EST une liste de liens : ul > li > a, jamais l'inverse.
+         Ce <nav> est identique sur les quatre pages du site. -->
+    <nav>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#sujets">Sujets</a></li>
+        <li><a href="inscription.html">Inscription</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <section id="sujets">
+      <h2>Sujets récents</h2>
+
+      <!-- Chaque sujet est un <article> : sorti de cette page, il garde du sens. -->
+      <article>
+        <h3><a href="sujet.html">Bienvenue sur le MiniForum !</a></h3>
+        <p>Posté par <strong>Alice</strong> le
+          <time datetime="2026-09-15">15 septembre 2026</time>
+          — Catégorie : Général</p>
+        <p>Présentez-vous dans ce premier sujet.</p>
+      </article>
+
+      <article>
+        <h3>Comment installer Node.js ?</h3>
+        <p>Posté par <strong>Bob</strong> le
+          <time datetime="2026-09-16">16 septembre 2026</time>
+          — Catégorie : Aide</p>
+        <p>J'ai un souci avec l'installation sous Windows, le terminal ne trouve
+          pas la commande.</p>
+      </article>
+
+      <article>
+        <h3>Partagez vos projets de la semaine</h3>
+        <p>Posté par <strong>Chloé</strong> le
+          <time datetime="2026-09-17">17 septembre 2026</time>
+          — Catégorie : Projets</p>
+        <p>Un fil pour montrer ce sur quoi vous travaillez en ce moment.</p>
+      </article>
+    </section>
+
+    <section id="nouveau-sujet">
+      <h2>Nouveau sujet</h2>
+
+      <!-- action et method n'auront d'effet qu'en semaine 15, quand un serveur
+           Express écoutera sur /topics. On les écrit juste dès maintenant. -->
+      <form action="/topics" method="post">
+
+        <fieldset>
+          <legend>Votre message</legend>
+
+          <p>
+            <label for="pseudo">Pseudo</label>
+            <input type="text" id="pseudo" name="pseudo"
+                   placeholder="ex : alice" required>
+          </p>
+
+          <p>
+            <label for="titre">Titre du sujet</label>
+            <input type="text" id="titre" name="titre" maxlength="80" required>
+          </p>
+
+          <p>
+            <label for="message">Message</label>
+            <!-- <textarea> n'est JAMAIS auto-fermante. La balise fermante est
+                 collée à l'ouvrante : tout espace entre les deux deviendrait
+                 le contenu initial du champ. -->
+            <textarea id="message" name="message" rows="6" maxlength="500"
+                      required></textarea>
+          </p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Options de publication</legend>
+
+          <p>
+            <label for="categorie">Catégorie</label>
+            <!-- C'est le value de l'<option> qui part au serveur,
+                 pas le texte affiché. -->
+            <select id="categorie" name="categorie">
+              <option value="general">Général</option>
+              <option value="aide">Aide</option>
+              <option value="projets">Projets</option>
+            </select>
+          </p>
+
+          <!-- Même name pour les deux radios : c'est lui qui forme le groupe.
+               value différente : c'est elle qui distingue l'option choisie.
+               id unique : c'est lui que vise le <label>. -->
+          <p>
+            <input type="radio" id="visibilite-public" name="visibilite"
+                   value="public" checked>
+            <label for="visibilite-public">Public</label>
+
+            <input type="radio" id="visibilite-prive" name="visibilite"
+                   value="prive">
+            <label for="visibilite-prive">Réservé aux membres</label>
+          </p>
+        </fieldset>
+
+        <p>
+          <button type="submit">Publier le sujet</button>
+        </p>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>MiniForum — Projet du cours de développement web</p>
+    <p>Classe passerelle — cfpt·i</p>
+  </footer>
+
+</body>
+</html>

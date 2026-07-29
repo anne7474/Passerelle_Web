@@ -1,0 +1,407 @@
+// ============================================================
+//  Quiz Moodle — Semaine 2 : HTML5 — Structure & sémantique
+//  Classe passerelle — Développement web — cfpt·i / hepia
+//  Anne Terrier
+//
+//  Format  : GIFT (import direct dans Moodle)
+//  Encodage: UTF-8 — le fichier DOIT être enregistré en UTF-8 sans BOM
+//  Import  : Banque de questions > Importer > format GIFT > UTF-8
+//  Catégorie cible : $course$/Semaine 2 - HTML5
+//
+//  Aligné sur S02_polycop (structure & sémantique).
+//  Les formulaires et l'accessibilité font l'objet du quiz de la
+//  semaine 3 : aucune question sur <form>, <input>, <label> ici.
+//
+//  40 questions réparties en 7 blocs, suivant les sections du
+//  polycopié. C'est une BANQUE, pas un test : pour l'auto-évaluation
+//  hebdomadaire, créer un test qui tire au hasard 15 questions de la
+//  catégorie (Test > Questions > Ajouter > une question aléatoire).
+//
+//  Répartition : 8 questions sur le balisage, 5 sur la structure du
+//  document, 6 sur la sémantique, 3 sur le texte, 7 sur les liens et
+//  images, 6 sur les listes et tableaux, 5 sur la validation.
+//  Types : 28 QCM, 7 vrai/faux, 3 appariements, 2 réponses multiples.
+//  Toutes les questions, sauf les appariements, portent un feedback
+//  général (####) qui reprend l'explication du polycopié.
+//
+//  NOTE TECHNIQUE — pourquoi &lt; et &gt; partout :
+//  Moodle interprète le texte GIFT comme du HTML. Écrire <img>
+//  directement ferait disparaître la balise à l'affichage. On écrit
+//  donc les balises sous forme d'entités, dans une balise <code>.
+// ============================================================
+
+$CATEGORY: $course$/Semaine 2 - HTML5
+
+
+// ============================================================
+//  BLOC 1 — Le HTML, langage de balisage
+// ============================================================
+
+::S02-Q01 — Qu'est-ce que le HTML ?::
+Le HTML est avant tout...{
+=un langage de balisage, qui décrit la structure et le contenu d'une page
+~un langage de programmation, qui contient la logique du site
+~un logiciel qui héberge les sites web
+~une base de données qui stocke les pages
+####Le HTML (HyperText Markup Language) n'est pas un langage de programmation : il n'a ni variables, ni conditions, ni boucles. On « balise » le contenu pour indiquer au navigateur ce que chaque morceau représente. La programmation viendra avec JavaScript, en semaine 6.
+}
+
+::S02-Q02 — Signification de l'acronyme::
+Que signifie l'acronyme « HTML » ?{
+=HyperText Markup Language
+~High Tech Modern Language
+~HyperText Machine Language
+~Home Tool Markup Language
+####HTML signifie « HyperText Markup Language », soit « langage de balisage hypertexte ».
+}
+
+::S02-Q03 — L'extension d'une page web::
+Quelle extension doit porter le fichier d'une page web ?{
+=.html
+~.web
+~.htm5
+~.css
+####Une page web est un simple fichier texte portant l'extension .html, que le navigateur lit et interprète.
+}
+
+::S02-Q04 — Les balises auto-fermantes::
+Parmi ces balises, lesquelles sont <b>auto-fermantes</b> (elles s'écrivent seules, sans balise fermante) ? Cochez toutes les bonnes réponses.{
+~%33.33333%<code>&lt;img&gt;</code>
+~%33.33333%<code>&lt;br&gt;</code>
+~%33.33333%<code>&lt;meta&gt;</code>
+~%-100%<code>&lt;p&gt;</code>
+~%-100%<code>&lt;article&gt;</code>
+####<code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;meta&gt;</code> et <code>&lt;link&gt;</code> n'encadrent aucun contenu : elles s'écrivent seules. <code>&lt;p&gt;</code> et <code>&lt;article&gt;</code> fonctionnent par paires : ouvrante puis fermante.
+}
+
+::S02-Q05 — La syntaxe d'un attribut::
+Un attribut s'écrit dans la balise <b>ouvrante</b>, sous la forme nom\="valeur".{
+TRUE
+####Vrai. Dans <code>&lt;a href\="page.html"&gt;</code>, href est le nom de l'attribut et "page.html" sa valeur. Une balise fermante, elle, ne porte jamais d'attribut.
+}
+
+::S02-Q06 — La règle d'imbrication::
+Parmi ces écritures, laquelle respecte la règle d'imbrication ?{
+=<code>&lt;p&gt;Un &lt;strong&gt;mot&lt;/strong&gt; important&lt;/p&gt;</code>
+~<code>&lt;p&gt;Un &lt;strong&gt;mot&lt;/p&gt;&lt;/strong&gt; important</code>
+~<code>&lt;strong&gt;&lt;p&gt;Un mot&lt;/strong&gt;&lt;/p&gt; important</code>
+~Les trois écritures sont équivalentes
+####Les balises se ferment dans l'ordre inverse de leur ouverture, comme des parenthèses : premier ouvert, dernier fermé. Elles ne peuvent jamais se chevaucher. Indenter son code rend ces erreurs visibles à l'œil nu.
+}
+
+::S02-Q07 — Espaces et retours à la ligne::
+Dans un fichier HTML, appuyer plusieurs fois sur Entrée crée des lignes vides visibles dans la page affichée.{
+FALSE
+####Faux. Plusieurs espaces consécutifs, les tabulations et les retours à la ligne sont réduits à un seul espace à l'affichage. C'est le balisage qui produit la mise en forme : un nouveau paragraphe s'obtient avec un nouveau <code>&lt;p&gt;</code>, les espacements avec du CSS.
+}
+
+::S02-Q08 — Les commentaires HTML::
+Un commentaire HTML, écrit entre <code>&lt;!--</code> et <code>--&gt;</code>...{
+=n'apparaît pas dans la page, mais reste lisible par tous via « Afficher le code source »
+~est totalement invisible, y compris dans le code source de la page
+~empêche le navigateur de charger la suite du fichier
+~s'affiche en gris clair dans la page
+####Un commentaire est invisible dans la page, mais parfaitement lisible via Ctrl+U. Il sert à expliquer son code, jamais à y cacher une information sensible.
+}
+
+
+// ============================================================
+//  BLOC 2 — La structure d'un document HTML5
+// ============================================================
+
+::S02-Q09 — Où placer le contenu visible ?::
+Dans quelle partie du document place-t-on tout le contenu <b>visible</b> par le visiteur ?{
+=Dans le <code>&lt;body&gt;</code>
+~Dans le <code>&lt;head&gt;</code>
+~Dans le <code>&lt;title&gt;</code>
+~Dans le <code>&lt;!DOCTYPE&gt;</code>
+####Le <code>&lt;body&gt;</code> contient tout le contenu visible. Le <code>&lt;head&gt;</code> ne contient que des informations SUR la page. Un titre écrit dans le <code>&lt;head&gt;</code> n'apparaîtra jamais dans la page : c'est l'erreur de débutant la plus fréquente.
+}
+
+::S02-Q10 — Le rôle du DOCTYPE::
+La déclaration <code>&lt;!DOCTYPE html&gt;</code> indique au navigateur qu'il s'agit d'un document HTML5.{
+TRUE
+####Vrai. Placée tout en haut du fichier, elle signale au navigateur de suivre le standard HTML5. Sans elle, le navigateur bascule dans un mode de compatibilité imprévisible.
+}
+
+::S02-Q11 — L'encodage des caractères::
+Quel encodage doit-on toujours déclarer dans le <code>&lt;head&gt;</code> ?{
+=UTF-8
+~ASCII
+~HTML5
+~Windows-1252
+####On déclare toujours <code>&lt;meta charset\="UTF-8"&gt;</code> : c'est l'encodage qui gère correctement les accents et les caractères spéciaux. Sans cette ligne, les accents s'affichent en caractères illisibles.
+}
+
+::S02-Q12 — La balise meta viewport::
+À quoi sert la ligne <code>&lt;meta name\="viewport" content\="width\=device-width, initial-scale\=1.0"&gt;</code> ?{
+=À indiquer au téléphone d'afficher la page à sa taille réelle, sans la miniaturiser
+~À définir la largeur maximale du texte
+~À choisir la résolution des images
+~À empêcher l'affichage de la page sur mobile
+####Sans cette ligne, un téléphone affiche la page comme s'il s'agissait d'un écran d'ordinateur, en la réduisant. Elle est indispensable à la mise en page responsive, vue en semaine 5.
+}
+
+::S02-Q13 — L'attribut lang::
+À quoi sert l'attribut lang dans <code>&lt;html lang\="fr"&gt;</code> ?{
+=À indiquer la langue de la page, utile aux lecteurs d'écran et au référencement
+~À traduire automatiquement la page dans toutes les langues
+~À choisir la police d'écriture
+~À définir le fuseau horaire du site
+####L'attribut lang précise la langue du contenu. Il aide les lecteurs d'écran à prononcer correctement le texte et améliore le référencement. Le validateur W3C signale son absence.
+}
+
+
+// ============================================================
+//  BLOC 3 — Les éléments sémantiques
+// ============================================================
+
+::S02-Q14 — Pourquoi des balises sémantiques ?::
+Quel est l'intérêt d'utiliser des balises sémantiques plutôt que des <code>&lt;div&gt;</code> partout ?{
+=Elles décrivent le rôle de chaque zone, ce qui aide les développeurs, les moteurs de recherche et les lecteurs d'écran
+~Elles rendent la page plus rapide à télécharger
+~Elles remplacent complètement le CSS
+~Elles sont obligatoires pour que la page s'affiche
+####Une balise sémantique indique ce que le contenu EST, pas la façon dont il doit s'afficher. Trois publics en tirent parti : les humains qui relisent le code, les moteurs de recherche, et les lecteurs d'écran.
+}
+
+::S02-Q15 — Le rôle des balises sémantiques::
+Associez chaque balise sémantique à son rôle.{
+=<code>&lt;header&gt;</code> -> L'en-tête de la page ou d'une section (titre, logo)
+=<code>&lt;nav&gt;</code> -> La zone de navigation (menu de liens)
+=<code>&lt;main&gt;</code> -> Le contenu principal, unique dans la page
+=<code>&lt;aside&gt;</code> -> Un contenu annexe, secondaire (barre latérale)
+=<code>&lt;footer&gt;</code> -> Le pied de page (mentions, contact)
+}
+
+::S02-Q16 — La balise main::
+Une page HTML peut contenir plusieurs balises <code>&lt;main&gt;</code>.{
+FALSE
+####Faux. <code>&lt;main&gt;</code> représente le contenu principal et doit être unique dans la page. Il ne contient d'ailleurs ni en-tête de site, ni menu de navigation.
+}
+
+::S02-Q17 — Section ou article ?::
+Un message de forum, qui garderait du sens même cité en dehors de la page, devrait plutôt être balisé avec...{
+=<code>&lt;article&gt;</code>
+~<code>&lt;section&gt;</code>
+~<code>&lt;aside&gt;</code>
+~<code>&lt;div&gt;</code>
+####Le test : ce contenu garderait-il du sens sorti de la page, publié seul ailleurs ? Si oui, c'est un <code>&lt;article&gt;</code>. Si non, c'est une <code>&lt;section&gt;</code> — « Sujets récents » n'a de sens que dans le forum qui la contient.
+}
+
+::S02-Q18 — Le div a-t-il disparu ?::
+Dans quel cas l'usage d'un <code>&lt;div&gt;</code> reste-t-il légitime en HTML5 ?{
+=Quand on regroupe des éléments uniquement pour les mettre en forme, sans aucune signification à exprimer
+~Quand on veut créer un en-tête de page
+~Quand on veut regrouper des contenus liés par un même thème
+~Jamais : le <code>&lt;div&gt;</code> est interdit depuis HTML5
+####Le <code>&lt;div&gt;</code> n'a pas disparu, il a cessé d'être le choix par défaut. Il reste utile quand il n'y a réellement aucun sens à exprimer. Son équivalent à l'intérieur d'une ligne de texte est le <code>&lt;span&gt;</code>.
+}
+
+::S02-Q19 — L'effet visible d'une balise sémantique::
+Remplacer un <code>&lt;div&gt;</code> par un <code>&lt;main&gt;</code> modifie nettement l'apparence de la page.{
+FALSE
+####Faux, et c'est déroutant au début : l'affichage ne change pratiquement pas. Le bénéfice est invisible — il se joue du côté des lecteurs d'écran, des moteurs de recherche et de la lisibilité du code.
+}
+
+
+// ============================================================
+//  BLOC 4 — Structurer le texte
+// ============================================================
+
+::S02-Q20 — La hiérarchie des titres::
+Concernant les titres <code>&lt;h1&gt;</code> à <code>&lt;h6&gt;</code>, quelle affirmation est correcte ?{
+=Il ne faut qu'un seul <code>&lt;h1&gt;</code> par page, et on ne saute pas de niveau
+~On peut mettre autant de <code>&lt;h1&gt;</code> que l'on veut
+~Il faut toujours commencer par <code>&lt;h6&gt;</code>
+~Les titres servent surtout à agrandir le texte
+####Les titres construisent le plan du document, comme dans un rapport. Un seul <code>&lt;h1&gt;</code>, et pas de saut de niveau en descendant. Choisir un <code>&lt;h3&gt;</code> « parce qu'il fait la bonne taille » est une erreur : la taille se règle en CSS.
+}
+
+::S02-Q21 — strong ou b ?::
+Pourquoi préférer <code>&lt;strong&gt;</code> à <code>&lt;b&gt;</code> pour signaler un contenu important ?{
+=Parce que <code>&lt;strong&gt;</code> décrit un sens, que les lecteurs d'écran restituent, alors que <code>&lt;b&gt;</code> ne décrit qu'une apparence
+~Parce que <code>&lt;b&gt;</code> n'existe plus en HTML5
+~Parce que <code>&lt;strong&gt;</code> affiche un gras plus foncé
+~Parce que <code>&lt;b&gt;</code> ralentit le chargement de la page
+####Le rendu visuel est identique, mais un lecteur d'écran change d'intonation sur un <code>&lt;strong&gt;</code> et ignore un <code>&lt;b&gt;</code>. C'est la règle générale du HTML : choisir la balise selon le sens, et laisser le CSS s'occuper de l'apparence. Même logique pour <code>&lt;em&gt;</code> face à <code>&lt;i&gt;</code>.
+}
+
+::S02-Q22 — Bloc ou en ligne ?::
+Parmi ces éléments, lequel est un élément <b>en ligne</b> (il reste dans le fil du texte sans le couper) ?{
+=<code>&lt;strong&gt;</code>
+~<code>&lt;p&gt;</code>
+~<code>&lt;section&gt;</code>
+~<code>&lt;ul&gt;</code>
+####Un élément en bloc occupe toute la largeur disponible et provoque un retour à la ligne : <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;div&gt;</code>. Un élément en ligne reste dans le fil du texte : <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;span&gt;</code>.
+}
+
+
+// ============================================================
+//  BLOC 5 — Liens et images
+// ============================================================
+
+::S02-Q23 — Créer un lien::
+Quel attribut de la balise <code>&lt;a&gt;</code> indique la destination d'un lien ?{
+=href
+~src
+~link
+~url
+####L'attribut href (hypertext reference) indique la destination. Exemple : <code>&lt;a href\="sujet.html"&gt;</code>. L'attribut src, lui, sert aux images et aux scripts.
+}
+
+::S02-Q24 — Un lien interne::
+Que fait un lien <code>&lt;a href\="\#contact"&gt;</code> ?{
+=Il fait défiler la page jusqu'à l'élément dont l'id vaut "contact"
+~Il ouvre un site nommé contact
+~Il télécharge un fichier contact
+~Il crée un nouvel élément appelé contact
+####Le \# désigne un élément de la page même : le lien mène à l'élément dont l'id vaut "contact". Attention, le \# s'écrit dans le href, jamais dans l'attribut id lui-même.
+}
+
+::S02-Q25 — La règle de l'id::
+Sur une même page, deux éléments différents peuvent porter le même id.{
+FALSE
+####Faux. Un id est unique dans la page : c'est ce qui garantit qu'il désigne un élément, et un seul. Le validateur W3C signale les doublons comme des erreurs. L'id servira ensuite au <code>&lt;label&gt;</code> (semaine 3), au CSS (semaine 4) et à JavaScript (semaine 7).
+}
+
+::S02-Q26 — Les chemins relatifs::
+Associez chaque écriture de chemin à sa signification.{
+=<code>sujet.html</code> -> Un fichier situé dans le même dossier
+=<code>images/logo.png</code> -> Un fichier situé dans le sous-dossier images
+=<code>../style.css</code> -> Un fichier situé dans le dossier parent
+=<code>https://exemple.ch/logo.png</code> -> Une adresse absolue, sur un autre serveur
+}
+
+::S02-Q27 — Nommer ses fichiers::
+Votre image s'affiche correctement sur votre ordinateur, mais pas une fois le site mis en ligne. Quelle est la cause la plus probable ?{
+=Une différence de casse entre le nom du fichier et le chemin écrit dans le HTML
+~Le fichier image est trop récent
+~Le navigateur du serveur est différent du vôtre
+~Il manque la balise <code>&lt;figure&gt;</code> autour de l'image
+####Sur un serveur Linux, Logo.png et logo.png sont deux fichiers différents, alors que Windows ne fait pas la distinction. D'où la règle : pas de majuscules aléatoires, pas d'espaces, pas d'accents dans les noms de fichiers.
+}
+
+::S02-Q28 — À quoi sert l'attribut alt ?::
+Pourquoi l'attribut alt d'une image est-il obligatoire ?{
+=Il est lu par les lecteurs d'écran et s'affiche si l'image ne charge pas
+~Il définit la taille de l'image
+~Il choisit la couleur de fond de l'image
+~Il rend l'image cliquable
+####Le texte alt décrit l'image : il est lu à voix haute par les lecteurs d'écran et s'affiche si l'image ne se charge pas. Le validateur W3C signale son absence comme une erreur. Un bon alt décrit ce que montre l'image, pas « image de... ».
+}
+
+::S02-Q29 — Une image purement décorative::
+Que faut-il écrire dans l'attribut alt d'une image purement décorative, qui n'apporte aucune information ?{
+=Un alt vide : alt\=""
+~Le mot « décoration »
+~Le nom du fichier image
+~Rien du tout : on supprime l'attribut alt
+####Un alt vide (alt\="") indique explicitement au lecteur d'écran d'ignorer l'image. Supprimer l'attribut ne produit pas le même effet : le lecteur d'écran annoncerait alors le nom du fichier, et le validateur signalerait une erreur.
+}
+
+
+// ============================================================
+//  BLOC 6 — Listes et tableaux
+// ============================================================
+
+::S02-Q30 — Quelle liste choisir ?::
+Pour présenter une suite d'étapes à réaliser dans l'ordre, quelle balise de liste utiliser ?{
+=<code>&lt;ol&gt;</code>, la liste ordonnée
+~<code>&lt;ul&gt;</code>, la liste non ordonnée
+~<code>&lt;li&gt;</code>, la liste libre
+~<code>&lt;dl&gt;</code>, la liste dynamique
+####On utilise une liste ordonnée <code>&lt;ol&gt;</code> quand l'ordre compte, et une liste non ordonnée <code>&lt;ul&gt;</code> quand il est indifférent.
+}
+
+::S02-Q31 — Le contenu direct d'une liste::
+Quel élément peut être enfant <b>direct</b> d'un <code>&lt;ul&gt;</code> ?{
+=<code>&lt;li&gt;</code>, et rien d'autre
+~<code>&lt;p&gt;</code>
+~<code>&lt;div&gt;</code>
+~N'importe quel élément
+####Seul un <code>&lt;li&gt;</code> peut être enfant direct d'un <code>&lt;ul&gt;</code> ou d'un <code>&lt;ol&gt;</code>. Tout autre contenu doit être placé À L'INTÉRIEUR du <code>&lt;li&gt;</code>. Le validateur est intraitable sur ce point.
+}
+
+::S02-Q32 — Comment écrire un menu de navigation ?::
+Comment s'écrit habituellement une barre de navigation en HTML ?{
+=Un <code>&lt;nav&gt;</code> contenant un <code>&lt;ul&gt;</code>, avec un lien dans chaque <code>&lt;li&gt;</code>
+~Une suite de <code>&lt;a&gt;</code> séparés par des espaces
+~Un <code>&lt;table&gt;</code> d'une seule ligne
+~Une suite de <code>&lt;div&gt;</code> alignés
+####Un menu EST une liste de liens : c'est ce que doivent comprendre les lecteurs d'écran. Cela paraît lourd tant qu'on pense en termes d'apparence — mais le CSS se chargera, en semaine 4, de l'afficher horizontalement.
+}
+
+::S02-Q33 — Les cellules d'un tableau::
+Dans un tableau, quelle balise correspond à une cellule d'<b>en-tête</b> ?{
+=<code>&lt;th&gt;</code>
+~<code>&lt;td&gt;</code>
+~<code>&lt;tr&gt;</code>
+~<code>&lt;thead&gt;</code>
+####<code>&lt;th&gt;</code> (table header) est une cellule d'en-tête, <code>&lt;td&gt;</code> (table data) une cellule de données, <code>&lt;tr&gt;</code> (table row) une ligne entière. <code>&lt;thead&gt;</code> regroupe, lui, les lignes d'en-tête.
+}
+
+::S02-Q34 — Fusionner des cellules::
+Quel attribut permet à une cellule de tableau de s'étendre sur plusieurs <b>colonnes</b> ?{
+=colspan
+~rowspan
+~span
+~merge
+####colspan fusionne horizontalement, sur plusieurs colonnes. rowspan fusionne verticalement, sur plusieurs lignes.
+}
+
+::S02-Q35 — À quoi servent les tableaux HTML ?::
+En HTML, on utilise un tableau (<code>&lt;table&gt;</code>) pour mettre en page l'interface d'un site.{
+FALSE
+####Faux. Un tableau présente des DONNÉES tabulaires : un horaire, un relevé de notes, un comparatif. Positionner des éléments dans la page est le rôle du CSS, vu en semaines 4 et 5. Une page mise en page avec des tableaux est illisible pour un lecteur d'écran et impossible à rendre responsive.
+}
+
+
+// ============================================================
+//  BLOC 7 — Valider son HTML
+// ============================================================
+
+::S02-Q36 — Valider son code HTML::
+Que permet le service validator.w3.org ?{
+=Vérifier qu'une page HTML respecte la spécification : balises bien fermées, imbrication correcte, attributs obligatoires
+~Héberger gratuitement son site web
+~Mesurer le nombre de visiteurs d'un site
+~Convertir une page HTML en PDF
+####Le validateur du W3C signale les erreurs de code. Le navigateur, lui, est très tolérant : il affiche une page même mal écrite, en devinant ce qu'on a voulu écrire — et chaque navigateur devine à sa manière.
+}
+
+::S02-Q37 — Lire les messages du validateur::
+Associez chaque message du validateur à sa correction.{
+=Unclosed element section -> Fermer la balise qui est restée ouverte
+=Duplicate ID "sujets" -> Renommer l'un des deux éléments qui portent cet id
+=An img element must have an alt attribute -> Ajouter un attribut alt à l'image
+=Element p not allowed as child of element ul -> Déplacer le paragraphe à l'intérieur du li
+}
+
+::S02-Q38 — Errors et Warnings::
+Dans un rapport du validateur W3C, quelle est la différence entre une « Error » et un « Warning » ?{
+=Les Errors doivent toutes être corrigées ; les Warnings signalent une maladresse sans invalider la page
+~Les Warnings sont plus graves que les Errors
+~Les Warnings concernent le CSS, les Errors le HTML
+~Il n'y a aucune différence, ce sont deux mots pour la même chose
+####Les Errors (rouge) rendent la page non conforme et doivent disparaître. Les Warnings (jaune) attirent l'attention sur une maladresse ou une pratique déconseillée, sans invalider le document.
+}
+
+::S02-Q39 — Méthode de correction::
+Le validateur affiche 12 erreurs sur votre page. Quelle est la bonne méthode ?{
+=Corriger la première erreur de la liste, puis relancer la validation
+~Corriger les 12 erreurs d'un coup avant de relancer
+~Commencer par la dernière erreur, en bas du fichier
+~Ignorer les erreurs si la page s'affiche correctement
+####Une seule balise oubliée peut produire dix messages en cascade. En corrigeant la première erreur puis en relançant, le compteur chute souvent d'un coup. Et une page qui « s'affiche correctement » chez vous peut se dérégler chez un autre visiteur.
+}
+
+::S02-Q40 — Prévenir les erreurs::
+Parmi ces habitudes, lesquelles réduisent le nombre d'erreurs de validation ? Cochez toutes les bonnes réponses.{
+~%33.33333%Indenter son code, un niveau par niveau d'imbrication
+~%33.33333%Écrire la balise fermante immédiatement après l'ouvrante, puis remplir le contenu
+~%33.33333%Tenir compte du soulignement rouge affiché par VS Code
+~%-100%Écrire tout le code sur une seule ligne pour gagner de la place
+~%-100%Supprimer les attributs qui provoquent des messages d'erreur
+####Indentation, fermeture immédiate des balises et lecture des signalements de l'éditeur suppriment la majorité des erreurs avant même la validation. Supprimer un attribut obligatoire (comme alt) fait disparaître le message, pas le problème.
+}

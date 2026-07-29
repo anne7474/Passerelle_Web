@@ -1,0 +1,776 @@
+% ============================================================
+%  Semaine 3 — Fiche TP — Les formulaires du MiniForum  [Module B]
+%  cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final et sur S03_polycop
+%  (S3 : les quatre formulaires du MiniForum — création de sujet,
+%   réponse, inscription, connexion — puis accessibilité.
+%   Toujours aucun CSS : la mise en forme commence en semaine 4.)
+%
+%  Images attendues dans ./images/ : cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+% ---------------------------------------------------------------
+% Compatibilité babel-french — deux garde-fous
+%  1. babel-french redéfinit la mise en page des listes, ce qui entre en
+%     conflit avec enumitem (erreurs « perhaps a missing \item », surtout
+%     sur les listes imbriquées). StandardLists=true rend la main à enumitem.
+%  2. Le français rend ( : ; ! ? ) actifs. La bibliothèque babel de TikZ,
+%     chargée plus bas, les neutralise dans les tikzpicture (les maquettes).
+% Sans effet si la cause est ailleurs.
+% ---------------------------------------------------------------
+\ifdefined\frenchsetup
+  \frenchsetup{StandardLists=true}
+\else
+  \ifdefined\frenchbsetup\frenchbsetup{StandardLists=true}\fi
+\fi
+
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+% Neutralise les caractères actifs du français à l'intérieur des tikzpicture.
+% À charger après babel. Sans effet si la langue n'a pas de raccourcis actifs.
+\usetikzlibrary{babel}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Images : insertion robuste
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \capture[largeur]{chemin}{légende}
+\newcommand{\capture}[3][0.72\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][2.8cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ capture à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% Maquettes : barre de fenêtre de navigateur
+% \browserbar{noeud}{nom du fichier}
+% ---------------------------------------------------------------
+\newcommand{\browserbar}[2]{%
+  \fill[cfptGrey] ([yshift=-0.02cm]#1.north west) rectangle ([yshift=-0.62cm]#1.north east);
+  \draw[cfptDarkGrey!45] ([yshift=-0.62cm]#1.north west) -- ([yshift=-0.62cm]#1.north east);
+  \foreach \bx in {0.28,0.5,0.72} \fill[cfptDarkGrey!35] ([xshift=\bx cm, yshift=-0.32cm]#1.north west) circle (0.055cm);
+  \fill[white, draw=cfptDarkGrey!35] ([xshift=1.05cm, yshift=-0.17cm]#1.north west) rectangle ([xshift=5cm, yshift=-0.47cm]#1.north west);
+  \node[anchor=west, font=\scriptsize\ttfamily, text=cfptDarkGrey] at ([xshift=1.15cm, yshift=-0.32cm]#1.north west) {#2};
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Fiche TP --- Semaine 3}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize Les formulaires du MiniForum}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
+\setlist[enumerate]{itemsep=6pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible.
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
+  numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, p, a, img, figure, figcaption, ul, ol, li,
+    table, caption, thead, tbody, tr, th, td, form, fieldset, legend, input,
+    textarea, select, option, label, button, div, span, meta, title, link,
+    script, strong, em, br, hr, time},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ---------------------------------------------------------------
+% Styles communs aux maquettes
+% ---------------------------------------------------------------
+\tikzset{
+  mkbrowser/.style={draw=cfptDarkGrey!50, thick, rounded corners=3pt},
+  mkzone/.style={draw=accentBlue!55, thin, dashed, rounded corners=2pt},
+  mkzoneb/.style={draw=successGreen!60, thin, dashed, rounded corners=2pt},
+  mkfield/.style={draw=cfptDarkGrey!45, fill=white, rounded corners=1pt,
+                  anchor=north west, minimum height=0.42cm},
+  mklab/.style={anchor=north west, font=\footnotesize\bfseries, text=cfptBlack},
+  mkhint/.style={anchor=north west, font=\scriptsize\itshape, text=cfptDarkGrey!80},
+  mktag/.style={font=\ttfamily\scriptsize, anchor=west},
+  mkbtn/.style={draw=accentBlue, fill=accentBlue, text=white, rounded corners=2pt,
+                anchor=north west, font=\footnotesize\bfseries,
+                inner xsep=8pt, inner ysep=4pt},
+  mklegend/.style={anchor=west, fill=white, font=\footnotesize\bfseries,
+                   text=accentBlue, inner sep=2pt}
+}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.72\linewidth}
+    {\color{cfptYellow}\Large\bfseries Fiche TP --- Semaine 3}\\[4pt]
+    {\color{white}\Large\bfseries Les formulaires du MiniForum}\\[4pt]
+    {\color{lightBlue}\normalsize Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Durée & \color{white}\small 4h \\
+      \color{lightBlue}\small Rendu & \color{white}\small avant S4 \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={Objectif du TP}]
+Mettre en place les \textbf{quatre formulaires} du MiniForum --- création de sujet, réponse à un sujet, inscription et connexion --- puis vérifier que l'ensemble du site reste utilisable \textbf{au clavier} et par un lecteur d'écran.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Avant de commencer}]
+Ce TP suppose que les notions du polycopié \textit{S03\_polycop} (champs, attributs, \texttt{name} contre \texttt{id}, validation native, \texttt{<label>}, \texttt{<fieldset>}, accessibilité) ont été vues en cours. Garde-le à portée de main.\\[3pt]
+Tu travailles dans le dépôt \texttt{miniforum}, avec les deux pages \texttt{index.html} et \texttt{sujet.html} produites en semaine 2.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{tcolorbox}[attention, title={Comment lire cette fiche}]
+Comme la semaine dernière, cette fiche ne donne pas le code à recopier. Elle décrit le \textbf{rendu attendu} sous forme de maquette et précise ce qu'il faut produire. À toi d'écrire le HTML correspondant.\\[4pt]
+Les balises annotées sur les maquettes (\texttt{<fieldset>}, \texttt{<label>}\dots) sont des indications, pas du texte à afficher. Les champs y sont dessinés vides : c'est bien leur \textbf{structure} qui est demandée, pas leur contenu.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{6.4cm}Xc}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Étape} & \hdr{Ce que tu produis} & \hdrc{Temps} \\
+  \midrule
+  \rowcolor{uniPaper}
+  1--2 \quad Reprise et création de sujet & le formulaire principal du forum & 1h \\
+  3--4 \quad Réponse et inscription & deux formulaires de plus & 1h15 \\
+  \rowcolor{uniPaper}
+  5--6 \quad Connexion et navigation & les quatre formulaires reliés & 40 min \\
+  7 \quad\; Passage au clavier et aux DevTools & un site réellement utilisable & 45 min \\
+  \rowcolor{uniPaper}
+  8 \quad\; Validation et envoi & un dépôt propre et validé & 20 min \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Reprendre le projet}
+% ============================================================
+
+\begin{enumerate}
+  \item Ouvrir le dossier \texttt{miniforum} dans VS Code et récupérer les éventuelles mises à jour :
+\begin{lstlisting}[language=bash, numbers=none]
+git pull
+\end{lstlisting}
+  \item Ouvrir \texttt{index.html} avec \textit{Live Server} (clic droit $\rightarrow$ \textit{Open with Live Server}) et garder la page visible à côté de l'éditeur pendant tout le TP.
+  \item Relire rapidement le HTML de la semaine 2 : les formulaires vont s'ajouter \textbf{dans} la structure existante, sans la casser.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Toujours pas de CSS}]
+Les formulaires vont être franchement laids : champs collés les uns aux autres, largeurs inégales, boutons gris. C'est normal et c'est voulu.\\[4pt]
+Un formulaire sans style force à juger sa \textbf{structure} --- et c'est exactement ce qui est évalué cette semaine. La mise en forme arrive en semaine 4.
+\end{tcolorbox}
+
+% ============================================================
+\section{Le formulaire de création de sujet}
+% ============================================================
+
+C'est le formulaire principal du forum : celui qui permet de lancer une nouvelle discussion. Il vient s'ajouter dans le \texttt{<main>} de \texttt{index.html}, \textbf{après} la section des sujets.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=8.9cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{index.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries\large] at (0,0) {Nouveau sujet};
+    \node[mktag, color=accentBlue] at (7.9,-0.2) {<h2>};
+
+    % ---- fieldset 1 : votre message ----
+    \node[mkzone, minimum width=10.2cm, minimum height=3.6cm, anchor=north west] (f1) at (0,-0.75) {};
+    \node[mklegend] at ([xshift=0.35cm]f1.north west) {Votre message};
+
+    \node[mklab] at (0.35,-1.2) {Pseudo};
+    \node[mkfield, minimum width=4cm] at (0.35,-1.55) {};
+    \node[mkhint] at (0.5,-1.6) {ex : alice};
+    \node[mktag, color=warningOrange] at (4.5,-1.76) {<input type="text"> + <label>};
+
+    \node[mklab] at (0.35,-2.15) {Titre du sujet};
+    \node[mkfield, minimum width=7.4cm] at (0.35,-2.5) {};
+    \node[mktag, color=warningOrange] at (7.95,-2.71) {required};
+
+    \node[mklab] at (0.35,-3.35) {Message};
+    \node[mkfield, minimum width=9.4cm, minimum height=0.75cm] at (0.35,-3.7) {};
+    \node[mktag, color=successGreen, anchor=east] at (9.7,-4.05) {<textarea>};
+    \node[mktag, color=accentBlue, anchor=east] at (10.15,-0.75) {<fieldset> + <legend>};
+
+    % ---- fieldset 2 : options ----
+    \node[mkzone, minimum width=10.2cm, minimum height=2.3cm, anchor=north west] (f2) at (0,-4.75) {};
+    \node[mklegend] at ([xshift=0.35cm]f2.north west) {Options de publication};
+
+    \node[mklab] at (0.35,-5.2) {Catégorie};
+    \node[mkfield, minimum width=3.2cm] at (0.35,-5.55) {};
+    \draw[cfptDarkGrey!70] (3.25,-5.72) -- (3.45,-5.72) -- (3.35,-5.86) -- cycle;
+    \node[mktag, color=successGreen] at (3.75,-5.76) {<select> --- trois <option>};
+
+    \node[mklab] at (0.35,-6.2) {Visibilité};
+    \draw[cfptDarkGrey!70, fill=accentBlue!25] (1.85,-6.32) circle (0.09);
+    \node[anchor=north west, font=\footnotesize] at (2.0,-6.15) {Public};
+    \draw[cfptDarkGrey!70, fill=white] (3.5,-6.32) circle (0.09);
+    \node[anchor=north west, font=\footnotesize] at (3.65,-6.15) {Réservé aux membres};
+    \node[mktag, color=warningOrange] at (6.9,-6.32) {deux <input type="radio">};
+
+    % ---- bouton ----
+    \node[mkbtn] at (0,-7.25) {Publier le sujet};
+    \node[mktag, color=accentBlue] at (2.6,-7.45) {<button type="submit">};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans \texttt{index.html}}]
+Une \texttt{<section>} contenant un titre \texttt{<h2>} « Nouveau sujet » et un \texttt{<form>} avec \texttt{action="/topics"} et \texttt{method="post"}, composé de :
+\begin{itemize}
+  \item un premier \texttt{<fieldset>} « Votre message » avec trois champs :
+  \begin{itemize}
+    \item \textbf{Pseudo} --- \texttt{input} de type \texttt{text}, \texttt{name="pseudo"}, obligatoire, avec un \texttt{placeholder} d'exemple ;
+    \item \textbf{Titre du sujet} --- \texttt{input} de type \texttt{text}, \texttt{name="titre"}, obligatoire, limité à 80 caractères ;
+    \item \textbf{Message} --- \texttt{textarea} de \texttt{name="message"}, obligatoire, 6 lignes, limité à 500 caractères ;
+  \end{itemize}
+  \item un second \texttt{<fieldset>} « Options de publication » avec :
+  \begin{itemize}
+    \item une liste déroulante \textbf{Catégorie} (\texttt{name="categorie"}) proposant \textit{Général}, \textit{Aide} et \textit{Projets} ;
+    \item deux boutons radio \textbf{Visibilité} (\texttt{name="visibilite"}), valeurs \texttt{public} et \texttt{prive}, le premier coché par défaut ;
+  \end{itemize}
+  \item un bouton d'envoi \texttt{<button type="submit">}.
+\end{itemize}
+Chaque champ a un \texttt{<label>} relié par \texttt{for} / \texttt{id}, et un \texttt{name} distinct.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Les \texttt{name} de ce formulaire sont définitifs}]
+\texttt{pseudo}, \texttt{titre}, \texttt{message}, \texttt{categorie}, \texttt{visibilite} : ces cinq noms sont exactement les clés que le serveur Express lira en semaine 15, sous la forme \texttt{req.body.titre}, \texttt{req.body.message}\dots\\[4pt]
+Choisis-les en minuscules, sans accent ni espace, et ne les change plus.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Le premier test à faire}]
+Sauvegarde, puis clique sur « Publier le sujet » avec les champs \textbf{vides}. Le navigateur doit refuser l'envoi, placer le curseur dans le premier champ obligatoire et afficher un message.\\[4pt]
+Si la page se recharge sans rien dire, c'est qu'il manque les \texttt{required}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Point d'étape}]
+\begin{lstlisting}[language=bash, numbers=none]
+git add index.html
+git commit -m "Formulaire de creation de sujet"
+\end{lstlisting}
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Le formulaire de réponse}
+% ============================================================
+
+Dans \texttt{sujet.html}, sous la liste des messages, on ajoute de quoi répondre à la discussion. Ce formulaire est plus court --- deux champs suffisent.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=5.5cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{sujet.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries] at (0,0) {Répondre à ce sujet};
+    \node[mktag, color=accentBlue] at (7.9,-0.15) {<h3>};
+
+    \node[mkzoneb, minimum width=10.2cm, minimum height=2.9cm, anchor=north west] (f1) at (0,-0.6) {};
+    \node[mklegend] at ([xshift=0.35cm]f1.north west) {Votre réponse};
+
+    \node[mklab] at (0.35,-1.05) {Pseudo};
+    \node[mkfield, minimum width=4cm] at (0.35,-1.4) {};
+    \node[mktag, color=warningOrange] at (4.55,-1.61) {name="pseudo"};
+
+    \node[mklab] at (0.35,-2.0) {Message};
+    \node[mkfield, minimum width=9.4cm, minimum height=0.8cm] at (0.35,-2.35) {};
+    \node[mktag, color=successGreen, anchor=east] at (9.7,-2.75) {<textarea name="message">};
+
+    \node[mkbtn] at (0,-3.65) {Envoyer la réponse};
+    \node[mktag, color=accentBlue] at (3.5,-3.85) {<button type="submit">};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans \texttt{sujet.html}}]
+Un \texttt{<form>} placé après la section des réponses, avec :
+\begin{itemize}
+  \item un titre \texttt{<h3>} « Répondre à ce sujet » ;
+  \item un \texttt{<fieldset>} « Votre réponse » contenant un champ \textbf{Pseudo} (\texttt{name="pseudo"}) et un \textbf{Message} (\texttt{textarea}, \texttt{name="message"}), tous deux obligatoires ;
+  \item un bouton d'envoi.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Attention aux \texttt{id} en double}]
+Le formulaire de \texttt{sujet.html} utilise les mêmes \textbf{noms de champs} que celui de \texttt{index.html} --- c'est normal, ce sont les mêmes données. Mais les deux formulaires sont dans \textbf{deux pages différentes} : aucun conflit d'\texttt{id} n'est possible.\\[4pt]
+En revanche, si tu ajoutes plus tard un second formulaire \textbf{dans la même page}, les \texttt{id} devront être distincts (\texttt{pseudo-reponse}, \texttt{message-reponse}\dots) alors que les \texttt{name} pourront rester identiques. C'est un bon test de compréhension de la différence entre les deux attributs.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{La page d'inscription}
+% ============================================================
+
+C'est le formulaire le plus riche du projet : il rassemble presque tous les types d'\texttt{input} vus en cours. Crée un nouveau fichier \texttt{inscription.html} à la racine, en reprenant le squelette et le \texttt{<header>} des pages existantes.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=9.7cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{inscription.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries\large] at (0,0) {Créer un compte};
+    \node[mktag, color=accentBlue] at (7.9,-0.2) {<h2>};
+
+    % ---- fieldset identifiants ----
+    \node[mkzone, minimum width=10.2cm, minimum height=4.15cm, anchor=north west] (f1) at (0,-0.75) {};
+    \node[mklegend] at ([xshift=0.35cm]f1.north west) {Identifiants};
+
+    \node[mklab] at (0.35,-1.2) {Pseudo};
+    \node[mkfield, minimum width=4.4cm] at (0.35,-1.55) {};
+    \node[mktag, color=warningOrange] at (4.95,-1.76) {pattern + title};
+
+    \node[mklab] at (0.35,-2.15) {Adresse e-mail};
+    \node[mkfield, minimum width=5.6cm] at (0.35,-2.5) {};
+    \node[mktag, color=warningOrange] at (6.15,-2.71) {type="email"};
+
+    \node[mklab] at (0.35,-3.1) {Mot de passe};
+    \node[mkfield, minimum width=4.4cm] at (0.35,-3.45) {};
+    \node[anchor=north west, font=\footnotesize, text=cfptDarkGrey] at (0.5,-3.5) {$\bullet\bullet\bullet\bullet\bullet\bullet\bullet\bullet$};
+    \node[mktag, color=warningOrange] at (4.95,-3.66) {type="password" + minlength};
+
+    \node[mklab] at (0.35,-4.05) {Date de naissance};
+    \node[mkfield, minimum width=3.2cm] at (0.35,-4.4) {};
+    \node[mktag, color=warningOrange] at (3.75,-4.61) {type="date"};
+
+    % ---- fieldset preferences ----
+    \node[mkzone, minimum width=10.2cm, minimum height=2.4cm, anchor=north west] (f2) at (0,-5.25) {};
+    \node[mklegend] at ([xshift=0.35cm]f2.north west) {Préférences};
+
+    \draw[cfptDarkGrey!70, fill=white] (0.4,-5.75) rectangle (0.62,-5.97);
+    \node[anchor=north west, font=\footnotesize] at (0.75,-5.7) {Recevoir la lettre d'information};
+    \node[mktag, color=successGreen] at (6.3,-5.86) {<input type="checkbox">};
+
+    \draw[cfptDarkGrey!70, fill=white] (0.4,-6.45) rectangle (0.62,-6.67);
+    \node[anchor=north west, font=\footnotesize] at (0.75,-6.4) {J'accepte les conditions d'utilisation};
+    \node[mktag, color=successGreen] at (6.3,-6.56) {required};
+
+    % ---- bouton + lien ----
+    \node[mkbtn] at (0,-7.7) {Créer mon compte};
+    \node[anchor=north west, font=\footnotesize, text=accentBlue] at (3.2,-7.72) {Déjà inscrit ? Se connecter};
+    \node[mktag, color=warningOrange, anchor=north west] at (3.2,-8.15) {<a href="connexion.html">};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans \texttt{inscription.html}}]
+La même charpente que les autres pages (\texttt{<header>}, \texttt{<main>}, \texttt{<footer>}), avec dans le \texttt{<main>} un \texttt{<h2>} « Créer un compte » et un \texttt{<form action="/inscription" method="post">} contenant :
+\begin{itemize}
+  \item un \texttt{<fieldset>} « Identifiants » :
+  \begin{itemize}
+    \item \textbf{Pseudo} --- texte, \texttt{name="pseudo"}, obligatoire, avec un \texttt{pattern} de 3 à 15 lettres ou chiffres \textbf{et} un \texttt{title} qui explique la règle ;
+    \item \textbf{Adresse e-mail} --- \texttt{type="email"}, \texttt{name="email"}, obligatoire ;
+    \item \textbf{Mot de passe} --- \texttt{type="password"}, \texttt{name="motdepasse"}, obligatoire, \texttt{minlength="8"} ;
+    \item \textbf{Date de naissance} --- \texttt{type="date"}, \texttt{name="naissance"} ;
+  \end{itemize}
+  \item un \texttt{<fieldset>} « Préférences » avec deux cases à cocher : la lettre d'information (facultative, \texttt{name="newsletter"}) et l'acceptation des conditions (\textbf{obligatoire}, \texttt{name="cgu"}) ;
+  \item un bouton « Créer mon compte » et un lien vers \texttt{connexion.html}.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Le \texttt{title} n'est pas facultatif}]
+Sans \texttt{title}, un \texttt{pattern} qui refuse la saisie affiche « Veuillez respecter le format demandé » --- et l'utilisateur reste bloqué sans savoir quoi corriger.\\[4pt]
+Teste ton champ pseudo avec une saisie invalide (\texttt{ab}, ou \texttt{alice!}) : le message affiché doit être le \textbf{tien}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[interdit, title={Aucun mot de passe n'est protégé aujourd'hui}]
+\texttt{type="password"} masque les caractères à l'écran. C'est tout. La valeur n'est ni chiffrée, ni protégée, et elle transiterait en clair vers le serveur.\\[4pt]
+Le hachage des mots de passe est traité en \textbf{semaine 18}. D'ici là, n'utilise jamais un vrai mot de passe personnel pour tester tes pages.
+\end{tcolorbox}
+
+% ============================================================
+\section{La page de connexion}
+% ============================================================
+
+Le plus simple des quatre. Crée \texttt{connexion.html} sur le même modèle.
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[mkbrowser, minimum width=12cm, minimum height=6.4cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{connexion.html}
+  \begin{scope}[shift={([xshift=0.45cm, yshift=-1.0cm]win.north west)}]
+    \node[mklab, font=\bfseries\large] at (0,0) {Connexion};
+    \node[mktag, color=accentBlue] at (7.9,-0.2) {<h2>};
+
+    \node[mkzoneb, minimum width=10.2cm, minimum height=3.2cm, anchor=north west] (f1) at (0,-0.75) {};
+    \node[mklegend] at ([xshift=0.35cm]f1.north west) {Vos identifiants};
+
+    \node[mklab] at (0.35,-1.2) {Pseudo ou adresse e-mail};
+    \node[mkfield, minimum width=5.2cm] at (0.35,-1.55) {};
+    \node[mktag, color=warningOrange] at (5.75,-1.76) {name="identifiant"};
+
+    \node[mklab] at (0.35,-2.15) {Mot de passe};
+    \node[mkfield, minimum width=4.4cm] at (0.35,-2.5) {};
+    \node[anchor=north west, font=\footnotesize, text=cfptDarkGrey] at (0.5,-2.55) {$\bullet\bullet\bullet\bullet\bullet\bullet\bullet\bullet$};
+    \node[mktag, color=warningOrange] at (4.95,-2.71) {type="password"};
+
+    \draw[cfptDarkGrey!70, fill=white] (0.4,-3.15) rectangle (0.62,-3.37);
+    \node[anchor=north west, font=\footnotesize] at (0.75,-3.1) {Rester connecté sur cet appareil};
+    \node[mktag, color=successGreen] at (6.3,-3.26) {<input type="checkbox">};
+
+    \node[mkbtn] at (0,-4.25) {Se connecter};
+    \node[anchor=north west, font=\footnotesize, text=accentBlue] at (2.6,-4.27) {Pas encore de compte ? S'inscrire};
+    \node[mktag, color=warningOrange, anchor=north west] at (2.6,-4.7) {<a href="inscription.html">};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans \texttt{connexion.html}}]
+Un \texttt{<form action="/connexion" method="post">} avec un \texttt{<fieldset>} « Vos identifiants » contenant un champ \textbf{identifiant} (texte, obligatoire), un champ \textbf{mot de passe} (obligatoire) et une case à cocher « Rester connecté ». Un bouton d'envoi, et un lien vers \texttt{inscription.html}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Pourquoi \texttt{method="post"} ici, sans discussion}]
+Avec \texttt{method="get"}, le mot de passe apparaîtrait \textbf{dans la barre d'adresse} --- donc dans l'historique du navigateur, dans les journaux du serveur et dans le presse-papier de quiconque copie l'URL.\\[4pt]
+C'est le cas d'école qui justifie \texttt{post}. Retiens-le : il tombera au contrôle écrit.
+\end{tcolorbox}
+
+% ============================================================
+\section{Relier les quatre pages}
+% ============================================================
+
+Quatre formulaires existent, mais rien ne permet encore de les atteindre.
+
+\begin{enumerate}
+  \item Dans le \texttt{<nav>} des \textbf{quatre} pages, ajouter deux entrées : « Inscription » vers \texttt{inscription.html} et « Connexion » vers \texttt{connexion.html}.
+  \item Vérifier que le \texttt{<nav>} est identique partout : même ordre, mêmes intitulés.
+  \item Tester tous les parcours dans le navigateur : accueil $\rightarrow$ sujet $\rightarrow$ inscription $\rightarrow$ connexion $\rightarrow$ accueil.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Le copier-coller a une limite}]
+Quatre pages partagent maintenant le même en-tête. Si tu modifies le menu, il faut le modifier \textbf{quatre fois} --- et l'oubli d'une page est la source d'erreur classique.\\[4pt]
+C'est une vraie limite du HTML statique, et non un défaut de ta méthode. Elle disparaîtra en semaine 16, quand le serveur générera les pages à partir d'un modèle commun.
+\end{tcolorbox}
+
+% ============================================================
+\section{Passer le site à l'accessibilité}
+% ============================================================
+
+Les formulaires fonctionnent. Reste à vérifier qu'ils sont utilisables par tout le monde. Cette partie compte autant que les précédentes.
+
+\subsection{Le test du clic sur l'étiquette}
+
+\begin{enumerate}
+  \item Sur chaque page, cliquer sur \textbf{chaque} texte d'étiquette --- pas sur le champ.
+  \item Le curseur doit se placer dans le champ correspondant, ou la case se cocher.
+  \item Si rien ne se passe : le \texttt{for} du \texttt{<label>} ne correspond pas à l'\texttt{id} du champ. Corrige.
+\end{enumerate}
+
+\begin{tcolorbox}[astuce, title={Une seconde par champ}]
+C'est le test le plus rentable de la semaine : il détecte en quelques secondes la totalité des liaisons \texttt{label} / \texttt{input} cassées, que le validateur W3C ne signale pas toujours.
+\end{tcolorbox}
+
+\subsection{Le test des trente secondes au clavier}
+
+\begin{enumerate}
+  \item Cliquer dans la barre d'adresse du navigateur, puis \textbf{lâcher la souris}.
+  \item Parcourir toute la page avec \texttt{Tab}, et remplir un formulaire entier sans souris : \texttt{Tab} pour avancer, \texttt{Espace} pour cocher, flèches pour les boutons radio, \texttt{Entrée} pour envoyer.
+  \item Vérifier les trois points ci-dessous.
+\end{enumerate}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4.6cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Ce qui doit être vrai} & \hdr{Sinon} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Tu vois toujours où tu te trouves & Un cadre doit entourer l'élément actif : ne le supprime jamais en CSS \\
+  L'ordre suit la lecture naturelle & L'ordre de tabulation suit l'ordre du \textbf{code} : réordonne le HTML \\
+  \rowcolor{uniPaper}
+  Tu atteins tous les champs et boutons & Un élément inatteignable au clavier est inutilisable par une partie des visiteurs \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Le vérificateur d'accessibilité des DevTools}
+
+\begin{enumerate}
+  \item Ouvrir les outils de développement (\texttt{F12}), onglet \textit{Accessibilité} (ou \textit{Accessibility}).
+  \item Sélectionner un champ dans la page et lire l'\textbf{arbre d'accessibilité} : le champ doit apparaître avec un nom --- celui de son \texttt{<label>}. Un champ dont le nom est vide est un champ inutilisable sans écran.
+  \item Lancer un audit \textit{Lighthouse} en cochant uniquement \textit{Accessibility}, sur les quatre pages.
+  \item Corriger tous les problèmes signalés comme bloquants, puis relancer.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Un score de 100 ne prouve rien}]
+Une machine sait vérifier qu'un \texttt{alt} \textbf{existe}, pas qu'il \textbf{décrit} l'image. Elle sait qu'un \texttt{<label>} est relié, pas qu'il est compréhensible.\\[4pt]
+Le score est un plancher, pas un objectif : le test du clavier reste le seul qui compte vraiment.
+\end{tcolorbox}
+
+% ============================================================
+\section{Valider et sauvegarder}
+% ============================================================
+
+\subsection{Valider les quatre pages}
+
+\begin{enumerate}
+  \item Aller sur \texttt{validator.w3.org}, onglet \textit{Validate by Direct Input}.
+  \item Coller le contenu de chaque page, l'une après l'autre, et corriger en commençant par \textbf{la première erreur de la liste}.
+\end{enumerate}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{6.1cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Message fréquent cette semaine} & \hdr{Correction} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{The for attribute of the label element must refer to a form control} & Le \texttt{for} pointe vers un \texttt{id} qui n'existe pas : corriger l'un ou l'autre \\
+  \texttt{Duplicate ID "pseudo"} & Deux champs portent le même \texttt{id} dans une page : en renommer un \\
+  \rowcolor{uniPaper}
+  \texttt{Element legend not allowed as child of element form} & Le \texttt{<legend>} doit être \textbf{dans} un \texttt{<fieldset>}, en première position \\
+  \texttt{Attribute maxlength not allowed on element select} & Cet attribut n'existe pas sur \texttt{<select>} : le supprimer \\
+  \rowcolor{uniPaper}
+  \texttt{Bad value for attribute pattern} & L'expression régulière est mal écrite : vérifier les crochets et les accolades \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Envoyer sur GitHub}
+
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "Formulaires d'inscription et de connexion, corrections d'accessibilite"
+git push
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Vérifier que c'est bien parti}]
+Sur \texttt{github.com}, ton dépôt doit contenir \textbf{quatre} fichiers HTML, et l'onglet \textit{Commits} doit montrer plusieurs commits pour cette séance --- un par étape, pas un seul en fin de TP.
+\end{tcolorbox}
+
+% ============================================================
+\section{Pour aller plus loin (optionnel)}
+% ============================================================
+
+Si tu as terminé en avance :
+
+\begin{itemize}
+  \item Ajouter un champ \textbf{Rechercher un sujet} dans le \texttt{<header>} de \texttt{index.html}, avec \texttt{type="search"} et \texttt{method="get"} --- le seul cas du projet où \texttt{get} est le bon choix. Explique pourquoi en commentaire.
+  \item Remplacer la liste déroulante des catégories par un \texttt{<datalist>} : l'utilisateur peut alors choisir \textit{ou} saisir librement.
+  \item Ajouter un \texttt{<input type="hidden">} dans le formulaire de réponse pour transporter l'identifiant du sujet, et réfléchir à ce que « caché » signifie exactement --- le champ est-il invisible pour l'utilisateur, ou introuvable ?
+  \item Regrouper les \texttt{<option>} de la catégorie par thème avec \texttt{<optgroup>}.
+  \item Installer un lecteur d'écran (NVDA sous Windows, VoiceOver déjà présent sous macOS) et parcourir un formulaire les yeux fermés. C'est l'exercice qui change le plus la façon d'écrire du HTML.
+\end{itemize}
+
+% ============================================================
+\section{Points de contrôle}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Auto-évaluation}]
+\begin{itemize}
+  \item[$\square$] Les quatre pages existent : \texttt{index.html}, \texttt{sujet.html}, \texttt{inscription.html}, \texttt{connexion.html}
+  \item[$\square$] Chaque formulaire est dans une balise \texttt{<form>} avec \texttt{action} et \texttt{method}
+  \item[$\square$] \texttt{method="post"} partout, sauf éventuellement pour une recherche
+  \item[$\square$] \textbf{Chaque} champ a un \texttt{name} en minuscules, sans accent ni espace
+  \item[$\square$] \textbf{Chaque} champ a un \texttt{<label>} relié par \texttt{for} / \texttt{id}, testé au clic
+  \item[$\square$] Les champs obligatoires portent \texttt{required}, et l'envoi à vide est bien refusé
+  \item[$\square$] Le champ pseudo de l'inscription a un \texttt{pattern} \textbf{et} un \texttt{title} explicite
+  \item[$\square$] Les types sont adaptés : \texttt{email}, \texttt{password}, \texttt{date}
+  \item[$\square$] Les champs liés sont groupés dans un \texttt{<fieldset>} avec un \texttt{<legend>}
+  \item[$\square$] Les deux boutons radio de la visibilité partagent le même \texttt{name} et des \texttt{value} distinctes
+  \item[$\square$] Chaque \texttt{<button>} a un attribut \texttt{type} explicite
+  \item[$\square$] Aucun \texttt{id} n'est en double dans une même page
+  \item[$\square$] Le \texttt{<nav>} des quatre pages est identique et tous les liens fonctionnent
+  \item[$\square$] Chaque page se parcourt et se remplit entièrement \textbf{au clavier}, avec un focus visible
+  \item[$\square$] Les quatre pages passent \texttt{validator.w3.org} \textbf{sans erreur}
+  \item[$\square$] L'audit Lighthouse ne signale plus de problème d'accessibilité bloquant
+  \item[$\square$] Le travail est poussé sur GitHub, en \textbf{plusieurs} commits au message clair
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[attention, title={À rendre avant la semaine 4}]
+Le dépôt GitHub \texttt{miniforum} à jour, avec les quatre pages validées et navigables au clavier.\\[4pt]
+La semaine 4 ouvre le \textbf{CSS}. Les trois semaines de structure que tu viens de terminer vont enfin recevoir leur mise en forme --- \textbf{sans une seule ligne de HTML à retoucher}. C'est précisément ce que permet un HTML bien écrit.
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[astuce, title={Bloqué ?}]
+Si une étape résiste plus de dix minutes, demande. Le polycopié \textit{S03\_polycop} contient la réponse à la quasi-totalité des questions de ce TP --- commence par y chercher, puis appelle.
+\end{tcolorbox}
+
+\end{document}

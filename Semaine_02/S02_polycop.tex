@@ -1,12 +1,18 @@
 % ============================================================
-%  Semaine 2 — HTML5 : structure & sémantique
+%  Semaine 2 — HTML5 : structure & sémantique  [Module B]
 %  Polycopié étudiant — cfpt·i | Anne Terrier
-%  Charte graphique : charte cfpt·i originale, police sans-serif
+%  Aligné sur PlanCours_Pass_Web_final (20 semaines, 3h cours + 4h TP)
+%
+%  Images attendues dans le sous-dossier ./images/ :
+%    cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
 % ============================================================
 \documentclass[a4paper,11pt]{article}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
 \usepackage[scaled=0.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
@@ -28,7 +34,7 @@
 \usepackage[hidelinks]{hyperref}
 
 % ---------------------------------------------------------------
-% Palette cfpt·i originale
+% Palette cfpt·i
 % ---------------------------------------------------------------
 \definecolor{cfptYellow}{HTML}{F5C400}
 \definecolor{cfptBlack}{HTML}{1A1A1A}
@@ -39,8 +45,11 @@
 \definecolor{codeGrey}{HTML}{F5F5F5}
 \definecolor{successGreen}{HTML}{1E7145}
 \definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+\definecolor{filrougeYellow}{HTML}{FFF8DC}
 
-% Alias (le contenu du document utilise ces noms) vers la palette ci-dessus
+% Alias utilisés dans le corps du document
 \colorlet{uniInk}{cfptBlack}
 \colorlet{uniNavy}{accentBlue}
 \colorlet{uniTeal}{successGreen}
@@ -51,19 +60,45 @@
 
 \color{cfptBlack}
 
-% --- En-tête / pied de page ---
+% ---------------------------------------------------------------
+% Images : insertion robuste (cadre de réservation si absente)
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \imagefig[largeur]{chemin}{légende}
+\newcommand{\imagefig}[3][0.80\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.2cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ image à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[L]{\IfFileExists{Semaine2/images/cfpti.png}{\includegraphics[height=18pt]{Semaine2/images/cfpti.png}}{\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}}
+\fancyhead[L]{\logocfpt}
 \fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
-\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 2}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 2 --- Module B}}
 \fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
-\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize {HTML5 --- Structure \& sémantique}}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize HTML5 --- Structure \& sémantique}
 \fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
-% --- Titres sections : bandeau plein largeur ---
+% ---------------------------------------------------------------
+% Titres de section : bandeau pleine largeur
+% ---------------------------------------------------------------
 \newcommand{\sectionbox}[1]{%
   \colorbox{accentBlue}{%
     \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
@@ -80,20 +115,25 @@
 \titlespacing{\section}{0pt}{18pt}{8pt}
 \titlespacing{\subsection}{0pt}{12pt}{4pt}
 
-% --- supprime les retraits de paragraphe ---
 \setlength{\parindent}{0pt}
 
-% --- Listes ---
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
 \setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
   leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
 \setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
 \setlist[enumerate]{itemsep=4pt, topsep=4pt, leftmargin=1.6em}
 
-% --- Boîtes tcolorbox ---
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
 \tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible (même correction que dans le plan de cours).
   definition/.style={
     colback=lightBlue!30, colframe=accentBlue,
-    fonttitle=\bfseries\small\color{accentBlue},
+    fonttitle=\bfseries\small, coltitle=white,
     boxrule=0.8pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt},
@@ -105,19 +145,34 @@
     toptitle=2pt, bottomtitle=2pt},
   astuce/.style={
     colback=successGreen!8, colframe=successGreen,
-    fonttitle=\bfseries\small\color{successGreen},
+    fonttitle=\bfseries\small, coltitle=white,
     boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small\color{white},
+    coltitle=white,
+    boxrule=1pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt},
   corrige/.style={
     colback=cfptGrey, colframe=cfptDarkGrey,
-    fonttitle=\bfseries\small\color{cfptDarkGrey},
+    fonttitle=\bfseries\small, coltitle=white,
     boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  filrouge/.style={
+    colback=filrougeYellow, colframe=cfptYellow,
+    fonttitle=\bfseries\small, coltitle=cfptBlack,
+    boxrule=1pt, arc=3pt,
     left=6pt, right=6pt, top=4pt, bottom=4pt,
     toptitle=2pt, bottomtitle=2pt}
 }
 
-% --- Listings code ---
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
 \lstset{
   basicstyle=\ttfamily\small,
   backgroundcolor=\color{codeGrey},
@@ -131,12 +186,26 @@
   numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
   numbersep=8pt,
   captionpos=b,
+  extendedchars=true,
+  % Les caractères accentués doivent être déclarés explicitement,
+  % sinon les commentaires français cassent la compilation.
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
 }
 \renewcommand{\lstlistingname}{Extrait}
 
-% Coloration adaptée au HTML/CSS (balises)
+% Coloration adaptée au HTML (balises)
 \lstdefinelanguage{HTML5}{
-  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article, aside, footer, h1, h2, h3, p, a, img, ul, ol, li, table, thead, tbody, tr, th, td, form, input, textarea, select, option, label, button, div, span, meta, title, link, script},
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, h5, h6, p, a, img, figure, figcaption,
+    ul, ol, li, table, caption, thead, tbody, tr, th, td, form, input,
+    textarea, select, option, label, button, div, span, meta, title, link,
+    script, strong, em, br, hr, blockquote, time, code},
   sensitive=false,
   morecomment=[s]{<!--}{-->},
   morestring=[b]",
@@ -144,6 +213,16 @@
   stringstyle=\color{warningOrange},
   commentstyle=\color{cfptDarkGrey}\itshape,
 }
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% (voir polycopié S01 pour le détail du problème corrigé ici)
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -155,18 +234,18 @@
 \begin{tcolorbox}[
   colback=accentBlue, colframe=accentBlue,
   arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
-  \begin{minipage}{0.72\linewidth}
-    {\color{white}\Large\bfseries Semaine 2}\\[4pt]
+  \begin{minipage}{0.70\linewidth}
+    {\color{cfptYellow}\Large\bfseries Semaine 2 \quad\textbar\quad Module B}\\[4pt]
     {\color{white}\Large\bfseries HTML5 --- Structure \& sémantique}\\[4pt]
     {\color{lightBlue}\normalsize Anne Terrier --- Développement web, classe passerelle}
   \end{minipage}
   \hfill
-  \begin{minipage}{0.22\linewidth}
+  \begin{minipage}{0.24\linewidth}
     \raggedleft
     \begin{tabular}{rl}
-      \multicolumn{2}{r}{\color{white}\small \today} \\
-      \color{lightBlue}\small Cours & \color{white}\small 4h \\
+      \color{lightBlue}\small Cours & \color{white}\small 3h \\
       \color{lightBlue}\small TP    & \color{white}\small 4h \\
+      \color{lightBlue}\small Fil rouge & \color{white}\small MiniForum \\
     \end{tabular}
   \end{minipage}
 \end{tcolorbox}
@@ -174,34 +253,43 @@
 \vspace{6pt}
 \begin{tcolorbox}[definition, title={Objectifs de la semaine}]
 \begin{itemize}
-  \item Écrire une page HTML5 valide et sémantique
-  \item Structurer le contenu avec les éléments appropriés
-  \item Maîtriser le texte, les liens, les images, les listes et les tableaux
-  \item Créer des formulaires fonctionnels avec les types d'\texttt{input} HTML5
-  \item Prendre en compte les bases de l'accessibilité
+  \item Écrire une page HTML5 valide, correctement imbriquée
+  \item Connaître le squelette d'un document et le rôle du \texttt{<head>}
+  \item Choisir la balise qui correspond au \textit{sens} du contenu, pas à son apparence
+  \item Structurer le texte : hiérarchie des titres, paragraphes, listes, tableaux
+  \item Créer des liens et insérer des images avec des chemins corrects
+  \item Valider une page sur \texttt{validator.w3.org} et savoir lire les erreurs signalées
 \end{itemize}
 \end{tcolorbox}
 
+\vspace{4pt}
+\begin{tcolorbox}[astuce, title={Où en sommes-nous ?}]
+La semaine 1 a posé le décor : le modèle client / serveur, les trois langages du navigateur, et l'environnement de travail. Cette semaine, on entre dans le premier de ces langages --- \textbf{HTML}, celui qui décrit la structure. Le style viendra en semaine 4, l'interactivité en semaine 6. Pour l'instant, la page sera laide, et ce n'est pas un problème.
+\end{tcolorbox}
+
 % ============================================================
-\section{Qu'est-ce que le HTML ?}
+\section{Le HTML, un langage de balisage}
 % ============================================================
 
-En semaine 1, nous avons vu que trois langages coexistent dans le navigateur. Le premier d'entre eux, le \textbf{HTML} (\textit{HyperText Markup Language}), est le langage qui décrit la \textbf{structure} et le \textbf{contenu} d'une page web. Pour créer une page web, il suffit de créer un fichier avec l'extension \textbf{.html}.
+\textbf{HTML} signifie \textit{HyperText Markup Language} : langage de balisage hypertexte. Une page web est un simple fichier texte portant l'extension \texttt{.html}, que le navigateur lit et interprète pour construire l'affichage.
 
 \begin{tcolorbox}[definition, title={Définition --- Langage de balisage}]
-Le HTML n'est pas un langage de programmation : c'est un \textbf{langage de balisage}. On \textit{balise} le contenu à l'aide d'éléments (\textit{balises}) pour indiquer au navigateur ce que chaque morceau représente : un titre, un paragraphe, une image, un lien\dots
+Un \textbf{langage de balisage} sert à \textit{décrire} un contenu, pas à effectuer des calculs. On entoure chaque morceau de texte d'une \textbf{balise} qui indique ce qu'il représente : un titre, un paragraphe, un lien, une image\dots
+
+\vspace{3pt}
+HTML n'est donc \textbf{pas un langage de programmation} : il n'a ni variables, ni conditions, ni boucles. Ces notions arriveront avec JavaScript, en semaine 6.
 \end{tcolorbox}
 
 \subsection{Anatomie d'une balise}
 
-La plupart des éléments HTML fonctionnent par \textbf{paires} : une balise ouvrante et une balise fermante, qui encadrent un contenu.
+La plupart des éléments HTML fonctionnent par \textbf{paires} : une balise ouvrante et une balise fermante encadrent un contenu.
 
 \vspace{6pt}
 \begin{center}
 \begin{tikzpicture}[font=\small]
   \node[font=\ttfamily\large] (code) {%
     \textcolor{accentBlue}{<p>}%
-    \textcolor{cfptBlack}{~Bonjour tous le monde~}%
+    \textcolor{cfptBlack}{~Bonjour tout le monde~}%
     \textcolor{accentBlue}{</p>}};
 
   \node[below=1cm of code, xshift=-3.0cm,
@@ -216,25 +304,93 @@ La plupart des éléments HTML fonctionnent par \textbf{paires} : une balise ouv
   \draw[-{Stealth[length=5pt]}, accentBlue!70, thick] (lf.north) -- ++(0,0.55);
 \end{tikzpicture}
 \end{center}
-\vspace{4pt}
+\vspace{2pt}
 
-Certaines balises sont \textbf{auto-fermantes} : elles n'encadrent aucun contenu et s'écrivent seules, comme \texttt{<img>} (une image) ou \texttt{<br>} (un retour à la ligne).
+L'ensemble --- balise ouvrante, contenu, balise fermante --- forme un \textbf{élément}. La balise fermante se distingue par sa barre oblique : \texttt{</p>}.
+
+\vspace{4pt}
+Certains éléments n'encadrent aucun contenu et s'écrivent donc \textbf{seuls}. On les dit \textbf{auto-fermants} : \texttt{<img>} (une image), \texttt{<br>} (un retour à la ligne forcé), \texttt{<meta>}, \texttt{<link>}, \texttt{<input>}.
 
 \subsection{Les attributs}
 
-Une balise peut porter des \textbf{attributs} qui précisent son comportement ou ses propriétés. Un attribut s'écrit dans la balise ouvrante, sous la forme \texttt{nom="valeur"}.
+Une balise peut porter des \textbf{attributs}, qui précisent son comportement. Un attribut s'écrit dans la balise \textbf{ouvrante}, sous la forme \texttt{nom="valeur"}.
 
-\begin{lstlisting}[language=HTML5, caption={Un lien avec l'attribut href}]
-<a href="https://www.hepia.ch">Site de la hepia</a>
+\begin{lstlisting}[language=HTML5, caption={Une balise, deux attributs}]
+<a href="https://www.hepia.ch" target="_blank">Site de la hepia</a>
 \end{lstlisting}
 
-Ici, \texttt{href} est l'attribut qui indique la destination du lien.
+Ici, \texttt{href} indique la destination du lien et \texttt{target} précise qu'il doit s'ouvrir dans un nouvel onglet. Une balise fermante, elle, ne porte \textbf{jamais} d'attribut.
+
+\subsection{L'imbrication : un document est un arbre}
+
+Les éléments se placent les uns \textbf{dans} les autres. Cette imbrication n'est pas décorative : elle construit une structure arborescente que le navigateur, les moteurs de recherche et --- plus tard --- ton code JavaScript vont parcourir.
+
+\vspace{8pt}
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  n/.style={draw=uniNavy, fill=uniNavy!8, rounded corners=2pt,
+            inner sep=4pt, font=\ttfamily\footnotesize},
+  f/.style={draw=uniGrey!55, fill=uniPaper, rounded corners=2pt,
+            inner sep=4pt, font=\ttfamily\footnotesize},
+  e/.style={uniGrey!70, thick}]
+
+\node[n] (html) at (0,0) {<html>};
+\node[n] (head) at (-3.0,-1.3) {<head>};
+\node[n] (body) at (2.4,-1.3) {<body>};
+\node[f] (title) at (-3.0,-2.6) {<title>};
+\node[n] (h1)   at (0.4,-2.6) {<h1>};
+\node[n] (ul)   at (3.2,-2.6) {<ul>};
+\node[f] (li1)  at (2.2,-3.9) {<li>};
+\node[f] (li2)  at (4.2,-3.9) {<li>};
+
+\draw[e] (html) -- (head);
+\draw[e] (html) -- (body);
+\draw[e] (head) -- (title);
+\draw[e] (body) -- (h1);
+\draw[e] (body) -- (ul);
+\draw[e] (ul) -- (li1);
+\draw[e] (ul) -- (li2);
+\end{tikzpicture}
+\end{center}
+\vspace{2pt}
+
+\begin{tcolorbox}[attention, title={La règle d'imbrication : premier ouvert, dernier fermé}]
+Les balises se ferment dans l'ordre inverse de leur ouverture, comme des parenthèses. Elles ne peuvent pas se chevaucher.
+
+\vspace{4pt}
+\textcolor{successGreen}{\textbf{OUI}}\quad \texttt{<p>Un <strong>mot</strong> important</p>}\\[3pt]
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{<p>Un <strong>mot</p></strong> important}
+
+\vspace{4pt}
+\textbf{Indente ton code} : un niveau d'indentation par niveau d'imbrication. C'est ce qui rend les erreurs visibles à l'\oe il nu.
+\end{tcolorbox}
+
+\subsection{Espaces, retours à la ligne et commentaires}
+
+\begin{tcolorbox}[attention, title={Le HTML ignore ta mise en forme du texte}]
+Dans un fichier HTML, plusieurs espaces consécutifs, les tabulations et les retours à la ligne sont \textbf{réduits à un seul espace} à l'affichage. Écrire trois lignes vides ne crée aucun blanc dans la page ; appuyer sur Entrée ne crée pas de nouveau paragraphe.
+
+\vspace{4pt}
+C'est le \textbf{balisage} qui produit la mise en forme : un nouveau paragraphe s'obtient avec un nouveau \texttt{<p>}, les espacements avec du CSS (semaine 4).
+\end{tcolorbox}
+
+\begin{lstlisting}[language=HTML5, caption={Un commentaire n'est pas affiché dans la page}]
+<!-- Liste des sujets du forum - à remplacer par du contenu
+     généré en JavaScript à partir de la semaine 7 -->
+<ul>
+  <li>Bienvenue sur le MiniForum</li>
+</ul>
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Le commentaire n'est pas un secret}]
+Un commentaire HTML est invisible \textit{dans la page}, mais parfaitement lisible par n'importe qui via \textit{Afficher le code source} (\texttt{Ctrl+U}). Il sert à expliquer ton code, jamais à y cacher une information.
+\end{tcolorbox}
 
 % ============================================================
 \section{La structure d'un document HTML5}
 % ============================================================
 
-Toute page HTML5 suit le même squelette de base. Le voici, à connaître par cœur :
+Toute page HTML5 repose sur le même squelette. Il est à connaître par c\oe ur :
 
 \begin{lstlisting}[language=HTML5, caption={Squelette minimal d'une page HTML5}]
 <!DOCTYPE html>
@@ -242,177 +398,387 @@ Toute page HTML5 suit le même squelette de base. Le voici, à connaître par c�
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Titre de la page</title>
+  <title>MiniForum</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Le contenu visible de la page va ici -->
+  <!-- Tout le contenu visible de la page -->
 </body>
 </html>
 \end{lstlisting}
 
 \begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{p{3.3cm}X}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.6cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Élément} & \color{white}\textbf{Rôle} \\
+  \hdr{Élément} & \hdr{Rôle} \\
   \midrule
   \rowcolor{uniPaper}
-  \texttt{<!DOCTYPE html>} & Indique au navigateur qu'il s'agit d'un document HTML5 \\
-  \texttt{<html lang="fr">} & La racine du document ; \texttt{lang} précise la langue \\
+  \texttt{<!DOCTYPE html>} & Annonce au navigateur qu'il s'agit d'un document HTML5. Sans lui, le navigateur bascule dans un mode de compatibilité imprévisible \\
+  \texttt{<html lang="fr">} & La racine du document ; \texttt{lang} indique la langue du contenu \\
   \rowcolor{uniPaper}
-  \texttt{<head>} & Métadonnées invisibles : encodage, titre, feuilles de style\dots \\
-  \texttt{<meta charset>} & Définit l'encodage des caractères (toujours \texttt{UTF-8}) \\
-  \rowcolor{uniPaper}
-  \texttt{<title>} & Le titre affiché dans l'onglet du navigateur \\
+  \texttt{<head>} & Métadonnées \textbf{invisibles} : encodage, titre d'onglet, feuilles de style \\
   \texttt{<body>} & Tout le contenu \textbf{visible} de la page \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\begin{tcolorbox}[attention, title={Important --- head vs body}]
-Tout ce qui doit être \textbf{vu} par le visiteur va dans le \texttt{<body>}. Le \texttt{<head>} ne contient que des informations \textit{sur} la page (son titre, son encodage), jamais du contenu affiché.
+\subsection{Ce que contient le \texttt{<head>}}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4.3cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Balise} & \hdr{Ce qu'elle fait} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{<meta charset="UTF-8">} & Définit l'encodage des caractères. \textbf{Toujours UTF-8} : sans cette ligne, les accents s'affichent en caractères illisibles \\
+  \texttt{<meta name="viewport">} & Indique au téléphone d'afficher la page à sa taille réelle. Indispensable pour le responsive (semaine 5) \\
+  \rowcolor{uniPaper}
+  \texttt{<title>} & Le texte affiché dans l'onglet, dans les favoris et dans les résultats de recherche \\
+  \texttt{<meta name="description">} & Le résumé affiché sous le titre dans les résultats des moteurs de recherche \\
+  \rowcolor{uniPaper}
+  \texttt{<link rel="stylesheet">} & Rattache une feuille de style CSS externe \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={\texttt{<head>} et \texttt{<body>} : ne pas confondre}]
+Tout ce qui doit être \textbf{vu} par le visiteur va dans le \texttt{<body>}. Le \texttt{<head>} ne contient que des informations \textit{sur} la page. Un titre écrit dans le \texttt{<head>} n'apparaîtra jamais dans la page --- c'est l'erreur de débutant la plus courante de la semaine.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Gagner du temps dans VS Code}]
+Dans un fichier \texttt{.html} vide, tape \texttt{!} puis \texttt{Tab} : VS Code génère l'intégralité du squelette ci-dessus. Utilise ce raccourci --- mais assure-toi de savoir le réécrire à la main, car c'est ce qui sera demandé au contrôle écrit de la semaine 12.
 \end{tcolorbox}
 
 % ============================================================
 \section{Les éléments sémantiques}
 % ============================================================
 
-Avant HTML5, les pages étaient construites avec des \texttt{<div>} partout. HTML5 a introduit des balises \textbf{sémantiques} : elles décrivent le \textit{rôle} de chaque zone de la page, ce qui la rend plus lisible pour les développeurs, les moteurs de recherche et les outils d'accessibilité.
+Pendant longtemps, les pages web ont été construites avec des \texttt{<div>} partout : des boîtes sans signification, distinguées uniquement par leur nom de classe. HTML5 a introduit des balises \textbf{sémantiques}, qui décrivent le \textbf{rôle} de chaque zone.
 
-\vspace{6pt}
+\begin{tcolorbox}[definition, title={Définition --- Sémantique}]
+Une balise \textbf{sémantique} indique ce que le contenu \textit{est}, pas la façon dont il doit s'afficher. \texttt{<nav>} signifie « ceci est une zone de navigation », indépendamment de sa couleur ou de sa position.
+\end{tcolorbox}
+
+\vspace{4pt}
+\noindent\textbf{Trois publics en tirent parti :}
+
+\begin{itemize}
+  \item les \textbf{humains} qui relisent le code --- toi, dans trois semaines, ou un collègue ;
+  \item les \textbf{moteurs de recherche}, qui comprennent où se trouve le contenu principal ;
+  \item les \textbf{lecteurs d'écran}, qui permettent aux personnes malvoyantes de sauter directement à la navigation ou au contenu. C'est le sujet de la semaine 3.
+\end{itemize}
+
+\subsection{La carte d'une page}
+
+\vspace{8pt}
 \begin{center}
 \begin{tikzpicture}[font=\footnotesize, every node/.style={align=center}]
-  % header
-  \node[draw=accentBlue, fill=accentBlue!12, thick, minimum width=9cm, minimum height=0.9cm] (header) {\textbf{<header>} --- en-tête, logo, titre du site};
-  % nav
-  \node[draw=warningOrange, fill=warningOrange!12, thick, minimum width=9cm, minimum height=0.7cm, below=0.15cm of header] (nav) {\textbf{<nav>} --- menu de navigation};
-  % main container
-  \node[draw=successGreen, fill=successGreen!8, thick, minimum width=6.4cm, minimum height=2.4cm, below=0.15cm of nav, xshift=-1.3cm, anchor=north] (main) {};
-  \node[text=successGreen, font=\footnotesize\bfseries] at ([yshift=-0.3cm]main.north) {<main>};
-  \node[draw=successGreen!70, fill=white, minimum width=5.6cm, minimum height=0.8cm] at ([yshift=-0.1cm]main.center) {\textbf{<section>} / \textbf{<article>}};
-  % aside
-  \node[draw=cfptDarkGrey, fill=cfptGrey, thick, minimum width=2.2cm, minimum height=2.4cm, right=0.15cm of main, anchor=north west, yshift=1.2cm] (aside) {\textbf{<aside>}\\[2pt]\footnotesize contenu\\annexe};
-  % footer
-  \node[draw=accentBlue, fill=accentBlue!12, thick, minimum width=9cm, minimum height=0.8cm, below=0.15cm of main, xshift=1.3cm] (footer) {\textbf{<footer>} --- pied de page, mentions, contact};
+
+% header
+\draw[draw=accentBlue, fill=accentBlue!12, rounded corners=2pt]
+  (0,0) rectangle (11,-1.0);
+\node[text=accentBlue] at (5.5,-0.5)
+  {\texttt{\textbf{<header>}} --- en-tête : titre du site, logo};
+
+% nav
+\draw[draw=warningOrange, fill=warningOrange!12, rounded corners=2pt]
+  (0,-1.15) rectangle (11,-1.95);
+\node[text=warningOrange] at (5.5,-1.55)
+  {\texttt{\textbf{<nav>}} --- menu de navigation};
+
+% main
+\draw[draw=successGreen, fill=successGreen!8, rounded corners=2pt]
+  (0,-2.1) rectangle (8.1,-5.9);
+\node[text=successGreen, font=\footnotesize\bfseries] at (1.2,-2.4) {\texttt{<main>}};
+\draw[draw=successGreen!70, fill=white, rounded corners=2pt]
+  (0.35,-2.75) rectangle (7.75,-4.15);
+\node at (4.05,-3.45) {\texttt{\textbf{<article>}}\\[2pt]un sujet du forum};
+\draw[draw=successGreen!70, fill=white, rounded corners=2pt]
+  (0.35,-4.35) rectangle (7.75,-5.6);
+\node at (4.05,-4.97) {\texttt{\textbf{<article>}}\\[2pt]un autre sujet};
+
+% aside
+\draw[draw=cfptDarkGrey, fill=cfptGrey, rounded corners=2pt]
+  (8.3,-2.1) rectangle (11,-5.9);
+\node[text=cfptDarkGrey] at (9.65,-4.0)
+  {\texttt{\textbf{<aside>}}\\[3pt]contenu annexe\\(barre latérale)};
+
+% footer
+\draw[draw=accentBlue, fill=accentBlue!12, rounded corners=2pt]
+  (0,-6.05) rectangle (11,-6.85);
+\node[text=accentBlue] at (5.5,-6.45)
+  {\texttt{\textbf{<footer>}} --- pied de page : mentions, contact};
+
 \end{tikzpicture}
 \end{center}
 \vspace{4pt}
 
 \begin{center}
-\renewcommand{\arraystretch}{1.2}
+\renewcommand{\arraystretch}{1.0}
 \begin{tabularx}{\linewidth}{p{2.6cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Balise} & \color{white}\textbf{Utilisation} \\
+  \hdr{Balise} & \hdr{Quand l'utiliser} \\
   \midrule
   \rowcolor{uniPaper}
-  \texttt{<header>} & En-tête de la page ou d'une section (titre, logo) \\
-  \texttt{<nav>} & Zone de navigation (menu principal, liens internes) \\
+  \texttt{<header>} & En-tête de la page \textbf{ou} d'une section : titre, logo, date de publication \\
+  \texttt{<nav>} & Un ensemble de liens de navigation. Réservé aux menus principaux, pas au moindre lien isolé \\
   \rowcolor{uniPaper}
-  \texttt{<main>} & Le contenu principal, unique dans la page \\
-  \texttt{<section>} & Un regroupement thématique de contenu \\
+  \texttt{<main>} & Le contenu principal. \textbf{Un seul par page}, et il ne contient ni en-tête ni menu \\
+  \texttt{<section>} & Un regroupement thématique, normalement introduit par un titre \\
   \rowcolor{uniPaper}
-  \texttt{<article>} & Un contenu autonome (un message du forum, un billet) \\
-  \texttt{<aside>} & Un contenu annexe (barre latérale, encadré) \\
+  \texttt{<article>} & Un contenu autonome : un message du forum, un billet de blog \\
+  \texttt{<aside>} & Un contenu annexe, secondaire par rapport au contenu principal \\
   \rowcolor{uniPaper}
-  \texttt{<footer>} & Pied de page (mentions, contact, copyright) \\
+  \texttt{<footer>} & Pied de page de la page ou d'une section \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\begin{tcolorbox}[astuce, title={Section ou article ?}]
-Retiens la règle simple : un \texttt{<article>} a du sens \textbf{tout seul}, sorti de son contexte (par exemple un message de forum que l'on pourrait citer ailleurs). Une \texttt{<section>} regroupe des contenus liés par un \textbf{thème} au sein de la page.
+\begin{tcolorbox}[astuce, title={\texttt{<section>} ou \texttt{<article>} ?}]
+Le test : est-ce que ce contenu garderait du sens \textbf{sorti de la page}, publié seul ailleurs ?
+
+\vspace{3pt}
+Si oui, c'est un \texttt{<article>} --- un message de forum que l'on pourrait citer sur un autre site. Si non, c'est une \texttt{<section>} --- « Sujets récents » n'a de sens que dans le forum qui la contient.
+\end{tcolorbox}
+
+\subsection{Ce qui reste du \texttt{<div>}}
+
+Les \texttt{<div>} et \texttt{<span>} n'ont pas disparu ; ils ont simplement cessé d'être le choix par défaut.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Balise} & \hdr{Usage légitime} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{<div>} & Regrouper des éléments \textbf{uniquement} pour les mettre en forme, sans aucune signification à exprimer \\
+  \texttt{<span>} & Idem, mais à l'intérieur d'une ligne de texte (pour colorer un mot, par exemple) \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Une balise sémantique ne change (presque) rien à l'affichage}]
+Remplacer un \texttt{<div>} par un \texttt{<main>} ne modifie pas visiblement la page. C'est déroutant au début : on a l'impression que le choix n'a pas d'importance.
+
+\vspace{3pt}
+Il en a une, mais elle est \textbf{invisible} --- elle se joue du côté des lecteurs d'écran, des moteurs de recherche et de la lisibilité du code. C'est aussi pour cela que le TP de cette semaine se fait \textbf{sans CSS} : rien ne doit venir masquer la structure.
 \end{tcolorbox}
 
 % ============================================================
-\section{Texte, liens et images}
+\section{Structurer le texte}
 % ============================================================
 
-\subsection{Structurer le texte}
+\subsection{Titres et paragraphes}
 
-\begin{lstlisting}[language=HTML5, caption={Titres et paragraphes}]
-<h1>Titre principal (un seul par page)</h1>
-<h2>Sous-titre de niveau 2</h2>
-<h3>Sous-titre de niveau 3</h3>
+\begin{lstlisting}[language=HTML5, caption={Titres et texte}]
+<h1>MiniForum</h1>
+<h2>Sujets récents</h2>
+<h3>Bienvenue sur le forum</h3>
 
-<p>Un paragraphe de texte. On peut y mettre du
-   <strong>texte important</strong> ou de
-   l'<em>emphase</em>.</p>
+<p>Un paragraphe de texte, dans lequel on peut signaler du
+   <strong>contenu important</strong> ou mettre un mot en
+   <em>emphase</em>.</p>
 \end{lstlisting}
 
-\begin{tcolorbox}[attention, title={Hiérarchie des titres}]
-Les titres vont de \texttt{<h1>} à \texttt{<h6>}. Il ne faut en utiliser \textbf{qu'un seul \texttt{<h1>}} par page, et ne pas sauter de niveau (ne pas passer d'un \texttt{<h2>} directement à un \texttt{<h4>}). Cette hiérarchie est essentielle pour l'accessibilité et le référencement.
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Balise} & \hdr{Sens} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{<h1>}\dots\texttt{<h6>} & Six niveaux de titres, du plus important au plus fin \\
+  \texttt{<p>} & Un paragraphe de texte \\
+  \rowcolor{uniPaper}
+  \texttt{<strong>} & Contenu d'\textbf{importance forte} (s'affiche en gras) \\
+  \texttt{<em>} & \textit{Emphase}, mot sur lequel on insiste (s'affiche en italique) \\
+  \rowcolor{uniPaper}
+  \texttt{<br>} & Retour à la ligne \textbf{à l'intérieur} d'un paragraphe (une adresse postale, un vers) \\
+  \texttt{<blockquote>} & Une citation longue, extraite d'une autre source \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={\texttt{<strong>} plutôt que \texttt{<b>}, \texttt{<em>} plutôt que \texttt{<i>}}]
+\texttt{<b>} et \texttt{<i>} décrivent une \textit{apparence} (gras, italique) ; \texttt{<strong>} et \texttt{<em>} décrivent un \textit{sens}. Le rendu est identique, mais un lecteur d'écran change d'intonation sur un \texttt{<strong>} et ignore un \texttt{<b>}.
+
+\vspace{3pt}
+La règle générale du HTML est là tout entière : \textbf{choisir la balise selon le sens}, et laisser le CSS s'occuper de l'apparence.
 \end{tcolorbox}
 
-\subsection{Les liens}
+\subsection{La hiérarchie des titres}
 
-Le lien hypertexte, cœur du web, se crée avec la balise \texttt{<a>} et son attribut \texttt{href} :
+Les titres ne sont pas un outil de mise en forme : ils construisent le \textbf{plan} du document, exactement comme les niveaux de titres d'un rapport.
 
-\begin{lstlisting}[language=HTML5, caption={Différents types de liens}]
-<!-- Lien externe -->
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{XX}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Plan correct} & \hdr{Plan incorrect} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{h1} MiniForum & \texttt{h1} MiniForum \\
+  \rowcolor{uniPaper}
+  \quad\texttt{h2} Sujets récents & \quad\texttt{h3} Sujets récents \quad\textcolor{alertRed}{\textbf{(saut de niveau)}} \\
+  \rowcolor{uniPaper}
+  \quad\quad\texttt{h3} Bienvenue & \quad\quad\texttt{h2} Bienvenue \\
+  \rowcolor{uniPaper}
+  \quad\quad\texttt{h3} Installer Node.js & \texttt{h1} Nouveau sujet \quad\textcolor{alertRed}{\textbf{(deuxième h1)}} \\
+  \rowcolor{uniPaper}
+  \quad\texttt{h2} Nouveau sujet & \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+Deux règles suffisent : \textbf{un seul \texttt{<h1>} par page}, et \textbf{on ne saute pas de niveau} en descendant. Choisir un \texttt{<h3>} parce qu'il « fait la bonne taille » est une erreur : la taille se règle en CSS.
+
+\subsection{Éléments en bloc et éléments en ligne}
+
+\begin{tcolorbox}[definition, title={Définition --- Bloc et en ligne}]
+Un élément \textbf{en bloc} occupe toute la largeur disponible et provoque un retour à la ligne : \texttt{<p>}, \texttt{<h1>}, \texttt{<ul>}, \texttt{<section>}, \texttt{<div>}.
+
+\vspace{3pt}
+Un élément \textbf{en ligne} se place dans le fil du texte, sans le couper : \texttt{<a>}, \texttt{<strong>}, \texttt{<em>}, \texttt{<img>}, \texttt{<span>}.
+\end{tcolorbox}
+
+Cette distinction explique dès maintenant pourquoi deux paragraphes se suivent verticalement alors que deux liens restent côte à côte. Elle deviendra centrale en semaine 4, avec le modèle de boîte du CSS.
+
+% ============================================================
+\section{Liens et images}
+% ============================================================
+
+\subsection{Le lien hypertexte}
+
+Le lien est ce qui fait du web un web. Il se crée avec la balise \texttt{<a>} (\textit{anchor}) et son attribut \texttt{href}.
+
+\begin{lstlisting}[language=HTML5, caption={Quatre types de liens}]
+<!-- Lien externe : URL complète -->
 <a href="https://www.hepia.ch">Site de la hepia</a>
 
-<!-- Lien vers une autre page du site -->
-<a href="contact.html">Nous contacter</a>
+<!-- Lien interne au site : vers un autre fichier -->
+<a href="sujet.html">Voir le sujet</a>
+
+<!-- Lien vers un élément de la page courante -->
+<a href="#nouveau-sujet">Créer un sujet</a>
 
 <!-- Lien ouvrant un nouvel onglet -->
-<a href="https://moodle.org" target="_blank">Moodle</a>
-
-<!-- Lien interne : vers un element de la meme page -->
-<a href="#contact">Aller au formulaire</a>
+<a href="https://developer.mozilla.org" target="_blank">MDN</a>
 \end{lstlisting}
 
-Ce dernier exemple, le \textbf{lien interne}, mérite qu'on s'y arrête : le \texttt{\#contact} ne pointe pas vers un fichier, mais vers un \textbf{élément de la page même} --- celui qui porte l'identifiant \texttt{contact}. Pour comprendre comment, il faut découvrir l'attribut \texttt{id}.
+\begin{tcolorbox}[astuce, title={Écrire un bon intitulé de lien}]
+Le texte du lien doit décrire sa destination \textbf{hors contexte}. Les lecteurs d'écran proposent en effet de lister tous les liens d'une page : une liste de « cliquez ici » répétés n'informe personne.
 
-\subsection{L'attribut \texttt{id} : identifier un élément}
+\vspace{3pt}
+\textcolor{successGreen}{\textbf{OUI}}\quad \texttt{<a href="sujet.html">Lire le sujet complet</a>}\\[3pt]
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{<a href="sujet.html">cliquez ici</a>}
+\end{tcolorbox}
 
-L'attribut \texttt{id} donne un \textbf{nom unique} à un élément de la page. On peut ensuite « pointer » vers cet élément.
+\subsection{Chemins relatifs et chemins absolus}
+
+C'est la source d'erreur numéro un du TP : l'image ne s'affiche pas, le lien ne mène nulle part. Presque toujours, le chemin est en cause.
+
+\begin{lstlisting}[caption={Arborescence du projet MiniForum}]
+miniforum/
+  |-- index.html
+  |-- sujet.html
+  |-- style.css
+  \-- images/
+       \-- logo.png
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Écriture} & \hdr{Signification} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{sujet.html} & Un fichier du \textbf{même dossier} \\
+  \texttt{images/logo.png} & Le fichier \texttt{logo.png}, dans le sous-dossier \texttt{images} \\
+  \rowcolor{uniPaper}
+  \texttt{../style.css} & Remonter d'un dossier, puis prendre \texttt{style.css} \\
+  \texttt{https://\dots} & Une adresse \textbf{absolue}, sur un autre serveur \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Trois pièges classiques}]
+\begin{itemize}
+  \item \textbf{La casse compte.} \texttt{Logo.png} et \texttt{logo.png} sont deux fichiers différents pour un serveur Linux --- même si Windows ne fait pas la différence. Ta page marchera chez toi et cassera en ligne.
+  \item \textbf{Pas d'espaces ni d'accents} dans les noms de fichiers : écris \texttt{photo-profil.png}, jamais \texttt{photo profil.png} ni \texttt{été.jpg}.
+  \item \textbf{Jamais de chemin \texttt{C:/Users/\dots}} : ce chemin n'existe que sur ta machine. Tous les chemins d'un site sont relatifs au projet.
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{L'attribut \texttt{id}}
+
+L'attribut \texttt{id} donne un \textbf{nom unique} à un élément de la page. Le lien \texttt{href="\#nouveau-sujet"} vu plus haut ne pointe pas vers un fichier, mais vers l'élément qui porte cet identifiant.
 
 \begin{lstlisting}[language=HTML5, caption={Un id sert de cible à un lien interne}]
-<!-- Le lien pointe vers l'element d'id "contact" -->
-<a href="#contact">Aller au formulaire</a>
+<a href="#nouveau-sujet">Créer un sujet</a>
 
 <!-- ... plus bas dans la page ... -->
-<section id="contact">
-  <h2>Nous contacter</h2>
+<section id="nouveau-sujet">
+  <h2>Créer un nouveau sujet</h2>
 </section>
 \end{lstlisting}
 
-Cliquer sur le lien fait \textbf{défiler} la page jusqu'à la section \texttt{contact}. Le \texttt{\#} dans le \texttt{href} signifie « un élément de cette page », suivi de l'\texttt{id} visé.
-
-\begin{tcolorbox}[attention, title={Règle d'or --- un id est unique}]
-Sur une même page, \textbf{deux éléments ne peuvent jamais partager le même \texttt{id}}. C'est ce qui garantit qu'un \texttt{id} désigne un élément, et un seul. (À la différence de l'attribut \texttt{class}, que nous verrons avec le CSS, et qui peut, lui, être partagé.)
+\begin{tcolorbox}[attention, title={Règle d'or --- un \texttt{id} est unique dans la page}]
+Deux éléments ne peuvent \textbf{jamais} partager le même \texttt{id} : c'est ce qui garantit qu'un \texttt{id} désigne un élément, et un seul. Le validateur W3C signale d'ailleurs les doublons comme des erreurs.
 \end{tcolorbox}
 
-\begin{tcolorbox}[astuce, title={L'id, un point d'accroche pour toute la suite}]
-L'\texttt{id} ne sert pas qu'aux liens internes. C'est un \textbf{point d'accroche} vers un élément, réutilisé partout ensuite : il relie déjà un \texttt{<label>} à son champ (via \texttt{for}), il permettra de cibler un élément en \textbf{CSS} (semaine 3), et de le manipuler en \textbf{JavaScript} --- souviens-toi du tout premier exemple : \texttt{document.getElementById('btn')} allait chercher le bouton par son \texttt{id}.
+\begin{tcolorbox}[astuce, title={L'\texttt{id}, un point d'accroche pour toute l'année}]
+L'\texttt{id} ne sert pas qu'aux liens internes. C'est le point d'accroche universel vers un élément : il reliera un \texttt{<label>} à son champ (semaine 3), permettra de cibler un élément en \textbf{CSS} (semaine 4), et de le manipuler en \textbf{JavaScript} (semaine 7). Souviens-toi du premier exemple de la semaine 1 : \texttt{document.getElementById('btn')} allait chercher le bouton par son \texttt{id}.
 \end{tcolorbox}
 
 \subsection{Les images}
 
-La balise \texttt{<img>} est auto-fermante. Elle a deux attributs importants :
+\begin{lstlisting}[language=HTML5, caption={Insérer une image, avec ou sans légende}]
+<img src="images/logo.png" alt="Logo du MiniForum">
 
-\begin{lstlisting}[language=HTML5, caption={Insérer une image}]
-<img src="logo.png" alt="Logo du MiniForum">
+<figure>
+  <img src="images/schema-forum.png"
+       alt="Schéma des pages du forum et de leurs liens">
+  <figcaption>Organisation des pages du MiniForum</figcaption>
+</figure>
 \end{lstlisting}
 
 \begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{p{2cm}X}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.6cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Attribut} & \color{white}\textbf{Rôle} \\
+  \hdr{Attribut} & \hdr{Rôle} \\
   \midrule
   \rowcolor{uniPaper}
   \texttt{src} & Le chemin vers le fichier image (\textit{source}) \\
-  \texttt{alt} & Un texte alternatif décrivant l'image \\
+  \texttt{alt} & Le texte alternatif décrivant l'image \\
+  \rowcolor{uniPaper}
+  \texttt{width} / \texttt{height} & Dimensions en pixels ; les renseigner évite que la page « saute » pendant le chargement \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\begin{tcolorbox}[attention, title={L'attribut alt n'est pas optionnel}]
-Le texte \texttt{alt} est lu à voix haute par les lecteurs d'écran pour les personnes malvoyantes, et s'affiche si l'image ne charge pas. Il est \textbf{obligatoire} pour une page accessible. Décris ce que montre l'image, pas « image de\dots ».
+\begin{tcolorbox}[attention, title={L'attribut \texttt{alt} n'est pas optionnel}]
+Le texte \texttt{alt} est lu à voix haute par les lecteurs d'écran et s'affiche si l'image ne charge pas. Le validateur W3C signale son absence comme une erreur.
+
+\vspace{4pt}
+\textcolor{successGreen}{\textbf{OUI}}\quad \texttt{alt="Logo du MiniForum"}\\[3pt]
+\textcolor{alertRed}{\textbf{NON}}\quad \texttt{alt="image"} \quad ou \quad \texttt{alt="photo de logo.png"}
+
+\vspace{4pt}
+Cas particulier : une image purement décorative, qui n'apporte aucune information, prend un \texttt{alt} \textbf{vide} --- \texttt{alt=""} --- pour que le lecteur d'écran l'ignore au lieu d'annoncer le nom du fichier. On approfondira en semaine 3.
 \end{tcolorbox}
 
 % ============================================================
@@ -421,17 +787,15 @@ Le texte \texttt{alt} est lu à voix haute par les lecteurs d'écran pour les pe
 
 \subsection{Les listes}
 
-Il existe deux types de listes courantes :
-
 \begin{lstlisting}[language=HTML5, caption={Liste non ordonnée et liste ordonnée}]
-<!-- Liste a puces (unordered list) -->
+<!-- Liste à puces : l'ordre est indifférent -->
 <ul>
   <li>HTML</li>
   <li>CSS</li>
   <li>JavaScript</li>
 </ul>
 
-<!-- Liste numerotee (ordered list) -->
+<!-- Liste numérotée : l'ordre compte -->
 <ol>
   <li>Ouvrir le terminal</li>
   <li>Taper la commande</li>
@@ -439,16 +803,24 @@ Il existe deux types de listes courantes :
 </ol>
 \end{lstlisting}
 
-\begin{tcolorbox}[astuce, title={Le bon usage}]
-Utilise une liste \textbf{ordonnée} (\texttt{<ol>}) quand l'ordre compte (des étapes à suivre), et une liste \textbf{non ordonnée} (\texttt{<ul>}) quand l'ordre est indifférent (une liste de fonctionnalités).
+\begin{tcolorbox}[attention, title={Un \texttt{<li>} vit toujours dans un \texttt{<ul>} ou un \texttt{<ol>}}]
+Rien d'autre qu'un \texttt{<li>} ne peut être enfant direct d'un \texttt{<ul>} --- pas de \texttt{<p>}, pas de \texttt{<div>}. Ce contenu doit être placé \textit{à l'intérieur} du \texttt{<li>}. Le validateur est intraitable sur ce point.
+
+\vspace{3pt}
+Une liste peut en revanche en contenir une autre : la sous-liste se place \textbf{dans} le \texttt{<li>} parent, avant sa fermeture.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Un menu de navigation est une liste de liens}]
+Les barres de navigation s'écrivent presque toujours ainsi : un \texttt{<nav>} contenant un \texttt{<ul>} de liens. Cela paraît étrange tant qu'on pense en termes d'apparence --- mais un menu \textit{est} bien une liste, et le CSS se chargera plus tard de l'afficher horizontalement.
 \end{tcolorbox}
 
 \subsection{Les tableaux}
 
 Un tableau se construit ligne par ligne (\texttt{<tr>}), avec des cellules d'en-tête (\texttt{<th>}) et des cellules de données (\texttt{<td>}).
 
-\begin{lstlisting}[language=HTML5, caption={Un tableau simple}]
+\begin{lstlisting}[language=HTML5, caption={Un tableau complet}]
 <table>
+  <caption>Derniers sujets publiés</caption>
   <thead>
     <tr>
       <th>Sujet</th>
@@ -460,172 +832,110 @@ Un tableau se construit ligne par ligne (\texttt{<tr>}), avec des cellules d'en-
       <td>Bienvenue</td>
       <td>Alice</td>
     </tr>
+    <tr>
+      <td>Installer Node.js</td>
+      <td>Bob</td>
+    </tr>
   </tbody>
 </table>
 \end{lstlisting}
 
-\paragraph{Fusionner des cellules}
-
-Il arrive qu'une cellule doive s'étendre sur plusieurs colonnes ou plusieurs lignes. On utilise alors les attributs \texttt{colspan} (fusion horizontale) et \texttt{rowspan} (fusion verticale).
-
-\begin{lstlisting}[language=HTML5, caption={Fusion de cellules avec colspan}]
-<table>
-  <tr>
-    <th colspan="2">Coordonnees</th>
-  </tr>
-  <tr>
-    <td>Email</td>
-    <td>alice@exemple.ch</td>
-  </tr>
-</table>
-\end{lstlisting}
-
-Ici, la cellule d'en-tête « Coordonnees » occupe la largeur de \textbf{deux} colonnes grâce à \texttt{colspan="2"}. L'attribut \texttt{rowspan="2"} produirait le même effet sur la hauteur, en fusionnant deux lignes.
-
-\begin{tcolorbox}[attention, title={Les tableaux, c'est pour des données}]
-Un tableau HTML sert à présenter des \textbf{données tabulaires} (un planning, des résultats). Il ne faut \textbf{jamais} l'utiliser pour mettre en page une interface : c'est le rôle du CSS, que nous verrons en semaine 3.
-\end{tcolorbox}
-
-% ============================================================
-\section{Les formulaires}
-% ============================================================
-
-Les formulaires permettent à l'utilisateur de \textbf{saisir} des informations : c'est ce qui rendra le MiniForum interactif. La balise conteneur est \texttt{<form>}.
-
-\subsection{Le champ de saisie : \texttt{<input>}}
-
-La balise \texttt{<input>} change de comportement selon son attribut \texttt{type}. HTML5 en propose de nombreux, avec validation automatique :
-
 \begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{p{3.2cm}X}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{type} & \color{white}\textbf{Usage} \\
+  \hdr{Balise} & \hdr{Rôle} \\
   \midrule
   \rowcolor{uniPaper}
-  \texttt{text} & Texte libre sur une ligne \\
-  \texttt{email} & Adresse e-mail (validée automatiquement) \\
+  \texttt{<caption>} & Le titre du tableau ; première balise à l'intérieur de \texttt{<table>} \\
+  \texttt{<thead>} / \texttt{<tbody>} & Séparent la ligne d'en-tête du corps des données \\
   \rowcolor{uniPaper}
-  \texttt{password} & Mot de passe (caractères masqués) \\
-  \texttt{number} & Valeur numérique \\
+  \texttt{<tr>} & Une ligne (\textit{table row}) \\
+  \texttt{<th>} & Une cellule d'en-tête (\textit{table header}) \\
   \rowcolor{uniPaper}
-  \texttt{checkbox} & Case à cocher \\
-  \texttt{radio} & Bouton radio (choix unique) \\
+  \texttt{<td>} & Une cellule de données (\textit{table data}) \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Cases à cocher et boutons radio}
+\subsubsection*{Fusionner des cellules}
 
-Ces deux types méritent un mot, car leur usage est un peu particulier. Une \textbf{case à cocher} (\texttt{checkbox}) permet plusieurs sélections indépendantes ; un \textbf{bouton radio} (\texttt{radio}) impose un choix \textbf{unique} parmi plusieurs.
-
-\begin{lstlisting}[language=HTML5, caption={Cases à cocher et boutons radio}]
-<!-- Cases a cocher : plusieurs choix possibles -->
-<input type="checkbox" id="news" name="news">
-<label for="news">Recevoir la newsletter</label>
-
-<!-- Boutons radio : un seul choix (meme name !) -->
-<input type="radio" id="pub" name="visibilite" value="public">
-<label for="pub">Public</label>
-<input type="radio" id="priv" name="visibilite" value="prive">
-<label for="priv">Prive</label>
+\begin{lstlisting}[language=HTML5, caption={Fusion horizontale avec colspan}]
+<tr>
+  <th colspan="2">Coordonnées</th>
+</tr>
+<tr>
+  <td>E-mail</td>
+  <td>alice@exemple.ch</td>
+</tr>
 \end{lstlisting}
 
-\begin{tcolorbox}[attention, title={La règle des boutons radio}]
-Pour que des boutons radio fonctionnent comme un groupe (un seul sélectionnable à la fois), ils doivent \textbf{partager le même attribut \texttt{name}}. C'est cet attribut commun qui les relie ; l'attribut \texttt{value} distingue, lui, l'option choisie.
+La cellule « Coordonnées » occupe la largeur de \textbf{deux} colonnes grâce à \texttt{colspan="2"}. L'attribut \texttt{rowspan="2"} produit le même effet sur la hauteur, en fusionnant deux lignes.
+
+\begin{tcolorbox}[interdit, title={Un tableau sert à présenter des données, jamais à mettre en page}]
+Un \texttt{<table>} présente des \textbf{données tabulaires} : un horaire, un relevé de notes, une comparaison. Il ne doit \textbf{jamais} servir à positionner des éléments dans la page --- c'est le rôle du CSS, vu en semaines 4 et 5. Une page mise en page avec des tableaux est illisible pour un lecteur d'écran et impossible à rendre responsive.
 \end{tcolorbox}
 
-\subsection{Un formulaire complet}
+% ============================================================
+\section{Valider son HTML}
+% ============================================================
 
-\begin{lstlisting}[language=HTML5, caption={Formulaire d'ajout de message}]
-<form>
-  <label for="pseudo">Votre pseudo :</label>
-  <input type="text" id="pseudo" name="pseudo"
-         placeholder="ex : alice" required>
+Le navigateur est très tolérant : il affiche une page même si des balises sont mal fermées, en devinant ce qu'on a voulu écrire. Cette tolérance est un piège --- chaque navigateur devine à sa manière, et le jour où l'affichage se dérègle, l'erreur est déjà enfouie sous cent lignes de code.
 
-  <label for="message">Votre message :</label>
-  <textarea id="message" name="message"
-            maxlength="500" required></textarea>
+\begin{tcolorbox}[definition, title={Le validateur du W3C}]
+Le service \textbf{validator.w3.org} vérifie qu'une page respecte la spécification HTML5. Il propose trois modes : par \textbf{adresse} (page en ligne), par \textbf{fichier} téléversé, ou par \textbf{copier-coller} du code --- c'est ce dernier mode que tu utiliseras en TP.
+\end{tcolorbox}
 
-  <label for="categorie">Categorie :</label>
-  <select id="categorie" name="categorie">
-    <option value="general">General</option>
-    <option value="aide">Aide</option>
-  </select>
+\subsection{Lire un message d'erreur}
 
-  <button type="submit">Envoyer</button>
-</form>
-\end{lstlisting}
+Chaque message du validateur comporte trois parties : la \textbf{ligne et la colonne} concernées, la \textbf{description} de l'erreur, et un \textbf{extrait} du code fautif avec la position surlignée.
+
+\begin{tcolorbox}[corrige, title={Exemple de message}]
+\ttfamily\small
+Error: End tag \textcolor{alertRed}{section} seen, but there were open elements.\\
+From line 24, column 3; to line 24, column 12
+\end{tcolorbox}
+
+\vspace{4pt}
+Traduction : à la ligne 24, on ferme une \texttt{<section>} alors qu'un élément ouvert à l'intérieur ne l'a pas été. Il manque une balise fermante quelque part au-dessus.
 
 \begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{p{2.6cm}X}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5.4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Élément} & \color{white}\textbf{Rôle} \\
+  \hdr{Message fréquent} & \hdr{Ce qu'il faut corriger} \\
   \midrule
   \rowcolor{uniPaper}
-  \texttt{<label>} & L'étiquette décrivant un champ \\
-  \texttt{<input>} & Un champ de saisie (selon son \texttt{type}) \\
+  \texttt{End tag X seen, but there were open elements} & Une balise ouverte à l'intérieur n'a pas été fermée \\
+  \texttt{Unclosed element X} & La balise \texttt{X} n'est jamais fermée \\
   \rowcolor{uniPaper}
-  \texttt{<textarea>} & Une zone de texte multi-lignes \\
-  \texttt{<select>} & Une liste déroulante de choix \\
+  \texttt{Duplicate ID "xyz"} & Deux éléments portent le même \texttt{id} \\
+  \texttt{An img element must have an alt attribute} & Une image sans \texttt{alt} \\
   \rowcolor{uniPaper}
-  \texttt{<button>} & Un bouton (ici, pour envoyer le formulaire) \\
+  \texttt{Element X not allowed as child of element Y} & Mauvaise imbrication (un \texttt{<p>} directement dans un \texttt{<ul>}, par exemple) \\
+  \texttt{Consider adding a lang attribute} & Il manque \texttt{lang="fr"} sur la balise \texttt{<html>} \\
+  \rowcolor{uniPaper}
+  \texttt{Stray end tag X} & Une balise fermante sans ouvrante correspondante \\
   \bottomrule
 \end{tabularx}
 \end{center}
 
-\begin{tcolorbox}[attention, title={Le lien label / input}]
-L'attribut \texttt{for} du \texttt{<label>} doit correspondre à l'\texttt{id} de l'\texttt{<input>} associé. Ce lien permet de cliquer sur l'étiquette pour activer le champ, et il est indispensable pour l'accessibilité.
+\begin{tcolorbox}[astuce, title={Méthode --- corriger de haut en bas}]
+Une seule balise oubliée peut produire dix messages d'erreur en cascade. Corrige donc \textbf{la première erreur de la liste}, puis relance la validation : le nombre d'erreurs chute souvent d'un coup.
+
+\vspace{3pt}
+Distingue aussi les \textbf{Errors} (rouge), qui doivent toutes disparaître, des \textbf{Warnings} (jaune), qui signalent une maladresse sans invalider la page.
 \end{tcolorbox}
 
-\subsection{Rendre un formulaire plus fiable}
-
-On peut guider l'utilisateur et éviter les saisies erronées grâce à quelques attributs, sans écrire une seule ligne de JavaScript.
-
-\begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabularx}{\linewidth}{p{3cm}X}
-  \toprule
-  \rowcolor{uniNavy}
-  \color{white}\textbf{Attribut} & \color{white}\textbf{Effet} \\
-  \midrule
-  \rowcolor{uniPaper}
-  \texttt{placeholder} & Affiche un texte d'exemple grisé dans le champ vide \\
-  \texttt{required} & Rend le champ obligatoire : le formulaire refuse de partir s'il est vide \\
-  \rowcolor{uniPaper}
-  \texttt{maxlength} & Limite le nombre de caractères saisissables \\
-  \texttt{min} / \texttt{max} & Bornent une valeur numérique (avec \texttt{type="number"}) \\
-  \bottomrule
-\end{tabularx}
-\end{center}
-
-\begin{tcolorbox}[astuce, title={La validation HTML5, gratuite et automatique}]
-Le navigateur vérifie \textbf{lui-même} certains champs avant l'envoi : un \texttt{type="email"} refuse une adresse mal formée, un champ \texttt{required} vide bloque l'envoi. Cette \textbf{validation HTML5} est immédiate, sans JavaScript, et améliore nettement l'expérience utilisateur. Nous la compléterons plus tard côté serveur, car une validation côté navigateur ne suffit jamais à elle seule pour la sécurité.
-\end{tcolorbox}
-
-\begin{tcolorbox}[definition, title={Et l'envoi des données ?}]
-Tu as sans doute remarqué que ce formulaire ne va, pour l'instant, \textbf{nulle part} : cliquer sur « Envoyer » ne fait rien de visible. C'est normal. L'envoi réel des données vers un \textbf{serveur} (via les attributs \texttt{action} et \texttt{method} de la balise \texttt{<form>}) sera vu en \textbf{phase 3}, quand le MiniForum aura un serveur Node.js pour les recevoir.
-\end{tcolorbox}
-
-% ============================================================
-\section{Accessibilité : les bons réflexes}
-% ============================================================
-
-L'\textbf{accessibilité} consiste à rendre les pages utilisables par tous, y compris les personnes en situation de handicap (malvoyance, navigation au clavier\dots). Dès la semaine 2, quelques réflexes simples font une grande différence :
-
+\begin{tcolorbox}[astuce, title={Prévenir plutôt que corriger}]
+Trois habitudes suppriment la majorité des erreurs avant même la validation :
 \begin{itemize}
-  \item Toujours renseigner l'attribut \texttt{alt} des images.
-  \item Respecter la hiérarchie des titres (\texttt{<h1>} puis \texttt{<h2>}\dots sans sauter de niveau).
-  \item Associer chaque \texttt{<input>} à un \texttt{<label>} via \texttt{for} / \texttt{id}.
-  \item Utiliser les balises sémantiques (\texttt{<nav>}, \texttt{<main>}\dots) plutôt que des \texttt{<div>} génériques.
-  \item Préciser la langue de la page avec \texttt{<html lang="fr">}.
+  \item \textbf{indenter} systématiquement (\texttt{Maj+Alt+F} dans VS Code, avec Prettier) ;
+  \item écrire la balise \textbf{fermante immédiatement} après l'ouvrante, puis remplir le contenu ;
+  \item se fier au \textbf{soulignement rouge} de VS Code, qui repère déjà une partie des erreurs.
 \end{itemize}
-
-\begin{tcolorbox}[astuce, title={Valider son code}]
-Le service en ligne \textbf{validator.w3.org} vérifie qu'une page HTML est correctement écrite (balises bien fermées, structure valide). Prends l'habitude de valider ton code : un HTML valide est la base d'un site fiable.
 \end{tcolorbox}
 
 % ============================================================
@@ -637,40 +947,31 @@ Le service en ligne \textbf{validator.w3.org} vérifie qu'une page HTML est corr
 \begin{tabularx}{\linewidth}{p{4cm}X}
   \toprule
   \rowcolor{uniNavy}
-  \color{white}\textbf{Terme} & \color{white}\textbf{Définition} \\
+  \hdr{Terme} & \hdr{Définition} \\
   \midrule
   \rowcolor{uniPaper}
-  Balise (\textit{tag}) & Élément HTML qui décrit un morceau de contenu \\
-  Attribut & Information complémentaire placée dans une balise (\texttt{nom="valeur"}) \\
+  Balise (\textit{tag}) & Marqueur qui décrit un morceau de contenu : \texttt{<p>}, \texttt{</p>} \\
+  Élément & L'ensemble balise ouvrante + contenu + balise fermante \\
   \rowcolor{uniPaper}
+  Attribut & Information complémentaire dans une balise ouvrante (\texttt{nom="valeur"}) \\
+  Auto-fermant & Balise sans contenu ni fermeture : \texttt{<img>}, \texttt{<br>}, \texttt{<meta>} \\
+  \rowcolor{uniPaper}
+  Imbrication & Placement d'un élément dans un autre ; les balises se ferment dans l'ordre inverse \\
   Sémantique & Choix d'une balise selon le \textit{sens} du contenu, pas son apparence \\
-  Élément auto-fermant & Balise sans contenu ni fermeture (\texttt{<img>}, \texttt{<br>}) \\
   \rowcolor{uniPaper}
-  \texttt{id} & Identifiant \textbf{unique} d'un élément ; cible d'un lien interne, d'un label, du CSS et du JS \\
   \texttt{<head>} & Zone des métadonnées, invisible pour le visiteur \\
-  \rowcolor{uniPaper}
   \texttt{<body>} & Zone du contenu visible de la page \\
-  Accessibilité & Ensemble des pratiques rendant une page utilisable par tous \\
   \rowcolor{uniPaper}
+  \texttt{id} & Identifiant \textbf{unique} d'un élément dans la page \\
+  Bloc / en ligne & Un bloc occupe toute la largeur ; un élément en ligne reste dans le fil du texte \\
+  \rowcolor{uniPaper}
+  Chemin relatif & Chemin exprimé depuis le fichier courant (\texttt{images/logo.png}) \\
   \texttt{alt} & Texte alternatif décrivant une image \\
-  Formulaire & Ensemble de champs permettant à l'utilisateur de saisir des données \\
   \rowcolor{uniPaper}
-  \texttt{required} & Attribut rendant un champ obligatoire avant l'envoi \\
-  Validation HTML5 & Vérification automatique des champs par le navigateur, sans JavaScript \\
+  Validation & Vérification de la conformité d'une page via \texttt{validator.w3.org} \\
   \bottomrule
 \end{tabularx}
 \end{center}
-
-% ============================================================
-\section*{Pour aller plus loin}
-% ============================================================
-
-\begin{tcolorbox}[astuce, title={Quiz et travaux pratiques}]
-\begin{itemize}
-  \item Un \textbf{quiz d'auto-évaluation} sur cette semaine est disponible sur Moodle.
-  \item La \textbf{fiche TP} (squelette HTML du MiniForum) est distribuée séparément : \textit{S02\_TP.pdf}.
-\end{itemize}
-\end{tcolorbox}
 
 % ============================================================
 \section*{Résumé de la semaine}
@@ -678,22 +979,34 @@ Le service en ligne \textbf{validator.w3.org} vérifie qu'une page HTML est corr
 
 \begin{tcolorbox}[definition, title={Ce qu'il faut retenir}]
 \begin{itemize}
-  \item Le HTML est un langage de \textbf{balisage} qui décrit la structure du contenu
-  \item Toute page suit le même squelette : \texttt{<!DOCTYPE>}, \texttt{<head>}, \texttt{<body>}
+  \item HTML est un langage de \textbf{balisage} : il décrit la structure, pas l'apparence
+  \item Les balises s'\textbf{imbriquent} comme des parenthèses et forment un \textbf{arbre}
+  \item Toute page suit le même squelette : \texttt{<!DOCTYPE>}, \texttt{<html lang>}, \texttt{<head>}, \texttt{<body>}
+  \item Le \texttt{<head>} contient les métadonnées invisibles ; le \texttt{<body>}, tout le visible
   \item Les balises \textbf{sémantiques} (\texttt{<header>}, \texttt{<nav>}, \texttt{<main>}, \texttt{<article>}, \texttt{<footer>}) décrivent le rôle de chaque zone
-  \item On structure le texte avec les titres \texttt{<h1>}\dots\texttt{<h6>}, les liens \texttt{<a>}, les images \texttt{<img>}
-  \item Les \textbf{formulaires} (\texttt{<form>}, \texttt{<input>}, \texttt{<label>}) permettent la saisie de données
-  \item L'\textbf{accessibilité} se construit dès le HTML : \texttt{alt}, \texttt{label}, hiérarchie des titres
+  \item \textbf{Un seul \texttt{<h1>}} par page, et pas de saut de niveau dans les titres
+  \item Un \texttt{id} est \textbf{unique} ; un \texttt{alt} est \textbf{obligatoire} sur chaque image
+  \item Les tableaux servent à des \textbf{données}, jamais à la mise en page
+  \item Une page se \textbf{valide} sur \texttt{validator.w3.org}, et les erreurs se corrigent de haut en bas
 \end{itemize}
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[filrouge, title={Fil rouge --- MiniForum : structure HTML du forum}]
+Les deux pages du MiniForum prennent forme en HTML pur : la page d'accueil avec sa liste de sujets, et la page de détail d'un sujet avec ses messages codés en dur.
+
+\vspace{4pt}
+\textbf{Aucun style cette semaine} : c'est voulu. La structure doit tenir debout toute seule. C'est aussi le meilleur moment pour vérifier qu'elle est correcte --- une fois le CSS posé, plus personne ne regarde le HTML.
 \end{tcolorbox}
 
 \vspace{8pt}
 \begin{tcolorbox}[attention, title={Pour la semaine 3}]
 \begin{itemize}
-  \item Avoir terminé le squelette HTML du MiniForum (en-tête, liste de sujets, formulaire)
-  \item Vérifier que sa page passe le validateur \textbf{validator.w3.org} sans erreur
-  \item La semaine 3 introduira le \textbf{CSS} pour donner du style à cette structure
+  \item Les deux pages HTML du MiniForum terminées et poussées sur GitHub
+  \item Chacune passe \texttt{validator.w3.org} \textbf{sans erreur}
+  \item La semaine 3 ajoutera les \textbf{formulaires} et les bases de l'\textbf{accessibilité} : c'est encore du HTML, et ce sera la dernière semaine avant le CSS
 \end{itemize}
+Le détail pas à pas se trouve dans la fiche \textit{S02\_TP}.
 \end{tcolorbox}
 
 \end{document}

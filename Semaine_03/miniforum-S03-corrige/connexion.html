@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum - Connexion</title>
+</head>
+<body>
+
+  <header>
+    <h1>MiniForum</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#sujets">Sujets</a></li>
+        <li><a href="inscription.html">Inscription</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>Connexion</h2>
+
+    <!-- method="post" et rien d'autre : avec get, le mot de passe se
+         retrouverait dans l'URL, donc dans l'historique du navigateur
+         et dans les journaux du serveur. -->
+    <form action="/connexion" method="post">
+
+      <fieldset>
+        <legend>Vos identifiants</legend>
+
+        <p>
+          <label for="identifiant">Pseudo ou adresse e-mail</label>
+          <input type="text" id="identifiant" name="identifiant"
+                 placeholder="ex : alice" required>
+        </p>
+
+        <p>
+          <label for="motdepasse">Mot de passe</label>
+          <input type="password" id="motdepasse" name="motdepasse" required>
+        </p>
+
+        <p>
+          <input type="checkbox" id="souvenir" name="souvenir" value="oui">
+          <label for="souvenir">Rester connecté sur cet appareil</label>
+        </p>
+      </fieldset>
+
+      <p>
+        <button type="submit">Se connecter</button>
+      </p>
+    </form>
+
+    <p>Pas encore de compte ? <a href="inscription.html">S'inscrire</a></p>
+
+  </main>
+
+  <footer>
+    <p>MiniForum — Projet du cours de développement web</p>
+    <p>Classe passerelle — cfpt·i</p>
+  </footer>
+
+</body>
+</html>

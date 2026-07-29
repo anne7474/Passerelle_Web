@@ -1,0 +1,838 @@
+% ============================================================
+%  Semaine 2 — HTML5 : structure & sémantique  [Module B]
+%  PRÉSENTATION (Beamer) — cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final et sur S02_polycop
+%  (les formulaires et l'accessibilité sont traités en semaine 3)
+%
+%  Version allégée : 5 parties, 27 diapositives.
+%  Le détail complet reste dans le polycopié — cette présentation
+%  ne garde que ce qui se commente à l'oral.
+%
+%  Images attendues dans ./images/ : aucune pour l'instant.
+%  Une image absente est remplacée par un cadre de réservation.
+% ============================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, decorations.pathreplacing}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{listings}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+%   1) \aboverulesep / \belowrulesep a 0 : supprime le lisere blanc
+%      entre le filet booktabs et la bande coloree du \rowcolor.
+%   2) \hdr : force l'alignement de la cellule d'en-tete. Sans cela,
+%      une colonne p{}, m{} ou X place le texte trop bas dans la bande.
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+
+% Alias (repris du polycopié)
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+% ---------------------------------------------------------------
+% Image robuste : cadre de réservation si le fichier est absent
+% ---------------------------------------------------------------
+\newcommand{\imageslide}[2][0.80\textwidth]{%
+  \IfFileExists{#2}%
+    {\includegraphics[width=#1]{#2}}%
+    {\setlength{\fboxrule}{0.6pt}%
+     \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.6cm][c]{#1}{%
+       \centering\small\color{cfptDarkGrey}%
+       [ image à insérer ]\\[4pt]\texttt{\detokenize{#2}}}}}}%
+}
+
+% ---------------------------------------------------------------
+% Thème Beamer cfpt·i
+% ---------------------------------------------------------------
+\usetheme{default}
+\usecolortheme{default}
+\setbeamercolor{palette primary}{bg=accentBlue, fg=white}
+\setbeamercolor{structure}{fg=accentBlue}
+\setbeamercolor{frametitle}{bg=accentBlue, fg=white}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{block title}{bg=accentBlue, fg=white}
+\setbeamercolor{block body}{bg=lightBlue!30, fg=cfptBlack}
+\setbeamercolor{block title alerted}{bg=cfptYellow!85!black, fg=cfptBlack}
+\setbeamercolor{block body alerted}{bg=cfptYellow!20, fg=cfptBlack}
+\setbeamercolor{block title example}{bg=successGreen, fg=white}
+\setbeamercolor{block body example}{bg=successGreen!8, fg=cfptBlack}
+\setbeamercolor{itemize item}{fg=cfptYellow!85!black}
+\setbeamercolor{itemize subitem}{fg=cfptDarkGrey}
+\setbeamercolor{enumerate item}{fg=accentBlue}
+\setbeamercolor{normal text}{fg=cfptBlack}
+\setbeamercolor{footline}{fg=white}
+
+\setbeamertemplate{itemize item}{\textbullet}
+\setbeamertemplate{itemize subitem}{--}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+% Titre de frame : bandeau pleine largeur
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.6ex, dp=1.2ex, leftskip=0.3cm]{frametitle}%
+    \usebeamerfont{frametitle}\bfseries\insertframetitle%
+  \end{beamercolorbox}%
+}
+
+% Pied de page
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.32\paperwidth, ht=2.4ex, dp=1ex, leftskip=0.3cm]{palette primary}%
+      \usebeamerfont{author in head/foot}\tiny Anne Terrier%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.44\paperwidth, ht=2.4ex, dp=1ex, center]{palette primary}%
+      \usebeamerfont{title in head/foot}\tiny Semaine 2 --- HTML5 : structure \& sémantique%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.24\paperwidth, ht=2.4ex, dp=1ex, right, rightskip=0.3cm]{palette primary}%
+      \usebeamerfont{date in head/foot}\tiny\insertframenumber\,/\,\inserttotalframenumber%
+    \end{beamercolorbox}%
+  }%
+}
+
+% Diapositive de séparation de partie
+\newcommand{\partieslide}[1]{%
+{%
+\setbeamertemplate{footline}{}%
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
+    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center) {#1};
+  \end{tikzpicture}
+\end{frame}
+}}
+
+% Diapositive « à vous de jouer » (fond vert)
+\newcommand{\exoslide}[1]{%
+{%
+\setbeamertemplate{footline}{}%
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[successGreen] (current page.north west) rectangle (current page.south east);
+    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=1.3cm]current page.center)
+      {À vous de jouer !};
+    \node[text=white, font=\large, text width=0.8\paperwidth, align=center]
+      at ([yshift=-0.9cm]current page.center) {#1};
+  \end{tikzpicture}
+\end{frame}
+}}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, h5, h6, p, a, img, figure, figcaption,
+    ul, ol, li, table, caption, thead, tbody, tr, th, td, div, span, meta,
+    title, link, script, strong, em, br, hr, blockquote},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+
+% ---------------------------------------------------------------
+% Métadonnées
+% ---------------------------------------------------------------
+\title{HTML5 --- Structure \& sémantique}
+\subtitle{Développement web --- Classe passerelle}
+\author{Anne Terrier}
+\institute{cfpt\textperiodcentered i --- École d'informatique}
+\date{Semaine 2}
+
+% ===============================================================
+\begin{document}
+% ===============================================================
+
+% --- Diapo de titre ---
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle ([yshift=-3.2cm]current page.north east);
+    \node[anchor=north west, text=white, font=\huge\bfseries, text width=0.9\paperwidth]
+      at ([shift={(0.8cm,-0.8cm)}]current page.north west)
+      {HTML5 --- Structure \& sémantique};
+    \node[anchor=north west, text=lightBlue, font=\large]
+      at ([shift={(0.85cm,-2.55cm)}]current page.north west)
+      {Développement web --- Classe passerelle};
+
+    % accent jaune
+    \fill[cfptYellow] ([yshift=-3.2cm]current page.north west) rectangle ([yshift=-3.35cm]current page.north east);
+
+    \node[anchor=south west, font=\large\bfseries, text=accentBlue]
+      at ([shift={(0.8cm,1.8cm)}]current page.south west) {Semaine 2 \quad\textbar\quad Module B};
+    \node[anchor=south west, font=\normalsize, text=cfptDarkGrey]
+      at ([shift={(0.8cm,1.1cm)}]current page.south west)
+      {Anne Terrier \quad\textbar\quad cfpt\textperiodcentered i --- École d'informatique};
+  \end{tikzpicture}
+\end{frame}
+}
+
+% --- Plan ---
+\begin{frame}{Au programme aujourd'hui}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{enumerate}
+        \item Balises et imbrication
+        \item Structure \& sémantique
+        \item Texte, liens \& images
+      \end{enumerate}
+      \vspace{0.15cm}
+      \begin{exampleblock}{Puis, au milieu}
+        Un exercice : \textbf{votre première page web}.
+      \end{exampleblock}
+      \vspace{0.1cm}
+      \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item Listes \& tableaux
+        \item Valider son HTML
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{block}{Objectif de la semaine}
+        Écrire une page HTML5 valide et sémantique, et savoir corriger les erreurs signalées par le validateur.
+      \end{block}
+      \vspace{0.15cm}
+      \begin{alertblock}{Le polycopié va plus loin}
+        Ces diapositives ne gardent que l'essentiel. Le détail --- tableaux de balises, cas particuliers, lexique --- est dans \textit{S02\_polycop}.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Où en sommes-nous ?}
+  \vspace{0.1cm}
+  \begin{center}
+  \begin{tikzpicture}[font=\small,
+    b/.style={draw, rounded corners=2pt, minimum width=3.2cm,
+              minimum height=1.15cm, align=center}]
+    \node[b, draw=warningOrange, fill=warningOrange!12] (h) at (0,0)
+      {\textbf{HTML}\\{\footnotesize la structure}};
+    \node[b, draw=accentBlue, fill=accentBlue!8, right=0.6cm of h] (c)
+      {\textbf{CSS}\\{\footnotesize la présentation}};
+    \node[b, draw=successGreen, fill=successGreen!8, right=0.6cm of c] (j)
+      {\textbf{JavaScript}\\{\footnotesize le comportement}};
+    \node[below=0.12cm of h, font=\footnotesize\bfseries, text=warningOrange]
+      {semaines 2 et 3};
+    \node[below=0.12cm of c, font=\footnotesize, text=cfptDarkGrey]
+      {semaines 4 et 5};
+    \node[below=0.12cm of j, font=\footnotesize, text=cfptDarkGrey]
+      {semaines 6 et 7};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.45cm}
+  \begin{alertblock}{Aujourd'hui, on ne fait que du HTML}
+    Votre page sera laide. C'est normal, et c'est même voulu : tant qu'il n'y a pas de style, on ne peut juger que la \textbf{structure}.
+  \end{alertblock}
+\end{frame}
+
+% ===============================================================
+\section{Balises et imbrication}
+% ===============================================================
+\partieslide{1. Balises et imbrication}
+
+\begin{frame}{Un langage de balisage}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Définition}
+        Le \textbf{HTML} décrit la \textbf{structure} et le \textbf{contenu} d'une page. Un simple fichier texte, d'extension \texttt{.html}.
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Pas un langage de programmation}
+        Ni variables, ni conditions, ni boucles. Tout cela arrivera avec JavaScript, en \textbf{semaine 6}.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{center}
+  \begin{tikzpicture}[font=\small]
+    \node[font=\ttfamily\Large] (code) {%
+      \textcolor{accentBlue}{<p>}%
+      \textcolor{cfptBlack}{~Bonjour tout le monde~}%
+      \textcolor{accentBlue}{</p>}};
+    \node[below=1.0cm of code, xshift=-3.4cm, text=accentBlue, font=\footnotesize\bfseries] (lo) {Balise ouvrante};
+    \node[below=1.0cm of code, xshift=0cm, text=cfptDarkGrey, font=\footnotesize\bfseries] (ct) {Contenu};
+    \node[below=1.0cm of code, xshift=3.3cm, text=accentBlue, font=\footnotesize\bfseries] (lf) {Balise fermante};
+    \draw[-{Stealth[length=5pt]}, accentBlue!70, thick] (lo.north) -- ++(0,0.6);
+    \draw[-{Stealth[length=5pt]}, cfptDarkGrey!70, thick] (ct.north) -- ++(0,0.6);
+    \draw[-{Stealth[length=5pt]}, accentBlue!70, thick] (lf.north) -- ++(0,0.6);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.15cm}
+  \begin{center}
+    \small Certaines balises n'encadrent rien et s'écrivent \textbf{seules} : \texttt{<img>}, \texttt{<br>}, \texttt{<meta>}, \texttt{<link>}.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Attributs, espaces et commentaires}
+\begin{lstlisting}[language=HTML5]
+<a href="https://www.hepia.ch" target="_blank">Site de la hepia</a>
+
+<!-- Un commentaire : invisible dans la page,
+     mais lisible par tous via Ctrl+U -->
+<p>Ce      texte    s'affichera    normalement.</p>
+\end{lstlisting}
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Un attribut}
+        S'écrit \texttt{nom="valeur"}, dans la balise \textbf{ouvrante} seulement. Jamais dans la fermante.
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Le HTML ignore votre mise en page}
+        Espaces multiples et retours à la ligne sont réduits à \textbf{un seul espace}. Un paragraphe se crée avec un \texttt{<p>}, pas avec Entrée.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{L'imbrication : un arbre, une règle}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \vspace{0.2cm}
+      \begin{center}
+      \begin{tikzpicture}[font=\scriptsize,
+        n/.style={draw=uniNavy, fill=uniNavy!8, rounded corners=2pt,
+                  inner sep=3pt, font=\ttfamily\scriptsize},
+        f/.style={draw=uniGrey!55, fill=uniPaper, rounded corners=2pt,
+                  inner sep=3pt, font=\ttfamily\scriptsize},
+        e/.style={uniGrey!70, thick}]
+        \node[n] (html) at (0,0) {<html>};
+        \node[n] (head) at (-1.6,-0.95) {<head>};
+        \node[n] (body) at (1.3,-0.95) {<body>};
+        \node[f] (title) at (-1.6,-1.9) {<title>};
+        \node[n] (h1)   at (0.2,-1.9) {<h1>};
+        \node[n] (ul)   at (1.9,-1.9) {<ul>};
+        \node[f] (li1)  at (1.2,-2.85) {<li>};
+        \node[f] (li2)  at (2.6,-2.85) {<li>};
+        \draw[e] (html) -- (head);  \draw[e] (html) -- (body);
+        \draw[e] (head) -- (title); \draw[e] (body) -- (h1);
+        \draw[e] (body) -- (ul);    \draw[e] (ul) -- (li1);
+        \draw[e] (ul) -- (li2);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{alertblock}{Premier ouvert, dernier fermé}
+        Comme des parenthèses. Les balises ne se chevauchent jamais.
+        \vspace{0.2cm}
+
+        \textcolor{successGreen}{\textbf{OUI}}\; \texttt{\footnotesize <p>Un <strong>mot</strong> ici</p>}
+
+        \vspace{0.12cm}
+        \textcolor{alertRed}{\textbf{NON}}\; \texttt{\footnotesize <p>Un <strong>mot</p></strong> ici}
+      \end{alertblock}
+      \vspace{0.1cm}
+      \begin{exampleblock}{Le réflexe qui évite tout}
+        \textbf{Indenter} : un niveau par niveau d'imbrication. Une balise oubliée devient visible à l'\oe il nu.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{center}
+    \small Cet arbre sera parcouru par le navigateur, les moteurs de recherche, et votre JavaScript dès la semaine 7.
+  \end{center}
+\end{frame}
+
+% ===============================================================
+\section{Structure \& sémantique}
+% ===============================================================
+\partieslide{2. Structure \& sémantique}
+
+\begin{frame}[fragile]{Le squelette d'une page HTML5}
+\begin{lstlisting}[language=HTML5]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum</title>
+</head>
+<body>
+  <!-- Tout le contenu visible de la page -->
+</body>
+</html>
+\end{lstlisting}
+  \vspace{0.08cm}
+  \begin{alertblock}{\texttt{<head>} et \texttt{<body>} : ne pas confondre}
+    Le \texttt{<head>} contient des informations \emph{sur} la page --- encodage, titre d'onglet, feuille de style. Le \texttt{<body>} contient tout le \textbf{visible}. Un titre écrit dans le \texttt{<head>} n'apparaîtra jamais dans la page.
+  \end{alertblock}
+  \vspace{0.02cm}
+  \begin{center}
+    \small Squelette à connaître \textbf{par c\oe ur} --- demandé au contrôle écrit de la semaine 12.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Décrire le rôle de chaque zone}
+  \vspace{0.05cm}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, every node/.style={align=center}, scale=0.86, transform shape]
+    \draw[draw=accentBlue, fill=accentBlue!12, rounded corners=2pt] (0,0) rectangle (10,-0.75);
+    \node[text=accentBlue] at (5,-0.375) {\texttt{\textbf{<header>}} --- en-tête : titre du site, logo};
+
+    \draw[draw=warningOrange, fill=warningOrange!12, rounded corners=2pt] (0,-0.9) rectangle (10,-1.55);
+    \node[text=warningOrange] at (5,-1.22) {\texttt{\textbf{<nav>}} --- menu de navigation};
+
+    \draw[draw=successGreen, fill=successGreen!8, rounded corners=2pt] (0,-1.7) rectangle (7.4,-4.5);
+    \node[text=successGreen, font=\scriptsize\bfseries] at (1.0,-1.95) {\texttt{<main>}};
+    \draw[draw=successGreen!70, fill=white, rounded corners=2pt] (0.3,-2.2) rectangle (7.1,-3.25);
+    \node at (3.7,-2.72) {\texttt{\textbf{<article>}} --- un sujet du forum};
+    \draw[draw=successGreen!70, fill=white, rounded corners=2pt] (0.3,-3.4) rectangle (7.1,-4.3);
+    \node at (3.7,-3.85) {\texttt{\textbf{<article>}} --- un autre sujet};
+
+    \draw[draw=cfptDarkGrey, fill=cfptGrey, rounded corners=2pt] (7.6,-1.7) rectangle (10,-4.5);
+    \node[text=cfptDarkGrey] at (8.8,-3.1) {\texttt{\textbf{<aside>}}\\[2pt]contenu\\annexe};
+
+    \draw[draw=accentBlue, fill=accentBlue!12, rounded corners=2pt] (0,-4.65) rectangle (10,-5.3);
+    \node[text=accentBlue] at (5,-4.97) {\texttt{\textbf{<footer>}} --- pied de page : mentions, contact};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.1cm}
+  \begin{center}
+    \small Une balise sémantique dit ce que le contenu \textbf{est}, pas comment il s'affiche.
+  \end{center}
+\end{frame}
+
+\begin{frame}{Pourquoi s'en soucier --- et quel choix faire}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Trois publics en tirent parti}
+        \begin{itemize}
+          \item les \textbf{humains} qui relisent le code
+          \item les \textbf{moteurs de recherche}
+          \item les \textbf{lecteurs d'écran}
+        \end{itemize}
+      \end{block}
+      \vspace{0.1cm}
+      \begin{alertblock}{Déroutant au début}
+        Remplacer un \texttt{<div>} par un \texttt{<main>} \textbf{ne change rien à l'affichage}. Le bénéfice est invisible --- et bien réel.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{\texttt{<section>} ou \texttt{<article>} ?}
+        Le test : ce contenu garderait-il du sens \textbf{sorti de la page} ?
+        \vspace{0.15cm}
+
+        \textbf{Oui} $\rightarrow$ \texttt{<article>} : un message de forum, un billet.
+        \vspace{0.08cm}
+
+        \textbf{Non} $\rightarrow$ \texttt{<section>} : « Sujets récents » n'existe que dans ce forum.
+      \end{exampleblock}
+      \vspace{0.1cm}
+      \begin{block}{Et le \texttt{<div>} ?}
+        Il reste utile quand il n'y a \textbf{aucun sens} à exprimer, seulement une mise en forme.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ===============================================================
+\section{Texte, liens \& images}
+% ===============================================================
+\partieslide{3. Texte, liens \& images}
+
+\begin{frame}[fragile]{Titres et texte}
+\begin{lstlisting}[language=HTML5]
+<h1>MiniForum</h1>
+<h2>Sujets récents</h2>
+<p>Un paragraphe avec du <strong>contenu important</strong>.</p>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{La hiérarchie des titres}
+        Les titres font le \textbf{plan} du document, pas la taille du texte.
+        \vspace{0.12cm}
+
+        \textbf{Un seul \texttt{<h1>}} par page, et \textbf{jamais de saut} de niveau.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{block}{\texttt{<strong>} plutôt que \texttt{<b>}}
+        L'un décrit un \textit{sens}, l'autre une \textit{apparence}. Rendu identique --- mais un lecteur d'écran change d'intonation sur \texttt{<strong>} et ignore \texttt{<b>}. Idem \texttt{<em>} face à \texttt{<i>}.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \begin{center}
+    \small Au passage : \texttt{<p>}, \texttt{<h1>}, \texttt{<ul>} sont des éléments \textbf{en bloc} (toute la largeur) ;\\
+    \small \texttt{<a>}, \texttt{<strong>}, \texttt{<img>} sont \textbf{en ligne} (dans le fil du texte). On y reviendra en semaine 4.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Liens et identifiants}
+\begin{lstlisting}[language=HTML5]
+<a href="https://www.hepia.ch">Site de la hepia</a>   <!-- externe -->
+<a href="sujet.html">Voir le sujet</a>                <!-- autre page -->
+<a href="#sujets">Aller aux sujets</a>                <!-- meme page -->
+
+<section id="sujets"> ... </section>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{alertblock}{Un \texttt{id} est unique}
+        Jamais deux fois le même dans une page --- le validateur signale les doublons.
+        \vspace{0.1cm}
+
+        Il resservira au \texttt{<label>} (sem. 3), au \textbf{CSS} (sem. 4), à \textbf{JavaScript} (sem. 7).
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Un bon intitulé de lien}
+        Il doit décrire sa destination \textbf{hors contexte} : les lecteurs d'écran listent les liens d'une page.
+        \vspace{0.1cm}
+
+        \textcolor{successGreen}{\textbf{OUI}} \texttt{Lire le sujet} \quad
+        \textcolor{alertRed}{\textbf{NON}} \texttt{cliquez ici}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Chemins et images}
+  \begin{columns}[T]
+    \begin{column}{0.40\textwidth}
+\begin{lstlisting}
+miniforum/
+  |-- index.html
+  |-- sujet.html
+  \-- images/
+       \-- logo.png
+\end{lstlisting}
+      \vspace{0.1cm}
+\begin{lstlisting}[language=HTML5]
+<img src="images/logo.png"
+     alt="Logo du MiniForum">
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{alertblock}{Chemins : la source d'erreur n\textsuperscript{o}\,1}
+        \texttt{sujet.html} même dossier \;\textbar\;
+        \texttt{images/logo.png} sous-dossier \;\textbar\;
+        \texttt{../style.css} dossier parent
+        \vspace{0.1cm}
+
+        \textbf{La casse compte} sur un serveur Linux : ça marche chez vous, ça casse en ligne. \textbf{Ni espaces ni accents} dans les noms.
+      \end{alertblock}
+      \vspace{0.08cm}
+      \begin{block}{L'attribut \texttt{alt} n'est pas optionnel}
+        Lu par les lecteurs d'écran, affiché si l'image ne charge pas. Son absence est une \textbf{erreur} pour le validateur.
+        \vspace{0.08cm}
+
+        \textcolor{successGreen}{\textbf{OUI}} \texttt{alt="Logo du MiniForum"}\\
+        \textcolor{alertRed}{\textbf{NON}} \texttt{alt="image"}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ===============================================================
+% EXERCICE INTERMÉDIAIRE
+% ===============================================================
+\exoslide{Exercice intermédiaire --- votre première page web}
+
+\begin{frame}{Exercice --- votre première page web}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{block}{Consignes --- fichier \texttt{ma-page.html}}
+        \begin{enumerate}
+          \item Le squelette écrit \textbf{à la main}
+          \item Un \texttt{<header>} avec un \texttt{<h1>} : votre prénom
+          \item Un \texttt{<main>} avec une \texttt{<section>} : un \texttt{<h2>}, un paragraphe, un mot en \texttt{<strong>}
+          \item Une image, avec un \texttt{alt} correct
+          \item Un lien à l'intitulé explicite
+          \item Un \texttt{<footer>} avec la date du jour
+        \end{enumerate}
+      \end{block}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{alertblock}{Ce que je vérifie en passant}
+        \begin{itemize}
+          \item Le code est \textbf{indenté}
+          \item \textbf{Un seul} \texttt{<h1>}
+          \item L'\texttt{alt} décrit quelque chose
+          \item Le chemin de l'image est \textbf{relatif}
+          \item Aucune balise laissée ouverte
+        \end{itemize}
+      \end{alertblock}
+      \vspace{0.1cm}
+      \begin{exampleblock}{En avance ?}
+        Ajoutez une liste \texttt{<ul>} et une \texttt{<figure>} avec sa \texttt{<figcaption>}.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{center}
+    \small\itshape 20 minutes, sans le raccourci \texttt{!}+\texttt{Tab} --- puis on valide ensemble sur \texttt{validator.w3.org}.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice --- une correction possible}
+\begin{lstlisting}[language=HTML5]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Alice - présentation</title>
+</head>
+<body>
+  <header><h1>Alice</h1></header>
+  <main>
+    <section>
+      <h2>Qui suis-je ?</h2>
+      <p>Étudiante en classe passerelle, je découvre le
+         <strong>développement web</strong> cette année.</p>
+      <img src="images/photo.jpg" alt="Alice devant l'entrée du cfpt">
+      <p><a href="https://developer.mozilla.org">La documentation MDN</a></p>
+    </section>
+  </main>
+  <footer><p>Page créée le 15 septembre 2026</p></footer>
+</body>
+</html>
+\end{lstlisting}
+\end{frame}
+
+% ===============================================================
+\section{Listes \& tableaux}
+% ===============================================================
+\partieslide{4. Listes \& tableaux}
+
+\begin{frame}[fragile]{Les listes}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{center}\footnotesize\textbf{Liste à puces --- ordre indifférent}\end{center}
+\begin{lstlisting}[language=HTML5]
+<ul>
+  <li>HTML</li>
+  <li>CSS</li>
+  <li>JavaScript</li>
+</ul>
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}\footnotesize\textbf{Liste numérotée --- l'ordre compte}\end{center}
+\begin{lstlisting}[language=HTML5]
+<ol>
+  <li>Ouvrir le terminal</li>
+  <li>Taper la commande</li>
+  <li>Valider</li>
+</ol>
+\end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{alertblock}{Un \texttt{<li>} vit toujours dans un \texttt{<ul>} ou un \texttt{<ol>}}
+    Rien d'autre qu'un \texttt{<li>} ne peut être enfant direct d'un \texttt{<ul>} : pas de \texttt{<p>}, pas de \texttt{<div>}. Ce contenu se place \emph{à l'intérieur} du \texttt{<li>}.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Un menu de navigation est une liste de liens}
+\begin{lstlisting}[language=HTML5]
+<nav>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="sujet.html">Sujets</a></li>
+  </ul>
+</nav>
+\end{lstlisting}
+  \vspace{0.3cm}
+  \begin{block}{Étrange ? Pas tant que ça}
+    Cela paraît lourd tant qu'on pense en termes d'\textbf{apparence}. Mais un menu \emph{est} bien une liste de liens --- et le CSS se chargera, en semaine 4, de l'afficher horizontalement.
+  \end{block}
+  \vspace{0.2cm}
+  \begin{center}
+    \small C'est exactement l'esprit du HTML : \textbf{décrire le sens}, laisser le CSS décider de la forme.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Les tableaux}
+\begin{lstlisting}[language=HTML5]
+<table>
+  <caption>Derniers sujets publiés</caption>
+  <thead>
+    <tr><th>Sujet</th><th>Auteur</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Bienvenue</td><td>Alice</td></tr>
+    <tr><td>Installer Node.js</td><td>Bob</td></tr>
+  </tbody>
+</table>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{alertblock}{Un tableau sert à des \textbf{données}, jamais à mettre en page}
+    Horaire, relevé de notes, comparatif : oui. Positionner des éléments dans la page : non --- c'est le rôle du CSS. Une page mise en page avec des tableaux est illisible pour un lecteur d'écran.
+  \end{alertblock}
+\end{frame}
+
+% ===============================================================
+\section{Valider son HTML}
+% ===============================================================
+\partieslide{5. Valider son HTML}
+
+\begin{frame}{Pourquoi valider}
+  \begin{block}{Le navigateur est trop gentil}
+    Il affiche une page même si des balises sont mal fermées : il \textbf{devine} ce que vous avez voulu écrire.
+  \end{block}
+  \vspace{0.3cm}
+  \begin{alertblock}{Et c'est un piège}
+    Chaque navigateur devine à sa manière. Le jour où l'affichage se dérègle, l'erreur est déjà enfouie sous cent lignes de code --- et elle ne se manifeste que chez certains utilisateurs.
+  \end{alertblock}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Le validateur du W3C --- \texttt{validator.w3.org}}
+    Trois modes : par \textbf{adresse}, par \textbf{fichier} téléversé, ou par \textbf{copier-coller} --- c'est celui qu'on utilise en classe.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Les messages fréquents --- et la bonne méthode}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.97\textwidth}{p{5.4cm}X}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Message} & \hdr{Ce qu'il faut corriger} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{Unclosed element X} & La balise \texttt{X} n'est jamais fermée \\
+    \texttt{Stray end tag X} & Une fermante sans ouvrante \\
+    \rowcolor{cfptGrey}
+    \texttt{Duplicate ID "xyz"} & Deux éléments portent le même \texttt{id} \\
+    \texttt{An img element must have an alt attribute} & Une image sans \texttt{alt} \\
+    \rowcolor{cfptGrey}
+    \texttt{Element X not allowed as child of element Y} & Mauvaise imbrication \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.2cm}
+  \begin{alertblock}{Corriger de haut en bas}
+    Une seule balise oubliée produit dix messages en cascade : corrigez \textbf{la première}, relancez, le compteur chute d'un coup. Les \textbf{Errors} doivent toutes disparaître ; les \textbf{Warnings} sont des maladresses.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Prévenir plutôt que corriger}
+  \begin{block}{Trois habitudes qui suppriment la majorité des erreurs}
+    \begin{itemize}
+      \item \textbf{Indenter} systématiquement --- \texttt{Maj+Alt+F} dans VS Code, avec Prettier
+      \item Écrire la balise \textbf{fermante immédiatement} après l'ouvrante, puis remplir le contenu
+      \item Se fier au \textbf{soulignement rouge} de VS Code, qui repère déjà une partie des erreurs
+    \end{itemize}
+  \end{block}
+  \vspace{0.4cm}
+  \begin{exampleblock}{Le réflexe documentation}
+    \textbf{MDN Web Docs} reste la première source : cherchez \texttt{mdn} suivi du nom de la balise. La page donne la description, la syntaxe, et surtout des \textbf{exemples modifiables}.
+  \end{exampleblock}
+\end{frame}
+
+% ===============================================================
+% Clôture
+% ===============================================================
+\begin{frame}{Résumé de la semaine}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Ce qu'on a vu}
+        \begin{itemize}
+          \item Le HTML, langage de balisage
+          \item L'imbrication, et l'arbre du document
+          \item Le squelette : \texttt{<head>} / \texttt{<body>}
+          \item Les balises sémantiques
+          \item Titres, texte, liens, images, chemins
+          \item Listes et tableaux
+          \item La validation W3C
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{alertblock}{À faire pour la semaine 3}
+        \begin{itemize}
+          \item Les \textbf{deux pages} du MiniForum (fiche TP)
+          \item Chacune valide \textbf{sans erreur}, poussée sur GitHub
+          \item Le quiz d'auto-évaluation sur Moodle
+        \end{itemize}
+      \end{alertblock}
+      \vspace{0.15cm}
+      \begin{exampleblock}{La semaine prochaine}
+        Les \textbf{formulaires} et l'\textbf{accessibilité} --- encore du HTML, et la dernière semaine avant le CSS.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=0.6cm]current page.center) {Des questions ?};
+    \fill[cfptYellow] ([yshift=-0.2cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.32cm]current page.center -| current page.east);
+    \node[text=lightBlue, font=\large] at ([yshift=-1.3cm]current page.center)
+      {Prochaine étape : la fiche TP --- structure HTML du MiniForum};
+  \end{tikzpicture}
+\end{frame}
+}
+
+\end{document}

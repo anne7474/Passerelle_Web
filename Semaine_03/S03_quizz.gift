@@ -1,0 +1,254 @@
+// ============================================================
+//  Semaine 3 — HTML5 : formulaires & accessibilité  [Module B]
+//  QUIZ MOODLE — format GIFT — cfpt·i | Anne Terrier
+//  Aligné sur PlanCours_Pass_Web_final et sur S03_polycop
+//
+//  IMPORT : Banque de questions -> Importer -> format « GIFT »
+//           Encodage du fichier : UTF-8
+//
+//  30 questions — QCM, réponses multiples, vrai/faux, réponse
+//  courte, appariement. Chaque question porte un feedback général
+//  (####) qui rappelle la règle sous-jacente.
+//
+//  Barème conseillé : 1 point par question, quiz formatif,
+//  plusieurs tentatives autorisées, note la plus haute retenue.
+//
+//  Les caractères de contrôle GIFT ( = ~ # { } : ) sont échappés
+//  par une contre-oblique partout où ils apparaissent dans un
+//  texte : c'est indispensable pour du code HTML.
+// ============================================================
+
+$CATEGORY: Développement web/Semaine 03 - Formulaires et accessibilité
+
+// ------------------------------------------------------------
+// 1. À quoi sert un formulaire
+// ------------------------------------------------------------
+
+::S03-01 Rôle d'un formulaire::[html]Quel est le rôle d'un formulaire dans une page web ?{
+=Permettre à un visiteur de transmettre des données à l'application#Exact. Le formulaire est le point d'entrée par lequel les données d'un utilisateur arrivent dans l'application.
+~Mettre en forme le contenu de la page#Non, c'est le rôle du CSS, que nous verrons en semaine 4.
+~Enregistrer directement des données dans la base de données#Non. Le navigateur ne parle jamais directement à la base de données, il passe toujours par le serveur.
+~Structurer la page en zones sémantiques#Non, c'est le rôle de balises comme &lt;header&gt;, &lt;main&gt; et &lt;footer&gt;, vues en semaine 2.
+####Un formulaire inverse le sens de circulation de l'information : jusqu'ici la page affichait, maintenant elle reçoit. Voir S03_polycop, section 1.
+}
+
+::S03-02 La balise enveloppe::[html]Quelle balise regroupe l'ensemble des champs d'un formulaire ?{
+=&lt;form&gt;#Exact.
+~&lt;fieldset&gt;#Non. &lt;fieldset&gt; regroupe des champs <em>liés entre eux</em> à l'intérieur d'un formulaire, mais il ne remplace pas &lt;form&gt;.
+~&lt;input&gt;#Non, &lt;input&gt; est un champ de saisie individuel.
+~&lt;section&gt;#Non, &lt;section&gt; est un élément de structure générique, sans rapport avec la saisie.
+####Sans &lt;form&gt;, les champs existent visuellement mais ne forment pas un ensemble transmissible.
+}
+
+::S03-03 L'attribut action::[html]Dans <code>&lt;form action\="/topics" method\="post"&gt;</code>, que désigne l'attribut <code>action</code> ?{
+=L'adresse à laquelle les données seront envoyées#Exact.
+~L'action JavaScript déclenchée au clic sur le bouton#Non. JavaScript n'intervient pas ici, nous le brancherons en semaine 7.
+~Le nom du formulaire#Non, un formulaire n'a pas besoin de nom pour fonctionner.
+~Le type de traitement appliqué aux données#Non, le traitement se décide côté serveur, pas dans le HTML.
+####<code>action</code> et <code>method</code> n'auront d'effet visible qu'en semaine 15, quand un serveur Express écoutera à cette adresse.
+}
+
+::S03-04 get ou post::[html]Un formulaire de connexion contient un champ mot de passe. Quelle méthode d'envoi faut-il utiliser, et pourquoi ?{
+=<code>post</code>, parce que <code>get</code> placerait le mot de passe dans l'URL#Exact. Il se retrouverait dans l'historique du navigateur, dans les journaux du serveur et dans toute URL copiée.
+~<code>get</code>, parce que c'est la méthode par défaut#Non. La méthode par défaut n'est pas un argument, et elle est ici le pire choix possible.
+~<code>get</code>, parce qu'elle est plus rapide#Non. La différence de performance est nulle, la différence de sécurité est majeure.
+~L'une ou l'autre, le mot de passe est chiffré dans les deux cas#Non. Le HTML ne chiffre rien. <code>type\="password"</code> masque seulement les caractères à l'écran.
+####<code>get</code> place les données dans l'URL, <code>post</code> dans le corps de la requête. Dès qu'on crée, modifie ou transmet quelque chose de sensible, c'est <code>post</code>.
+}
+
+// ------------------------------------------------------------
+// 2. Les champs de saisie
+// ------------------------------------------------------------
+
+::S03-05 Le bon type d'input::[html]Quel <code>type</code> d'<code>&lt;input&gt;</code> faut-il choisir pour une adresse e-mail ?{
+=<code>type\="email"</code>#Exact. Le navigateur vérifie la présence d'un arobase et d'un domaine, et le clavier mobile s'adapte.
+~<code>type\="text"</code>#Cela fonctionne, mais on perd la vérification automatique et le clavier adapté sur téléphone.
+~<code>type\="mail"</code>#Ce type n'existe pas. Un type inconnu se comporte comme <code>text</code>, sans le moindre avertissement.
+~<code>type\="url"</code>#Non, <code>url</code> attend une adresse web, pas une adresse e-mail.
+####Choisir le bon <code>type</code> est le moyen le moins coûteux d'améliorer un formulaire : un mot à changer, aucun code à écrire.
+}
+
+::S03-06 Le type et le clavier mobile::[html]Sur un téléphone, quel effet a le <code>type</code> d'un champ de saisie ?{
+=Il fait apparaître un clavier adapté (pavé numérique, touche arobase, calendrier)#Exact, et c'est un gain gratuit pour l'utilisateur.
+~Aucun, le clavier est toujours le même#Non, essayez avec <code>type\="number"</code> puis <code>type\="email"</code> sur un téléphone.
+~Il agrandit automatiquement le champ#Non, la taille relève du CSS.
+~Il traduit les messages d'erreur#Les messages sont bien traduits, mais cela dépend de la langue du navigateur, pas du <code>type</code>.
+####Le <code>type</code> agit sur trois choses : le contrôle automatique, le clavier mobile, et parfois l'interface proposée (calendrier, sélecteur de couleur).
+}
+
+::S03-07 La balise textarea::[html]La balise <code>&lt;textarea&gt;</code> est auto-fermante, comme <code>&lt;input&gt;</code>.{FALSE####<code>&lt;textarea&gt;</code> n'est <strong>jamais</strong> auto-fermante : son contenu initial se place entre la balise ouvrante et la balise fermante. Écrire une balise auto-fermante produit une page invalide.}
+
+::S03-08 Ce que transmet un select::[html]Dans une liste déroulante, qu'est-ce qui est transmis au serveur quand l'utilisateur choisit une option ?{
+=L'attribut <code>value</code> de l'<code>&lt;option&gt;</code> sélectionnée#Exact.
+~Le texte affiché entre les balises <code>&lt;option&gt;</code>#Non. Le texte affiché est pour l'humain, le <code>value</code> est pour la machine.
+~La position de l'option dans la liste#Non, aucune position n'est transmise.
+~L'<code>id</code> de l'<code>&lt;option&gt;</code>#Non, l'<code>id</code> ne sert jamais à transmettre une valeur.
+####C'est ce qui permet d'afficher « Général » à l'écran tout en transmettant <code>general</code> au serveur.
+}
+
+::S03-09 Le button sans type::[html]À l'intérieur d'un <code>&lt;form&gt;</code>, que fait un <code>&lt;button&gt;</code> auquel on n'a pas mis d'attribut <code>type</code> ?{
+=Il se comporte comme un bouton d'envoi et recharge la page#Exact, <code>submit</code> est la valeur par défaut.
+~Il ne fait rien tant qu'on ne lui ajoute pas de JavaScript#Non, c'est le comportement de <code>type\="button"</code>, qu'il faut écrire explicitement.
+~Il vide le formulaire#Non, c'est le comportement de <code>type\="reset"</code>.
+~La page affiche une erreur#Non, le HTML ne signale rien du tout.
+####C'est la cause d'une bonne moitié des « mon bouton ne marche pas » de la semaine 7 : le code JavaScript s'exécute, puis la page se recharge et efface tout. Précise toujours le <code>type</code>.
+}
+
+::S03-10 Cases à cocher ou boutons radio::[html]Un utilisateur doit choisir <strong>une seule</strong> visibilité pour son message, parmi « Public » et « Réservé aux membres ». Quel champ utiliser ?{
+=Deux <code>&lt;input type\="radio"&gt;</code> partageant le même <code>name</code>#Exact.
+~Deux <code>&lt;input type\="checkbox"&gt;</code>#Non. Les cases à cocher sont indépendantes, l'utilisateur pourrait cocher les deux.
+~Deux <code>&lt;input type\="radio"&gt;</code> avec des <code>name</code> différents#Non. Deux <code>name</code> différents produisent deux groupes indépendants, cochables séparément.
+~Un seul <code>&lt;input type\="text"&gt;</code>#Non. Rien n'empêcherait alors une saisie fantaisiste.
+####Case à cocher, plusieurs choix indépendants. Bouton radio, un seul choix dans un groupe, et le groupe est défini par le <code>name</code> commun.
+}
+
+// ------------------------------------------------------------
+// 3. Les attributs qui encadrent la saisie
+// ------------------------------------------------------------
+
+::S03-11 L'attribut qui compte pour le serveur::[html]Quel attribut détermine le nom sous lequel la valeur d'un champ sera transmise au serveur ?{
+=<code>name</code>#Exact.
+~<code>id</code>#Non. L'<code>id</code> sert dans la page (label, CSS, JavaScript), jamais à l'envoi.
+~<code>value</code>#Non. <code>value</code> est la valeur elle-même, pas son nom.
+~<code>placeholder</code>#Non, le <code>placeholder</code> est un simple texte d'exemple.
+####En semaine 15, le serveur Express lira <code>req.body.pseudo</code>, <code>req.body.titre</code>. Ces clés sont exactement les <code>name</code> choisis aujourd'hui.
+}
+
+::S03-12 Champ sans name::[html]Un champ de formulaire dépourvu d'attribut <code>name</code> est tout de même transmis au serveur, sous son <code>id</code>.{FALSE####Un champ sans <code>name</code> est purement et simplement <strong>absent</strong> des données envoyées : le serveur ne saura même pas qu'il a existé. C'est l'erreur la plus difficile à diagnostiquer, parce que la page fonctionne parfaitement à l'écran.}
+
+::S03-13 name et id dans un groupe de radios::[html]Dans un groupe de trois boutons radio, comment se répartissent les attributs ?{
+=<code>name</code> identique pour les trois, <code>value</code> et <code>id</code> différents#Exact.
+~<code>name</code>, <code>value</code> et <code>id</code> identiques pour les trois#Non. Des <code>id</code> en double rendent la page invalide et cassent les étiquettes.
+~<code>name</code> différent pour chacun, <code>id</code> identique#Non, c'est exactement l'inverse.
+~<code>name</code> identique et <code>value</code> identique#Non, le serveur ne pourrait alors pas savoir quelle option a été choisie.
+####Le <code>name</code> commun relie les boutons entre eux, la <code>value</code> distingue l'option choisie, l'<code>id</code> reste unique pour le <code>&lt;label&gt;</code>.
+}
+
+::S03-14 disabled ou readonly::[html]Quelle est la différence entre <code>readonly</code> et <code>disabled</code> ?{
+=<code>readonly</code> transmet la valeur au serveur, <code>disabled</code> ne la transmet pas#Exact.
+~Il n'y en a aucune, ce sont deux synonymes#Non, la différence est précisément celle de la transmission.
+~<code>disabled</code> transmet la valeur, <code>readonly</code> ne la transmet pas#Non, c'est l'inverse.
+~<code>readonly</code> masque le champ, <code>disabled</code> l'affiche en gris#Non, aucun des deux ne masque le champ.
+####Les deux empêchent la modification, mais un champ <code>disabled</code> disparaît des données envoyées.
+}
+
+::S03-15 pattern sans title::[html]Un champ porte <code>pattern\="[A-Za-z0-9]\{3,15\}"</code> mais aucun attribut <code>title</code>. Que voit l'utilisateur dont la saisie est refusée ?{
+=Un message générique du type « Veuillez respecter le format demandé », sans indication de ce qu'il faut corriger#Exact, et le champ devient un piège.
+~Le motif de l'expression régulière, affiché tel quel#Non, le navigateur n'affiche jamais l'expression régulière à l'utilisateur.
+~Rien du tout, le formulaire part quand même#Non, l'envoi est bien bloqué.
+~Un message rédigé automatiquement à partir du motif#Non, aucun navigateur ne sait traduire une expression régulière en français.
+####<code>pattern</code> sans <code>title</code> est inutilisable : le <code>title</code> fournit le texte affiché à la place du message générique. Il n'est pas décoratif.
+}
+
+::S03-16 L'attribut obligatoire::[html]Quel attribut place-t-on sur un champ pour que le formulaire refuse de partir tant qu'il est vide ? Réponds par un seul mot, en minuscules.{
+=required#Exact.
+####<code>required</code> déclenche la validation native du navigateur : l'envoi est bloqué, le curseur se place dans le champ fautif et un message s'affiche.
+}
+
+// ------------------------------------------------------------
+// 4. La validation native et ses limites
+// ------------------------------------------------------------
+
+::S03-17 La validation native est-elle une sécurité::[html]La validation HTML5 (<code>required</code>, <code>type\="email"</code>, <code>pattern</code>) protège l'application contre les données malveillantes.{FALSE####C'est une <strong>aide à la saisie</strong>, pas une sécurité. Elle s'exécute sur la machine du visiteur, qui garde la main dessus : il suffit d'ouvrir les outils de développement et de supprimer l'attribut <code>required</code>. On peut même envoyer une requête au serveur sans passer par un navigateur.}
+
+::S03-18 Le seul niveau fiable::[html]Parmi ces quatre niveaux de contrôle, lequel constitue la seule barrière réellement fiable ?{
+=Le serveur#Exact. C'est le seul niveau que le visiteur ne contrôle pas.
+~Le navigateur, via la validation HTML5#Non, le visiteur peut la désactiver en quelques secondes.
+~JavaScript côté client#Non, il s'exécute lui aussi sur la machine du visiteur.
+~L'utilisateur, s'il est prévenu par un message clair#Non. Un message clair aide l'utilisateur de bonne foi, il n'arrête personne d'autre.
+####Règle valable pour toute l'année : tout contrôle effectué dans le navigateur doit être <strong>refait sur le serveur</strong>. Mise en œuvre en semaine 15.
+}
+
+::S03-19 Ce qu'apporte la validation native::[html]Quels sont les apports réels de la validation native du navigateur ? Plusieurs réponses sont attendues.{
+~%33.33333%Un retour immédiat, sans aller-retour avec le serveur#Oui.
+~%33.33333%Des messages traduits dans la langue du navigateur, sans effort#Oui.
+~%33.33333%Un premier filtre contre les saisies manifestement erronées#Oui.
+~%-50%Une protection contre les données envoyées par un outil autre qu'un navigateur#Non. Un outil en ligne de commande n'a jamais vu le formulaire.
+~%-50%Une garantie que les données stockées sont valides#Non. Seuls le serveur et la base de données peuvent l'assurer.
+####La validation native améliore le confort de saisie. Elle ne garantit rien sur ce qui arrive au serveur.
+}
+
+// ------------------------------------------------------------
+// 5. Structurer un formulaire
+// ------------------------------------------------------------
+
+::S03-20 fieldset et legend::[html]À quoi servent <code>&lt;fieldset&gt;</code> et <code>&lt;legend&gt;</code> ?{
+=À regrouper des champs liés et à donner un titre à ce groupe#Exact, pour l'œil comme pour les lecteurs d'écran.
+~À encadrer visuellement le formulaire#Le cadre est un effet de bord du style par défaut. Le rôle de ces balises est sémantique.
+~À valider les champs qu'ils contiennent#Non, ils n'ont aucun effet sur la validation.
+~À remplacer les <code>&lt;label&gt;</code> des champs regroupés#Non, chaque champ garde son <code>&lt;label&gt;</code>.
+####Le <code>&lt;legend&gt;</code> doit être la <strong>première balise</strong> à l'intérieur du <code>&lt;fieldset&gt;</code>, sinon la page est invalide.
+}
+
+::S03-21 Pourquoi un fieldset autour des radios::[html]Pourquoi un groupe de boutons radio doit-il être placé dans un <code>&lt;fieldset&gt;</code> muni d'un <code>&lt;legend&gt;</code> ?{
+=Parce que sans le <code>&lt;legend&gt;</code>, un lecteur d'écran annonce les options sans dire de quoi il s'agit#Exact. La personne entend « Public » sans savoir que la question porte sur la visibilité.
+~Parce que sinon les boutons ne fonctionnent pas ensemble#Non, c'est le <code>name</code> commun qui les relie, pas le <code>&lt;fieldset&gt;</code>.
+~Parce que le validateur W3C l'exige#Non, la page reste valide sans <code>&lt;fieldset&gt;</code>. C'est une question d'accessibilité, pas de validité.
+~Parce que cela permet de les aligner horizontalement#Non, l'alignement relève du CSS.
+####Pour un champ isolé, le <code>&lt;label&gt;</code> suffit. Pour un groupe, il faut les deux.
+}
+
+// ------------------------------------------------------------
+// 6. Accessibilité
+// ------------------------------------------------------------
+
+::S03-22 L'attribut for du label::[html]Dans <code>&lt;label for\="pseudo"&gt;</code>, à quoi doit correspondre la valeur <code>pseudo</code> ?{
+=À l'<code>id</code> du champ associé#Exact.
+~Au <code>name</code> du champ associé#Non, c'est la confusion la plus fréquente. Le <code>for</code> reprend toujours l'<code>id</code>.
+~Au texte affiché dans le champ#Non.
+~À la <code>value</code> du champ#Non.
+####Test d'une seconde, à faire sur chaque champ : clique sur l'étiquette. Si le curseur se place dans le champ, ou si la case se coche, la liaison fonctionne.
+}
+
+::S03-23 placeholder et label::[html]Un <code>placeholder</code> bien rédigé peut remplacer le <code>&lt;label&gt;</code> d'un champ.{FALSE####Quatre raisons : le texte disparaît dès la première frappe, son contraste est volontairement faible, plusieurs lecteurs d'écran ne l'annoncent pas, et il n'offre aucune zone cliquable. Le <code>placeholder</code> donne un <strong>exemple</strong> de saisie, le <code>&lt;label&gt;</code> dit <strong>ce qu'est</strong> le champ.}
+
+::S03-24 Le alt d'une image décorative::[html]Que faut-il mettre dans l'attribut <code>alt</code> d'une image purement décorative ?{
+=Un <code>alt</code> vide, deux guillemets sans rien entre eux#Exact. Le lecteur d'écran ignore alors l'image, ce qui est le comportement souhaité.
+~Le mot « décoration »#Non, cela ajoute un bruit inutile à la lecture.
+~Le nom du fichier image#Non, c'est le pire des cas : le lecteur d'écran épelle un nom de fichier sans intérêt.
+~Rien du tout, on omet l'attribut <code>alt</code>#Non. Sans attribut <code>alt</code>, la page est invalide et le lecteur d'écran annonce quand même l'image.
+####Le bon <code>alt</code> dépend du <strong>rôle</strong> de l'image : ce qu'elle dit si elle informe, la destination si elle est un lien, un <code>alt</code> vide si elle décore.
+}
+
+::S03-25 Le seuil de contraste AA::[html]Quel rapport de contraste minimum les règles WCAG de niveau AA demandent-elles pour du texte courant ?{
+=4,5 pour 1#Exact. Le seuil descend à 3 pour 1 dans le cas des grands titres.
+~3 pour 1#C'est le seuil des grands titres, pas celui du texte courant.
+~21 pour 1#C'est le contraste maximal possible, noir pur sur blanc pur. Ce n'est pas un seuil.
+~1 pour 1#Un rapport de 1 pour 1 correspond à un texte invisible.
+####Le rapport de contraste compare la luminosité d'un texte et de son fond. L'onglet Accessibilité des outils de développement le calcule pour vous.
+}
+
+::S03-26 La couleur comme seule information::[html]Un formulaire signale ses champs en erreur uniquement par une bordure rouge. Où est le problème ?{
+=Une personne daltonienne ne perçoit pas le signal, et rien d'autre ne l'informe#Exact, cela concerne environ huit pour cent des hommes.
+~Le rouge est une couleur agressive#Ce n'est pas un problème d'accessibilité.
+~La bordure ne s'affiche pas sur tous les navigateurs#Non, une bordure CSS s'affiche partout.
+~Il n'y a aucun problème, le rouge est la convention habituelle#La convention existe, mais elle ne remplace pas un second signal.
+####L'information n'est jamais portée par la seule couleur. Double-la d'un texte, d'une icône ou d'un soulignement. La règle vaut aussi pour les liens dans un paragraphe.
+}
+
+::S03-27 outline none::[html]On trouve souvent <code>outline\: none;</code> dans du CSS repris en ligne. Quel est l'effet de cette ligne ?{
+=Elle supprime le cadre de focus et rend le site inutilisable au clavier#Exact.
+~Elle supprime la bordure des champs de formulaire#Non, la bordure relève de <code>border</code>, pas de <code>outline</code>.
+~Elle n'a aucun effet visible#Elle en a un, précisément quand on navigue au clavier.
+~Elle améliore l'accessibilité en simplifiant l'affichage#Non, c'est exactement le contraire.
+####Si le cadre par défaut ne plaît pas, on le <strong>remplace</strong> par un autre style bien visible. On ne l'efface jamais.
+}
+
+::S03-28 L'ordre de tabulation::[html]Quel ordre suit la touche <code>Tab</code> lorsqu'on parcourt une page ?{
+=L'ordre des éléments dans le code HTML#Exact.
+~L'ordre visuel, de haut en bas et de gauche à droite#Non, et c'est précisément le piège : le CSS peut déplacer un élément sans changer l'ordre de tabulation.
+~L'ordre alphabétique des <code>id</code>#Non.
+~Un ordre choisi automatiquement par le navigateur#Non, le navigateur suit le document.
+####Une raison de plus d'écrire le HTML dans un ordre logique dès maintenant : en semaines 4 et 5, le CSS déplacera des éléments, et la navigation clavier continuera de suivre le code.
+}
+
+::S03-29 Les limites des outils automatiques::[html]Un rapport Lighthouse affichant un score de 100 en accessibilité prouve que la page est accessible.{FALSE####Une machine sait vérifier qu'un <code>alt</code> <strong>existe</strong>, pas qu'il <strong>décrit correctement</strong> l'image. Elle sait qu'un <code>&lt;label&gt;</code> est relié, pas qu'il est compréhensible. Ces outils repèrent les erreurs mécaniques, le reste relève du jugement, et le test du clavier reste le plus fiable.}
+
+::S03-30 Associer les attributs à leur rôle::[html]Associez chaque attribut au rôle qu'il joue dans un formulaire.{
+=name -> nom sous lequel la valeur est transmise au serveur
+=id -> identifiant unique dans la page, utilisé par l'étiquette
+=value -> valeur du champ, ou option représentée par un bouton radio
+=placeholder -> exemple de saisie affiché dans un champ vide
+=pattern -> format imposé à la saisie
+####Les quatre premiers se confondent facilement. Retiens la ligne de partage : <code>name</code> regarde vers le serveur, <code>id</code> regarde vers la page.
+}

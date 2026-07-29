@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum - Inscription</title>
+</head>
+<body>
+
+  <header>
+    <h1>MiniForum</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#sujets">Sujets</a></li>
+        <li><a href="inscription.html">Inscription</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>Créer un compte</h2>
+
+    <form action="/inscription" method="post">
+
+      <fieldset>
+        <legend>Identifiants</legend>
+
+        <!-- pattern SANS title est un piège : le navigateur n'afficherait
+             qu'un « Veuillez respecter le format demandé » sans dire quoi
+             corriger. Le title fournit le message affiché. -->
+        <p>
+          <label for="pseudo">Pseudo</label>
+          <input type="text" id="pseudo" name="pseudo"
+                 pattern="[A-Za-z0-9]{3,15}"
+                 title="3 à 15 caractères : lettres et chiffres uniquement"
+                 placeholder="ex : alice" required>
+        </p>
+
+        <!-- type="email" : le navigateur vérifie la forme de l'adresse
+             et le clavier mobile affiche la touche @. -->
+        <p>
+          <label for="email">Adresse e-mail</label>
+          <input type="email" id="email" name="email"
+                 placeholder="ex : alice@example.ch" required>
+        </p>
+
+        <!-- type="password" masque les caractères à l'écran. Il ne chiffre
+             rien : le hachage des mots de passe est vu en semaine 18. -->
+        <p>
+          <label for="motdepasse">Mot de passe</label>
+          <input type="password" id="motdepasse" name="motdepasse"
+                 minlength="8"
+                 title="8 caractères au minimum" required>
+        </p>
+
+        <p>
+          <label for="naissance">Date de naissance</label>
+          <input type="date" id="naissance" name="naissance">
+        </p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Préférences</legend>
+
+        <p>
+          <input type="checkbox" id="newsletter" name="newsletter" value="oui">
+          <label for="newsletter">Recevoir la lettre d'information</label>
+        </p>
+
+        <!-- Une case à cocher peut être required : elle doit alors être cochée
+             pour que le formulaire parte. -->
+        <p>
+          <input type="checkbox" id="cgu" name="cgu" value="oui" required>
+          <label for="cgu">J'accepte les conditions d'utilisation</label>
+        </p>
+      </fieldset>
+
+      <p>
+        <button type="submit">Créer mon compte</button>
+      </p>
+    </form>
+
+    <p>Déjà inscrit ? <a href="connexion.html">Se connecter</a></p>
+
+  </main>
+
+  <footer>
+    <p>MiniForum — Projet du cours de développement web</p>
+    <p>Classe passerelle — cfpt·i</p>
+  </footer>
+
+</body>
+</html>

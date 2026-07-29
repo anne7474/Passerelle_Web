@@ -1,0 +1,881 @@
+% ============================================================
+%  Semaine 3 — HTML5 : formulaires & accessibilité  [Module B]
+%  Polycopié étudiant — cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final (20 semaines, 3h cours + 4h TP)
+%
+%  Images attendues dans le sous-dossier ./images/ :
+%    cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, fit, backgrounds, decorations.pathreplacing}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+\definecolor{filrougeYellow}{HTML}{FFF8DC}
+
+% Alias utilisés dans le corps du document
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Images : insertion robuste (cadre de réservation si absente)
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \imagefig[largeur]{chemin}{légende}
+\newcommand{\imagefig}[3][0.80\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.2cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ image à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Semaine 3 --- Module B}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize HTML5 --- Formulaires \& accessibilité}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section : bandeau pleine largeur
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[itemize,2]{label={\color{cfptDarkGrey}--}, leftmargin=1.8em}
+\setlist[enumerate]{itemsep=4pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible (même correction que dans le plan de cours).
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small\color{white},
+    coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  corrige/.style={
+    colback=cfptGrey, colframe=cfptDarkGrey,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  filrouge/.style={
+    colback=filrougeYellow, colframe=cfptYellow,
+    fonttitle=\bfseries\small, coltitle=cfptBlack,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
+  numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  % Les caractères accentués doivent être déclarés explicitement,
+  % sinon les commentaires français cassent la compilation.
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+% Coloration adaptée au HTML (balises)
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, h5, h6, p, a, img, figure, figcaption,
+    ul, ol, li, table, caption, thead, tbody, tr, th, td, form, fieldset,
+    legend, input, textarea, select, option, optgroup, datalist, label,
+    button, div, span, meta, title, link, script, strong, em, br, hr},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% (voir polycopié S01 pour le détail du problème corrigé ici)
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.70\linewidth}
+    {\color{cfptYellow}\Large\bfseries Semaine 3 \quad\textbar\quad Module B}\\[4pt]
+    {\color{white}\Large\bfseries HTML5 --- Formulaires \& accessibilité}\\[4pt]
+    {\color{lightBlue}\normalsize Anne Terrier --- Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Cours & \color{white}\small 3h \\
+      \color{lightBlue}\small TP    & \color{white}\small 4h \\
+      \color{lightBlue}\small Fil rouge & \color{white}\small MiniForum \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={Objectifs de la semaine}]
+\begin{itemize}
+  \item Construire un formulaire complet avec les types d'\texttt{input} HTML5
+  \item Distinguer le rôle de \texttt{name} (le serveur) de celui de \texttt{id} (la page)
+  \item Utiliser la validation native du navigateur --- et connaître ses limites
+  \item Associer chaque champ à son \texttt{<label>} et grouper les champs liés
+  \item Appliquer les principes de base de l'accessibilité : \texttt{alt}, contraste, navigation au clavier
+  \item Contrôler une page avec le vérificateur d'accessibilité des outils de développement
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{tcolorbox}[astuce, title={Où en sommes-nous ?}]
+La semaine 2 a servi à \textbf{afficher} du contenu. Cette semaine, on ouvre la page dans l'autre sens : le visiteur va pouvoir \textbf{saisir} quelque chose. C'est la dernière séance consacrée au HTML --- le CSS commence en semaine 4.
+
+\vspace{3pt}
+Les formulaires écrits ici sont ceux du MiniForum final : leur structure ne changera plus jusqu'à la soutenance. Ils resteront inertes quelques semaines, le temps que JavaScript (semaine 7) puis le serveur (semaine 15) viennent les brancher.
+\end{tcolorbox}
+
+% ============================================================
+\section{À quoi sert un formulaire}
+% ============================================================
+
+Jusqu'ici, le MiniForum ne fait que présenter des informations écrites en dur dans le HTML. Un formulaire inverse le sens de circulation : c'est le \textbf{point d'entrée} par lequel les données d'un utilisateur arrivent dans l'application.
+
+\begin{tcolorbox}[definition, title={Définition --- Formulaire}]
+Un \textbf{formulaire} est un ensemble de champs de saisie, regroupés dans une balise \texttt{<form>}, permettant à un visiteur de transmettre des données à l'application.
+\end{tcolorbox}
+
+\subsection{La vie d'une donnée saisie}
+
+Une donnée tapée par un visiteur traverse plusieurs étapes avant d'être enregistrée. Ce cours les construit une par une, sur toute l'année :
+
+\vspace{10pt}
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  et/.style={draw, rounded corners=2pt, minimum width=2.45cm,
+             minimum height=1.5cm, align=center, inner sep=3pt},
+  fl/.style={-{Stealth[length=5pt]}, thick, uniGrey!70}]
+
+\node[et, draw=uniNavy, fill=uniNavy!10] (a) at (0,0)
+  {\textbf{Saisie}\\dans le\\formulaire};
+\node[et, draw=uniNavy, fill=uniNavy!10, right=0.5cm of a] (b)
+  {\textbf{Contrôle}\\par le\\navigateur};
+\node[et, draw=uniGold, fill=uniGold!10, right=0.5cm of b] (c)
+  {\textbf{Contrôle}\\en\\JavaScript};
+\node[et, draw=uniTeal, fill=uniTeal!10, right=0.5cm of c] (d)
+  {\textbf{Envoi}\\au serveur\\et contrôle};
+\node[et, draw=uniTeal, fill=uniTeal!10, right=0.5cm of d] (e)
+  {\textbf{Écriture}\\en base de\\données};
+
+\draw[fl] (a) -- (b);
+\draw[fl] (b) -- (c);
+\draw[fl] (c) -- (d);
+\draw[fl] (d) -- (e);
+
+\node[below=0.15cm of a, font=\scriptsize\bfseries, text=uniNavy] {semaine 3};
+\node[below=0.15cm of b, font=\scriptsize\bfseries, text=uniNavy] {semaine 3};
+\node[below=0.15cm of c, font=\scriptsize\bfseries, text=uniGold] {semaine 7};
+\node[below=0.15cm of d, font=\scriptsize\bfseries, text=uniTeal] {semaine 15};
+\node[below=0.15cm of e, font=\scriptsize\bfseries, text=uniTeal] {semaine 15};
+\end{tikzpicture}
+\end{center}
+\vspace{6pt}
+
+Cette semaine couvre les deux premières cases. Les trois autres expliquent pourquoi certains choix faits aujourd'hui --- l'attribut \texttt{name} en particulier --- paraîtront inutiles jusqu'en décembre.
+
+\subsection{La balise \texttt{<form>}}
+
+\begin{lstlisting}[language=HTML5, caption={L'enveloppe d'un formulaire}]
+<form action="/topics" method="post">
+  <!-- les champs de saisie viennent ici -->
+  <button type="submit">Publier</button>
+</form>
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Attribut} & \hdr{Rôle} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{action} & L'adresse à laquelle les données sont envoyées \\
+  \texttt{method} & La façon de les envoyer : \texttt{get} (dans l'URL) ou \texttt{post} (dans le corps de la requête) \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Ces deux attributs ne serviront qu'en semaine 15}]
+Tant qu'aucun serveur n'écoute à l'adresse indiquée, \texttt{action} et \texttt{method} n'ont aucun effet visible : cliquer sur « Publier » recharge la page, et c'est tout.
+
+\vspace{3pt}
+Retiens seulement la logique : \texttt{get} place les données \textbf{dans l'URL} --- pratique pour un formulaire de recherche que l'on veut pouvoir mettre en favori, inacceptable pour un mot de passe. \texttt{post} les place dans le corps de la requête, invisible dans la barre d'adresse. On y reviendra en détail avec Express.
+\end{tcolorbox}
+
+% ============================================================
+\section{Les champs de saisie}
+% ============================================================
+
+\subsection{\texttt{<input>} et son attribut \texttt{type}}
+
+\texttt{<input>} est une balise auto-fermante dont le comportement change entièrement selon son attribut \texttt{type}.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.5cm}Xp{3.5cm}}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{\texttt{type}} & \hdr{Usage} & \hdr{Contrôle automatique} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{text} & Texte libre sur une ligne & aucun \\
+  \texttt{email} & Adresse e-mail & présence d'un \texttt{@} et d'un domaine \\
+  \rowcolor{uniPaper}
+  \texttt{password} & Mot de passe & aucun ; masque les caractères \\
+  \texttt{number} & Valeur numérique & chiffres uniquement, bornes \texttt{min} / \texttt{max} \\
+  \rowcolor{uniPaper}
+  \texttt{date} & Date & sélecteur de calendrier, format garanti \\
+  \texttt{url} & Adresse web & format d'URL \\
+  \rowcolor{uniPaper}
+  \texttt{tel} & Numéro de téléphone & aucun (les formats varient trop) \\
+  \texttt{checkbox} & Case à cocher & --- \\
+  \rowcolor{uniPaper}
+  \texttt{radio} & Choix unique dans un groupe & --- \\
+  \texttt{hidden} & Donnée transmise sans être affichée & --- \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Le bon \texttt{type} améliore surtout le téléphone}]
+Sur mobile, le clavier affiché s'adapte au \texttt{type} du champ : pavé numérique pour \texttt{number}, clavier avec \texttt{@} pour \texttt{email}, calendrier pour \texttt{date}. Choisir le bon type est le moyen le moins coûteux d'améliorer un formulaire.
+\end{tcolorbox}
+
+\subsection{Les autres champs}
+
+\begin{lstlisting}[language=HTML5, caption={Zone de texte, liste déroulante et bouton}]
+<!-- Texte long, sur plusieurs lignes -->
+<textarea id="message" name="message" rows="6"
+          maxlength="500"></textarea>
+
+<!-- Liste déroulante -->
+<select id="categorie" name="categorie">
+  <option value="general">Général</option>
+  <option value="aide">Aide</option>
+  <option value="projets">Projets</option>
+</select>
+
+<button type="submit">Publier</button>
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.6cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Balise} & \hdr{Rôle} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{<textarea>} & Zone de texte multi-lignes. \textbf{Jamais auto-fermante} : son contenu initial se place entre les deux balises \\
+  \texttt{<select>} / \texttt{<option>} & Liste déroulante. C'est l'attribut \texttt{value} de l'\texttt{<option>} qui est transmis, pas le texte affiché \\
+  \rowcolor{uniPaper}
+  \texttt{<button>} & Bouton. \texttt{type="submit"} envoie le formulaire, \texttt{type="button"} ne fait rien sans JavaScript \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Le piège du \texttt{<button>} sans \texttt{type}}]
+À l'intérieur d'un \texttt{<form>}, un \texttt{<button>} sans attribut \texttt{type} vaut \texttt{submit} par défaut : il envoie le formulaire et recharge la page. C'est la cause d'une bonne moitié des « mon bouton ne marche pas » de la semaine 7. Précise toujours le \texttt{type}.
+\end{tcolorbox}
+
+\subsection{Cases à cocher et boutons radio}
+
+Une \textbf{case à cocher} autorise plusieurs sélections indépendantes ; un \textbf{bouton radio} impose un choix unique dans un groupe.
+
+\begin{lstlisting}[language=HTML5, caption={Checkbox et radio}]
+<!-- Case à cocher : chaque case est indépendante -->
+<input type="checkbox" id="news" name="news">
+<label for="news">Recevoir la newsletter</label>
+
+<!-- Boutons radio : même name = même groupe -->
+<input type="radio" id="pub" name="visibilite" value="public" checked>
+<label for="pub">Public</label>
+
+<input type="radio" id="priv" name="visibilite" value="prive">
+<label for="priv">Privé</label>
+\end{lstlisting}
+
+\begin{tcolorbox}[attention, title={La règle des boutons radio}]
+Pour qu'un groupe de boutons radio fonctionne --- un seul sélectionnable à la fois --- tous ses boutons doivent partager le \textbf{même \texttt{name}}. C'est cet attribut commun qui les relie ; c'est \texttt{value} qui distingue l'option choisie, et \texttt{id} qui reste unique pour le \texttt{<label>}.
+
+\vspace{3pt}
+Deux \texttt{name} différents produisent deux groupes indépendants, chacun cochable séparément : symptôme classique quand « les deux boutons restent allumés ».
+\end{tcolorbox}
+
+% ============================================================
+\section{Les attributs qui encadrent la saisie}
+% ============================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Attribut} & \hdr{Effet} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{name} & \textbf{Le nom sous lequel la valeur sera transmise au serveur.} Sans lui, le champ n'est pas envoyé \\
+  \texttt{id} & Identifiant unique dans la page ; sert au \texttt{<label>}, au CSS et à JavaScript \\
+  \rowcolor{uniPaper}
+  \texttt{value} & La valeur initiale du champ (ou, pour \texttt{radio} et \texttt{checkbox}, la valeur envoyée) \\
+  \texttt{placeholder} & Texte d'exemple grisé, qui disparaît dès la première frappe \\
+  \rowcolor{uniPaper}
+  \texttt{required} & Le champ doit être rempli pour que le formulaire parte \\
+  \texttt{maxlength} / \texttt{minlength} & Bornent le nombre de caractères \\
+  \rowcolor{uniPaper}
+  \texttt{min} / \texttt{max} / \texttt{step} & Bornent une valeur numérique ou une date \\
+  \texttt{pattern} & Impose un format via une expression régulière \\
+  \rowcolor{uniPaper}
+  \texttt{readonly} & Champ visible et transmis, mais non modifiable \\
+  \texttt{disabled} & Champ inactif et \textbf{non transmis} au serveur \\
+  \rowcolor{uniPaper}
+  \texttt{autocomplete} & Autorise le navigateur à proposer une valeur déjà saisie \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{\texttt{name} et \texttt{id} : deux mondes}
+
+C'est la confusion la plus tenace de la semaine. Les deux attributs se ressemblent, portent souvent la même valeur, et ne servent pourtant à rien de commun.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2cm}XX}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{} & \hdr{\texttt{id}} & \hdr{\texttt{name}} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Sert à & désigner l'élément \textbf{dans la page} & nommer la valeur \textbf{pour le serveur} \\
+  Utilisé par & le \texttt{<label>}, le CSS, JavaScript & le formulaire au moment de l'envoi \\
+  \rowcolor{uniPaper}
+  Unicité & unique dans la page & partagé par les boutons radio d'un même groupe \\
+  Si absent & impossible de relier un label & \textbf{le champ n'est pas transmis} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[definition, title={Aperçu --- ce que le serveur recevra en semaine 15}]
+Au moment de l'envoi, le navigateur assemble les champs en une suite de paires \texttt{nom=valeur}. Pour le formulaire de création de sujet, cela donne :
+
+\vspace{4pt}
+\texttt{\small pseudo=alice\&titre=Bonjour\&categorie=general\&message=Salut}
+
+\vspace{4pt}
+Chaque clé de cette liste est un attribut \texttt{name}. En semaine 15, le serveur Express lira exactement ces clés : \texttt{req.body.pseudo}, \texttt{req.body.titre}\dots{} Un champ sans \texttt{name} sera tout simplement absent de la liste, et le serveur ne saura pas qu'il a existé.
+
+\vspace{3pt}
+C'est pour cette raison qu'on nomme les champs \textbf{dès maintenant}, alors même que rien ne les lit encore.
+\end{tcolorbox}
+
+\subsection{\texttt{pattern} : imposer un format}
+
+\begin{lstlisting}[language=HTML5, caption={Un pseudo de 3 à 15 caractères, lettres et chiffres seulement}]
+<label for="pseudo">Pseudo</label>
+<input type="text" id="pseudo" name="pseudo"
+       pattern="[A-Za-z0-9]{3,15}"
+       title="3 à 15 caractères : lettres et chiffres uniquement"
+       required>
+\end{lstlisting}
+
+\begin{tcolorbox}[attention, title={\texttt{pattern} sans \texttt{title} est inutilisable}]
+Si la saisie ne correspond pas au motif, le navigateur affiche un message d'erreur générique du type « Veuillez respecter le format demandé » --- l'utilisateur ne sait pas quoi corriger.
+
+\vspace{3pt}
+L'attribut \texttt{title} fournit le texte affiché à la place. Il n'est pas décoratif : sans lui, le champ devient un piège.
+\end{tcolorbox}
+
+% ============================================================
+\section{La validation native et ses limites}
+% ============================================================
+
+Le navigateur contrôle lui-même certains champs avant d'envoyer le formulaire, sans une ligne de JavaScript. Un champ \texttt{required} vide ou un \texttt{type="email"} mal formé bloquent l'envoi et déclenchent une bulle d'avertissement.
+
+\begin{tcolorbox}[astuce, title={Tester la validation}]
+Laisse un champ \texttt{required} vide et clique sur le bouton d'envoi : le navigateur doit refuser, placer le curseur dans le champ fautif et afficher un message. C'est le premier test à faire sur chaque formulaire du TP.
+\end{tcolorbox}
+
+\subsection{Ce qu'elle apporte}
+
+\begin{itemize}
+  \item Un retour \textbf{immédiat}, avant tout aller-retour avec le serveur
+  \item Des messages traduits dans la langue du navigateur, sans effort
+  \item Un premier filtre contre les saisies manifestement erronées
+\end{itemize}
+
+\subsection{Ce qu'elle ne fait pas}
+
+\begin{tcolorbox}[interdit, title={Une validation côté navigateur ne protège rien}]
+La validation HTML5 est une \textbf{aide à la saisie}, pas une sécurité. Elle s'exécute sur la machine du visiteur, qui garde la main dessus.
+
+\vspace{4pt}
+Il suffit d'ouvrir les outils de développement et de supprimer l'attribut \texttt{required} pour envoyer un formulaire vide. Il suffit même de ne pas utiliser de navigateur du tout : n'importe quel outil en ligne de commande peut envoyer une requête directement au serveur, sans jamais avoir vu le formulaire.
+
+\vspace{4pt}
+\textbf{Conséquence, valable pour toute l'année :} tout contrôle effectué dans le navigateur doit être \textbf{refait sur le serveur}. On le mettra en \oe uvre en semaine 15, et on verra en semaine 19 ce qu'un attaquant fait d'un serveur qui a fait confiance au navigateur.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.6cm}Xp{2.2cm}}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Niveau de contrôle} & \hdr{Ce qu'il assure} & \hdr{Vu en} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Navigateur (HTML5) & Confort de saisie, erreurs évidentes & semaine 3 \\
+  JavaScript (client) & Messages sur mesure, règles combinées & semaine 7 \\
+  \rowcolor{uniPaper}
+  Serveur (Express) & \textbf{La seule barrière fiable} & semaine 15 \\
+  Base de données & Intégrité des données stockées & semaine 8 \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Structurer un formulaire}
+% ============================================================
+
+Un formulaire de plus de trois ou quatre champs a besoin d'être organisé --- pour l'\oe il comme pour les lecteurs d'écran.
+
+\begin{lstlisting}[language=HTML5, caption={Regrouper des champs liés}]
+<form action="/topics" method="post">
+
+  <fieldset>
+    <legend>Votre message</legend>
+
+    <label for="titre">Titre du sujet</label>
+    <input type="text" id="titre" name="titre"
+           maxlength="80" required>
+
+    <label for="message">Message</label>
+    <textarea id="message" name="message"
+              rows="6" maxlength="500" required></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>Visibilité</legend>
+
+    <input type="radio" id="pub" name="visibilite"
+           value="public" checked>
+    <label for="pub">Public</label>
+
+    <input type="radio" id="priv" name="visibilite" value="prive">
+    <label for="priv">Réservé aux membres</label>
+  </fieldset>
+
+  <button type="submit">Publier</button>
+</form>
+\end{lstlisting}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{2.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Balise} & \hdr{Rôle} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{<fieldset>} & Regroupe des champs qui vont ensemble \\
+  \texttt{<legend>} & Le titre du groupe ; \textbf{première balise} à l'intérieur du \texttt{<fieldset>} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={\texttt{<fieldset>} est indispensable pour un groupe de boutons radio}]
+Un lecteur d'écran annonce l'étiquette de chaque bouton radio --- « Public », « Réservé aux membres » --- mais rien ne dit \textit{de quoi} il s'agit. Le \texttt{<legend>} fournit cette information manquante : la personne entend « Visibilité : Public ».
+
+\vspace{3pt}
+Pour un champ isolé, le \texttt{<label>} suffit. Pour un groupe, il faut les deux.
+\end{tcolorbox}
+
+% ============================================================
+\section{Accessibilité}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Définition --- Accessibilité (a11y)}]
+L'\textbf{accessibilité} consiste à rendre un site utilisable par tous, y compris les personnes en situation de handicap : malvoyance, cécité, daltonisme, difficultés motrices empêchant l'usage d'une souris, troubles cognitifs.
+
+\vspace{3pt}
+Ce n'est pas une couche que l'on ajoute à la fin : elle se joue à 80\,\% dans le choix des balises HTML, donc maintenant.
+\end{tcolorbox}
+
+\vspace{4pt}
+\noindent Trois raisons de s'en préoccuper dès la troisième semaine :
+
+\begin{itemize}
+  \item \textbf{Des gens.} Une page inaccessible exclut des utilisateurs réels, souvent sans que personne s'en aperçoive.
+  \item \textbf{La loi.} Les sites publics suisses sont soumis à des exigences d'accessibilité, et la plupart des appels d'offres publics les imposent.
+  \item \textbf{La qualité.} Un HTML accessible est un HTML bien structuré : il est aussi mieux référencé et plus facile à maintenir.
+\end{itemize}
+
+\subsection{\texttt{<label>} : relier une étiquette à son champ}
+
+C'est le point le plus important de la semaine. Un champ sans \texttt{<label>} correctement relié est, pour un lecteur d'écran, une case vide dont personne ne sait quoi faire.
+
+\begin{lstlisting}[language=HTML5, caption={Deux écritures possibles, un seul résultat}]
+<!-- Écriture explicite : for = id (la plus courante) -->
+<label for="pseudo">Votre pseudo</label>
+<input type="text" id="pseudo" name="pseudo">
+
+<!-- Écriture implicite : le label enveloppe le champ -->
+<label>
+  Votre pseudo
+  <input type="text" name="pseudo">
+</label>
+\end{lstlisting}
+
+\begin{tcolorbox}[attention, title={\texttt{for} doit reprendre \texttt{id}, pas \texttt{name}}]
+Un \texttt{for} qui pointe vers un \texttt{id} inexistant ne relie rien du tout --- et le validateur W3C le signale. Vérifie le lien en \textbf{cliquant sur l'étiquette} dans le navigateur : si le curseur se place dans le champ (ou si la case se coche), la liaison fonctionne. C'est un test d'une seconde, à faire sur chaque champ.
+\end{tcolorbox}
+
+\begin{tcolorbox}[interdit, title={Un \texttt{placeholder} n'est pas un \texttt{<label>}}]
+Il est tentant de supprimer les étiquettes et de tout mettre dans le \texttt{placeholder} : le formulaire paraît plus épuré. C'est une mauvaise idée pour quatre raisons :
+
+\begin{itemize}
+  \item le texte \textbf{disparaît} dès la première frappe, et l'utilisateur ne sait plus ce qu'il remplit ;
+  \item son contraste est volontairement faible, donc difficile à lire ;
+  \item plusieurs lecteurs d'écran ne l'annoncent pas ;
+  \item il n'y a plus de zone cliquable pour atteindre le champ.
+\end{itemize}
+
+Le \texttt{placeholder} donne un \textbf{exemple} de saisie (\texttt{ex : alice}) ; le \texttt{<label>} dit ce qu'est le champ. Les deux, pas l'un à la place de l'autre.
+\end{tcolorbox}
+
+\subsection{Le texte alternatif des images}
+
+Rappel de la semaine 2, complété par la règle qui manquait : \textbf{le bon \texttt{alt} dépend du rôle de l'image}.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Rôle de l'image} & \hdr{Que mettre dans \texttt{alt}} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Elle porte une information & Ce que l'image \textbf{dit} : \texttt{alt="Trois sujets sans réponse depuis lundi"} \\
+  Elle est un lien ou un bouton & La \textbf{destination} ou l'action : \texttt{alt="Retour à l'accueil"} \\
+  \rowcolor{uniPaper}
+  Elle est décorative & Un \texttt{alt} \textbf{vide} : \texttt{alt=""}, pour que le lecteur d'écran l'ignore \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Le test du téléphone}]
+Imagine que tu décrives la page à quelqu'un au téléphone. Ce que tu dirais de l'image, c'est le \texttt{alt}. Ce que tu passerais sous silence parce que c'est un simple élément de décor, c'est un \texttt{alt=""}.
+\end{tcolorbox}
+
+\subsection{Le contraste des couleurs}
+
+Un texte gris clair sur fond blanc est illisible pour beaucoup de gens --- et pour tout le monde en plein soleil.
+
+\begin{tcolorbox}[definition, title={Définition --- Rapport de contraste}]
+Le \textbf{rapport de contraste} compare la luminosité d'un texte et de son fond. Il va de 1:1 (invisible) à 21:1 (noir sur blanc).
+
+\vspace{3pt}
+Le seuil de référence est le niveau \textbf{AA} des règles WCAG : \textbf{4{,}5:1} pour le texte courant, \textbf{3:1} pour les grands titres.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={La couleur ne doit jamais être la seule information}]
+Un champ en erreur signalé \textbf{uniquement} par une bordure rouge est invisible pour une personne daltonienne --- environ 8\,\% des hommes.
+
+\vspace{3pt}
+Double systématiquement la couleur d'un second signal : un texte (« Ce champ est obligatoire »), une icône, ou un soulignement. La règle vaut aussi pour les liens dans un paragraphe : ils doivent rester reconnaissables sans la couleur.
+\end{tcolorbox}
+
+\subsection{La navigation au clavier}
+
+Toutes les personnes n'utilisent pas de souris : handicap moteur, lecteur d'écran, ou simple habitude. Un site doit rester utilisable au seul clavier.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{3cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Touche} & \hdr{Action} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{Tab} & Passer à l'élément interactif suivant \\
+  \texttt{Maj + Tab} & Revenir au précédent \\
+  \rowcolor{uniPaper}
+  \texttt{Entrée} & Activer un lien ou envoyer un formulaire \\
+  \texttt{Espace} & Cocher une case, activer un bouton \\
+  \rowcolor{uniPaper}
+  Flèches & Se déplacer dans un groupe de boutons radio ou une liste déroulante \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Le test des trente secondes}]
+Ouvre ta page, clique dans la barre d'adresse, puis parcours toute la page avec \texttt{Tab} sans jamais toucher la souris. Trois choses doivent être vraies :
+
+\begin{itemize}
+  \item tu \textbf{vois toujours} où tu te trouves (un cadre entoure l'élément actif) ;
+  \item l'ordre suit la \textbf{lecture naturelle} de la page, de haut en bas ;
+  \item tu peux atteindre \textbf{tous} les liens, champs et boutons, et envoyer le formulaire.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Deux règles à retenir pour la suite}]
+\textbf{L'ordre de tabulation suit l'ordre du code}, pas l'ordre visuel. Si le CSS déplace un élément (semaines 4 et 5), la navigation clavier suivra toujours le HTML : c'est une raison de plus pour écrire le HTML dans un ordre logique dès maintenant.
+
+\vspace{4pt}
+\textbf{Ne supprime jamais le cadre de focus.} On trouve souvent \texttt{outline: none;} dans du CSS trouvé en ligne : cette seule ligne rend un site inutilisable au clavier. Si le cadre par défaut ne plaît pas, on le \textbf{remplace} par un autre style visible --- on ne l'efface pas.
+\end{tcolorbox}
+
+\subsection{Vérifier son travail}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Outil} & \hdr{Ce qu'il apporte} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Onglet \textit{Accessibilité} des outils de développement & Affiche l'arbre tel que le perçoit un lecteur d'écran, et signale les contrastes insuffisants \\
+  Lighthouse (Chrome, onglet du même nom) & Produit un rapport noté, avec la liste des problèmes détectés \\
+  \rowcolor{uniPaper}
+  \texttt{validator.w3.org} & Repère déjà les \texttt{alt} manquants, les \texttt{for} orphelins et les \texttt{id} en double \\
+  Le clavier & Le test le plus rapide, et celui qu'aucun outil ne remplace \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Aucun outil automatique ne suffit}]
+Un rapport Lighthouse à 100 ne signifie pas qu'une page est accessible : une machine sait vérifier qu'un \texttt{alt} existe, pas qu'il décrit correctement l'image. Ces outils repèrent les erreurs mécaniques ; le reste relève du jugement.
+\end{tcolorbox}
+
+\begin{tcolorbox}[definition, title={Mémo --- les huit réflexes de la semaine}]
+\begin{itemize}
+  \item Chaque \texttt{<input>} a un \texttt{<label>} relié par \texttt{for} / \texttt{id}
+  \item Chaque \texttt{<img>} a un \texttt{alt} adapté à son rôle (vide si décorative)
+  \item Chaque champ à transmettre a un \texttt{name}
+  \item Les groupes de boutons radio sont dans un \texttt{<fieldset>} avec \texttt{<legend>}
+  \item Le \texttt{placeholder} complète le label, il ne le remplace pas
+  \item L'information n'est jamais portée par la seule couleur
+  \item La page se parcourt entièrement au clavier, avec un focus visible
+  \item La page passe le validateur W3C sans erreur
+\end{itemize}
+\end{tcolorbox}
+
+% ============================================================
+\section{Lexique de la semaine}
+% ============================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Terme} & \hdr{Définition} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Formulaire & Ensemble de champs permettant à un visiteur de transmettre des données \\
+  \texttt{name} & Nom sous lequel la valeur d'un champ est transmise au serveur \\
+  \rowcolor{uniPaper}
+  \texttt{value} & Valeur d'un champ ; pour un \texttt{radio}, l'option qu'il représente \\
+  \texttt{placeholder} & Exemple de saisie affiché dans un champ vide \\
+  \rowcolor{uniPaper}
+  \texttt{required} & Attribut rendant un champ obligatoire \\
+  \texttt{pattern} & Format imposé à la saisie, exprimé par une expression régulière \\
+  \rowcolor{uniPaper}
+  Validation native & Contrôle automatique effectué par le navigateur avant l'envoi \\
+  \texttt{<fieldset>} / \texttt{<legend>} & Groupe de champs liés et son titre \\
+  \rowcolor{uniPaper}
+  Accessibilité (a11y) & Ensemble des pratiques rendant un site utilisable par tous \\
+  Lecteur d'écran & Logiciel qui restitue une page à voix haute \\
+  \rowcolor{uniPaper}
+  Rapport de contraste & Mesure de lisibilité d'un texte sur son fond (seuil AA : 4{,}5:1) \\
+  Focus & Élément qui reçoit actuellement les entrées clavier \\
+  \rowcolor{uniPaper}
+  Ordre de tabulation & Ordre dans lequel \texttt{Tab} parcourt les éléments interactifs \\
+  WCAG & Règles internationales d'accessibilité des contenus web \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section*{Résumé de la semaine}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Ce qu'il faut retenir}]
+\begin{itemize}
+  \item Un \texttt{<form>} contient des champs : \texttt{<input>}, \texttt{<textarea>}, \texttt{<select>}, \texttt{<button>}
+  \item Le \texttt{type} d'un \texttt{<input>} change son comportement, son clavier mobile et son contrôle automatique
+  \item \texttt{name} nomme la valeur \textbf{pour le serveur} ; \texttt{id} désigne l'élément \textbf{dans la page}
+  \item Les boutons radio d'un même groupe partagent le même \texttt{name}
+  \item La validation native est un \textbf{confort de saisie}, jamais une sécurité : tout sera revérifié côté serveur
+  \item Chaque champ a un \texttt{<label>} relié ; les groupes ont un \texttt{<fieldset>} et une \texttt{<legend>}
+  \item L'accessibilité repose sur le HTML : \texttt{alt} adapté, contraste suffisant, information jamais portée par la seule couleur
+  \item Une page doit être entièrement utilisable \textbf{au clavier}, avec un focus visible
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[filrouge, title={Fil rouge --- MiniForum : tous les formulaires en place}]
+Le MiniForum contient désormais l'intégralité de ses formulaires : création de sujet, réponse à un sujet, inscription et connexion.
+
+\vspace{4pt}
+Ils ne font encore rien --- mais leur structure ne changera plus jusqu'à la fin du cours. Les \texttt{name} choisis cette semaine sont ceux que le serveur Express lira en semaine 15, et les \texttt{id} sont ceux que JavaScript utilisera dès la semaine 7.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[attention, title={Pour la semaine 4}]
+\begin{itemize}
+  \item Les quatre formulaires du MiniForum terminés et poussés sur GitHub
+  \item Chaque page passe \texttt{validator.w3.org} \textbf{sans erreur}
+  \item Le site est entièrement parcourable au clavier, et le vérificateur d'accessibilité des outils de développement ne signale plus de problème bloquant
+  \item La semaine 4 ouvre le \textbf{CSS} : la structure construite pendant trois semaines va enfin recevoir sa mise en forme
+\end{itemize}
+Le détail pas à pas se trouve dans la fiche \textit{S03\_TP}.
+\end{tcolorbox}
+
+\end{document}

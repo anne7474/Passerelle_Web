@@ -1,0 +1,976 @@
+% ============================================================
+%  Semaine 3 — HTML5 : formulaires & accessibilité  [Module B]
+%  PRÉSENTATION (Beamer) — cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final et sur S03_polycop
+%
+%  Images attendues dans ./images/ : (aucune obligatoire)
+%  Une image absente est remplacée par un cadre de réservation.
+% ============================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, decorations.pathreplacing}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{listings}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+%   1) \aboverulesep / \belowrulesep a 0 : supprime le lisere blanc
+%      entre le filet booktabs et la bande coloree du \rowcolor.
+%   2) \hdr : force l'alignement de la cellule d'en-tete. Sans cela,
+%      une colonne p{}, m{} ou X place le texte trop bas dans la bande.
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+
+% Alias (repris du polycopié)
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+% ---------------------------------------------------------------
+% Image robuste : cadre de réservation si le fichier est absent
+% ---------------------------------------------------------------
+\newcommand{\imageslide}[2][0.80\textwidth]{%
+  \IfFileExists{#2}%
+    {\includegraphics[width=#1]{#2}}%
+    {\setlength{\fboxrule}{0.6pt}%
+     \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][3.6cm][c]{#1}{%
+       \centering\small\color{cfptDarkGrey}%
+       [ image à insérer ]\\[4pt]\texttt{\detokenize{#2}}}}}}%
+}
+
+% ---------------------------------------------------------------
+% Thème Beamer cfpt·i
+% ---------------------------------------------------------------
+\usetheme{default}
+\usecolortheme{default}
+\setbeamercolor{palette primary}{bg=accentBlue, fg=white}
+\setbeamercolor{structure}{fg=accentBlue}
+\setbeamercolor{frametitle}{bg=accentBlue, fg=white}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{block title}{bg=accentBlue, fg=white}
+\setbeamercolor{block body}{bg=lightBlue!30, fg=cfptBlack}
+\setbeamercolor{block title alerted}{bg=cfptYellow!85!black, fg=cfptBlack}
+\setbeamercolor{block body alerted}{bg=cfptYellow!20, fg=cfptBlack}
+\setbeamercolor{block title example}{bg=successGreen, fg=white}
+\setbeamercolor{block body example}{bg=successGreen!8, fg=cfptBlack}
+\setbeamercolor{itemize item}{fg=cfptYellow!85!black}
+\setbeamercolor{itemize subitem}{fg=cfptDarkGrey}
+\setbeamercolor{enumerate item}{fg=accentBlue}
+\setbeamercolor{normal text}{fg=cfptBlack}
+\setbeamercolor{footline}{fg=white}
+
+\setbeamertemplate{itemize item}{\textbullet}
+\setbeamertemplate{itemize subitem}{--}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+% Titre de frame : bandeau pleine largeur
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.6ex, dp=1.2ex, leftskip=0.3cm]{frametitle}%
+    \usebeamerfont{frametitle}\bfseries\insertframetitle%
+  \end{beamercolorbox}%
+}
+
+% Pied de page
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.32\paperwidth, ht=2.4ex, dp=1ex, leftskip=0.3cm]{palette primary}%
+      \usebeamerfont{author in head/foot}\tiny Anne Terrier%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.44\paperwidth, ht=2.4ex, dp=1ex, center]{palette primary}%
+      \usebeamerfont{title in head/foot}\tiny Semaine 3 --- HTML5 : formulaires \& accessibilité%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.24\paperwidth, ht=2.4ex, dp=1ex, right, rightskip=0.3cm]{palette primary}%
+      \usebeamerfont{date in head/foot}\tiny\insertframenumber\,/\,\inserttotalframenumber%
+    \end{beamercolorbox}%
+  }%
+}
+
+% Diapositive de séparation de partie
+\newcommand{\partieslide}[1]{%
+{%
+\setbeamertemplate{footline}{}%
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
+    \fill[cfptYellow] ([yshift=-0.15cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.3cm]current page.center -| current page.east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=0.9cm]current page.center) {#1};
+  \end{tikzpicture}
+\end{frame}
+}}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, h5, h6, p, a, img, figure, figcaption,
+    ul, ol, li, table, caption, thead, tbody, tr, th, td, form, fieldset,
+    legend, input, textarea, select, option, optgroup, datalist, label,
+    button, div, span, meta, title, link, script, strong, em, br, hr},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+\lstdefinelanguage{CSS}{
+  morekeywords={background-color, border, border-radius, color, cursor,
+    display, flex, font-family, font-size, grid, height, margin, outline,
+    padding, text-align, width},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  sensitive=false,
+}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+
+% ---------------------------------------------------------------
+% Métadonnées
+% ---------------------------------------------------------------
+\title{HTML5 --- Formulaires \& accessibilité}
+\subtitle{Développement web --- Classe passerelle}
+\author{Anne Terrier}
+\institute{cfpt\textperiodcentered i --- École d'informatique}
+\date{Semaine 3}
+
+% ===============================================================
+\begin{document}
+% ===============================================================
+
+% --- Diapo de titre ---
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle ([yshift=-3.2cm]current page.north east);
+    \node[anchor=north west, text=white, font=\huge\bfseries, text width=0.9\paperwidth]
+      at ([shift={(0.8cm,-0.8cm)}]current page.north west)
+      {HTML5 --- Formulaires \& accessibilité};
+    \node[anchor=north west, text=lightBlue, font=\large]
+      at ([shift={(0.85cm,-2.55cm)}]current page.north west)
+      {Développement web --- Classe passerelle};
+
+    % accent jaune
+    \fill[cfptYellow] ([yshift=-3.2cm]current page.north west) rectangle ([yshift=-3.35cm]current page.north east);
+
+    \node[anchor=south west, font=\large\bfseries, text=accentBlue]
+      at ([shift={(0.8cm,1.8cm)}]current page.south west) {Semaine 3 \quad\textbar\quad Module B};
+    \node[anchor=south west, font=\normalsize, text=cfptDarkGrey]
+      at ([shift={(0.8cm,1.1cm)}]current page.south west)
+      {Anne Terrier \quad\textbar\quad cfpt\textperiodcentered i --- École d'informatique};
+  \end{tikzpicture}
+\end{frame}
+}
+
+% --- Plan ---
+\begin{frame}{Au programme aujourd'hui}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{enumerate}
+        \item À quoi sert un formulaire
+        \item Les champs de saisie
+        \item Les attributs qui encadrent la saisie
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item La validation native et ses limites
+        \item Structurer un formulaire
+        \item Accessibilité
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+  \vspace{0.4cm}
+  \begin{block}{Objectif de la semaine}
+    Écrire des formulaires complets, corrects et utilisables par tous --- y compris par une personne qui n'utilise ni souris ni écran.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Où en sommes-nous ?}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Semaine 2 --- afficher}
+        Le MiniForum \textbf{présente} du contenu : titres, listes de sujets, messages. Tout est écrit en dur dans le HTML.
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{Semaine 3 --- saisir}
+        La page s'ouvre dans l'autre sens : le visiteur va pouvoir \textbf{entrer} quelque chose.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{0.35cm}
+  \begin{alertblock}{Dernière séance de HTML}
+    Les formulaires écrits aujourd'hui sont ceux du MiniForum \textbf{final} : leur structure ne changera plus jusqu'à la soutenance. Ils resteront inertes quelques semaines --- JavaScript les branchera en semaine 7, le serveur en semaine 15.
+    \vspace{0.1cm}
+
+    Le CSS commence la semaine prochaine.
+  \end{alertblock}
+\end{frame}
+
+% ===============================================================
+\section{À quoi sert un formulaire}
+% ===============================================================
+\partieslide{1. À quoi sert un formulaire}
+
+\begin{frame}{Le point d'entrée des données}
+  \begin{block}{Définition --- Formulaire}
+    Un \textbf{formulaire} est un ensemble de champs de saisie, regroupés dans une balise \texttt{<form>}, permettant à un visiteur de transmettre des données à l'application.
+  \end{block}
+  \vspace{0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{Sans formulaire}
+        Le site \textbf{diffuse}. Le contenu vient du développeur, et de lui seul.
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{Avec formulaire}
+        Le site \textbf{reçoit}. Un forum, une boutique, un réseau social n'existent que par ce que les visiteurs y déposent.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{La vie d'une donnée saisie}
+  \vspace{0.3cm}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, scale=0.95, transform shape,
+    et/.style={draw, rounded corners=2pt, minimum width=2.35cm,
+               minimum height=1.4cm, align=center, inner sep=3pt},
+    fl/.style={-{Stealth[length=5pt]}, thick, uniGrey!70}]
+
+  \node[et, draw=uniNavy, fill=uniNavy!10] (a) at (0,0)
+    {\textbf{Saisie}\\dans le\\formulaire};
+  \node[et, draw=uniNavy, fill=uniNavy!10, right=0.42cm of a] (b)
+    {\textbf{Contrôle}\\par le\\navigateur};
+  \node[et, draw=uniGold, fill=uniGold!10, right=0.42cm of b] (c)
+    {\textbf{Contrôle}\\en\\JavaScript};
+  \node[et, draw=uniTeal, fill=uniTeal!10, right=0.42cm of c] (d)
+    {\textbf{Envoi}\\au serveur\\et contrôle};
+  \node[et, draw=uniTeal, fill=uniTeal!10, right=0.42cm of d] (e)
+    {\textbf{Écriture}\\en base de\\données};
+
+  \draw[fl] (a) -- (b);
+  \draw[fl] (b) -- (c);
+  \draw[fl] (c) -- (d);
+  \draw[fl] (d) -- (e);
+
+  \node[below=0.12cm of a, font=\scriptsize\bfseries, text=uniNavy] {semaine 3};
+  \node[below=0.12cm of b, font=\scriptsize\bfseries, text=uniNavy] {semaine 3};
+  \node[below=0.12cm of c, font=\scriptsize\bfseries, text=uniGold] {semaine 7};
+  \node[below=0.12cm of d, font=\scriptsize\bfseries, text=uniTeal] {semaine 15};
+  \node[below=0.12cm of e, font=\scriptsize\bfseries, text=uniTeal] {semaine 15};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{center}
+    \small Aujourd'hui : les \textbf{deux premières cases}. Les trois autres expliquent pourquoi certains choix faits ce matin paraîtront inutiles jusqu'en décembre.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{La balise \texttt{<form>}}
+\begin{lstlisting}[language=HTML5]
+<form action="/topics" method="post">
+  <!-- les champs de saisie viennent ici -->
+  <button type="submit">Publier</button>
+</form>
+\end{lstlisting}
+  \vspace{0.2cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.95\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Attribut} & \hdr{Rôle} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{action} & L'adresse à laquelle les données sont envoyées \\
+    \texttt{method} & La façon de les envoyer : \texttt{get} (dans l'URL) ou \texttt{post} (dans le corps de la requête) \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{\texttt{get} ou \texttt{post} ?}
+  \begin{alertblock}{Ces deux attributs ne serviront qu'en semaine 15}
+    Tant qu'aucun serveur n'écoute à l'adresse indiquée, \texttt{action} et \texttt{method} n'ont aucun effet visible : cliquer sur « Publier » recharge la page, et c'est tout.
+  \end{alertblock}
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{\texttt{get}}
+        Les données passent \textbf{dans l'URL}.
+        \vspace{0.1cm}
+
+        Pratique pour une recherche que l'on veut mettre en favori.
+        \vspace{0.1cm}
+
+        \textcolor{alertRed}{\textbf{Inacceptable}} pour un mot de passe.
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{\texttt{post}}
+        Les données passent dans le \textbf{corps de la requête}.
+        \vspace{0.1cm}
+
+        Invisibles dans la barre d'adresse.
+        \vspace{0.1cm}
+
+        Le choix par défaut dès qu'on crée ou modifie quelque chose.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ===============================================================
+\section{Les champs de saisie}
+% ===============================================================
+\partieslide{2. Les champs de saisie}
+
+\begin{frame}{\texttt{<input>} et son attribut \texttt{type}}
+  Une seule balise, auto-fermante, dont le comportement change \textbf{entièrement} selon son \texttt{type}.
+  \vspace{0.15cm}
+  \begin{center}
+  \scriptsize
+  \begin{tabularx}{\textwidth}{lXl}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{\texttt{type}} & \hdr{Usage} & \hdr{Contrôle automatique} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{text} & Texte libre sur une ligne & aucun \\
+    \texttt{email} & Adresse e-mail & présence d'un \texttt{@} et d'un domaine \\
+    \rowcolor{cfptGrey}
+    \texttt{password} & Mot de passe & aucun ; masque les caractères \\
+    \texttt{number} & Valeur numérique & chiffres, bornes \texttt{min} / \texttt{max} \\
+    \rowcolor{cfptGrey}
+    \texttt{date} & Date & calendrier, format garanti \\
+    \texttt{url} & Adresse web & format d'URL \\
+    \rowcolor{cfptGrey}
+    \texttt{tel} & Numéro de téléphone & aucun (les formats varient trop) \\
+    \texttt{checkbox} & Case à cocher & --- \\
+    \rowcolor{cfptGrey}
+    \texttt{radio} & Choix unique dans un groupe & --- \\
+    \texttt{hidden} & Donnée transmise sans être affichée & --- \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Le bon \texttt{type} améliore surtout le téléphone}
+  \begin{exampleblock}{Un gain gratuit}
+    Sur mobile, le clavier affiché s'adapte au \texttt{type} du champ :
+    \begin{itemize}
+      \item \texttt{number} $\rightarrow$ pavé numérique
+      \item \texttt{email} $\rightarrow$ clavier avec la touche \texttt{@}
+      \item \texttt{date} $\rightarrow$ sélecteur de calendrier
+      \item \texttt{tel} $\rightarrow$ clavier de téléphone
+    \end{itemize}
+  \end{exampleblock}
+  \vspace{0.3cm}
+  \begin{center}
+    \small Choisir le bon \texttt{type} est le moyen le \textbf{moins coûteux} d'améliorer un formulaire : un mot à changer, aucun code à écrire.
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Les autres champs}
+\begin{lstlisting}[language=HTML5]
+<!-- Texte long, sur plusieurs lignes -->
+<textarea id="message" name="message" rows="6" maxlength="500"></textarea>
+
+<!-- Liste deroulante -->
+<select id="categorie" name="categorie">
+  <option value="general">General</option>
+  <option value="aide">Aide</option>
+</select>
+
+<button type="submit">Publier</button>
+\end{lstlisting}
+  \vspace{0.1cm}
+  \begin{center}
+  \scriptsize
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Balise} & \hdr{Rôle} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{<textarea>} & \textbf{Jamais auto-fermante} : le contenu initial se place entre les deux balises \\
+    \texttt{<select>} / \texttt{<option>} & C'est l'attribut \texttt{value} de l'\texttt{<option>} qui est transmis, pas le texte affiché \\
+    \rowcolor{cfptGrey}
+    \texttt{<button>} & \texttt{type="submit"} envoie le formulaire ; \texttt{type="button"} ne fait rien sans JavaScript \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Le piège du \texttt{<button>} sans \texttt{type}}
+  \begin{alertblock}{Le comportement par défaut}
+    À l'intérieur d'un \texttt{<form>}, un \texttt{<button>} sans attribut \texttt{type} vaut \texttt{submit} : il \textbf{envoie le formulaire et recharge la page}.
+  \end{alertblock}
+  \vspace{0.3cm}
+  \begin{block}{Ce que ça donne en semaine 7}
+    C'est la cause d'une bonne moitié des « mon bouton ne marche pas » : le code JavaScript s'exécute bien, mais la page se recharge dans la foulée et efface tout.
+    \vspace{0.15cm}
+
+    \textbf{Précise toujours le \texttt{type}}, même quand il semble évident.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Cases à cocher et boutons radio}
+\begin{lstlisting}[language=HTML5]
+<!-- Case a cocher : chaque case est independante -->
+<input type="checkbox" id="news" name="news">
+<label for="news">Recevoir la newsletter</label>
+
+<!-- Boutons radio : meme name = meme groupe -->
+<input type="radio" id="pub" name="visibilite" value="public" checked>
+<label for="pub">Public</label>
+
+<input type="radio" id="priv" name="visibilite" value="prive">
+<label for="priv">Prive</label>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{center}
+    \small Une \textbf{case à cocher} autorise plusieurs sélections indépendantes ; un \textbf{bouton radio} impose un choix unique dans un groupe.
+  \end{center}
+\end{frame}
+
+\begin{frame}{La règle des boutons radio}
+  \begin{alertblock}{Même \texttt{name} pour tout le groupe}
+    Pour qu'un groupe de boutons radio fonctionne --- un seul sélectionnable à la fois --- tous ses boutons doivent partager le \textbf{même \texttt{name}}.
+  \end{alertblock}
+  \vspace{0.2cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.95\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Attribut} & \hdr{Dans un groupe de radios} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{name} & \textbf{identique} pour tous : c'est lui qui les relie \\
+    \texttt{value} & \textbf{différente} pour chacun : c'est l'option choisie \\
+    \rowcolor{cfptGrey}
+    \texttt{id} & \textbf{unique} pour chacun : c'est le lien avec son \texttt{<label>} \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.25cm}
+  \begin{center}
+    \small\itshape Deux \texttt{name} différents produisent deux groupes indépendants --- symptôme classique quand « les deux boutons restent allumés ».
+  \end{center}
+\end{frame}
+
+% ===============================================================
+\section{Les attributs qui encadrent la saisie}
+% ===============================================================
+\partieslide{3. Les attributs qui encadrent la saisie}
+
+\begin{frame}{Le tableau des attributs}
+  \vspace{0.1cm}
+  \begin{center}
+  \scriptsize
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Attribut} & \hdr{Effet} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{name} & \textbf{Le nom sous lequel la valeur sera transmise au serveur.} Sans lui, le champ n'est pas envoyé \\
+    \texttt{id} & Identifiant unique dans la page ; sert au \texttt{<label>}, au CSS et à JavaScript \\
+    \rowcolor{cfptGrey}
+    \texttt{value} & Valeur initiale du champ (ou, pour \texttt{radio} et \texttt{checkbox}, la valeur envoyée) \\
+    \texttt{placeholder} & Texte d'exemple grisé, qui disparaît dès la première frappe \\
+    \rowcolor{cfptGrey}
+    \texttt{required} & Le champ doit être rempli pour que le formulaire parte \\
+    \texttt{maxlength} / \texttt{minlength} & Bornent le nombre de caractères \\
+    \rowcolor{cfptGrey}
+    \texttt{min} / \texttt{max} / \texttt{step} & Bornent une valeur numérique ou une date \\
+    \texttt{pattern} & Impose un format via une expression régulière \\
+    \rowcolor{cfptGrey}
+    \texttt{readonly} & Champ visible et \textbf{transmis}, mais non modifiable \\
+    \texttt{disabled} & Champ inactif et \textbf{non transmis} au serveur \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{\texttt{name} et \texttt{id} : deux mondes}
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{lXX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{} & \hdr{\texttt{id}} & \hdr{\texttt{name}} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    Sert à & désigner l'élément \textbf{dans la page} & nommer la valeur \textbf{pour le serveur} \\
+    Utilisé par & le \texttt{<label>}, le CSS, JavaScript & le formulaire au moment de l'envoi \\
+    \rowcolor{cfptGrey}
+    Unicité & unique dans la page & partagé par les radios d'un groupe \\
+    Si absent & impossible de relier un label & \textbf{le champ n'est pas transmis} \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{alertblock}{La confusion la plus tenace de la semaine}
+    Les deux attributs se ressemblent, portent souvent la \textbf{même valeur}, et ne servent pourtant à rien de commun.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Ce que le serveur recevra en semaine 15}
+  \begin{block}{Au moment de l'envoi}
+    Le navigateur assemble les champs en une suite de paires \texttt{nom=valeur}. Pour le formulaire de création de sujet :
+    \vspace{0.2cm}
+
+    \begin{center}
+      \texttt{\small pseudo=alice\&titre=Bonjour\&categorie=general\&message=Salut}
+    \end{center}
+  \end{block}
+  \vspace{0.2cm}
+  \begin{exampleblock}{Chaque clé est un attribut \texttt{name}}
+    En semaine 15, le serveur Express lira exactement ces clés : \texttt{req.body.pseudo}, \texttt{req.body.titre}\ldots
+    \vspace{0.15cm}
+
+    Un champ sans \texttt{name} est \textbf{absent de la liste} : le serveur ne saura même pas qu'il a existé. C'est pour cela qu'on nomme les champs \textbf{dès maintenant}, alors que rien ne les lit encore.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{pattern} : imposer un format}
+\begin{lstlisting}[language=HTML5]
+<label for="pseudo">Pseudo</label>
+<input type="text" id="pseudo" name="pseudo"
+       pattern="[A-Za-z0-9]{3,15}"
+       title="3 a 15 caracteres : lettres et chiffres uniquement"
+       required>
+\end{lstlisting}
+  \vspace{0.2cm}
+  \begin{alertblock}{\texttt{pattern} sans \texttt{title} est inutilisable}
+    Si la saisie ne correspond pas au motif, le navigateur affiche un message générique du type « Veuillez respecter le format demandé » : l'utilisateur ne sait \textbf{pas quoi corriger}.
+    \vspace{0.15cm}
+
+    L'attribut \texttt{title} fournit le texte affiché à la place. Il n'est pas décoratif --- sans lui, le champ devient un piège.
+  \end{alertblock}
+\end{frame}
+
+% ===============================================================
+\section{La validation native et ses limites}
+% ===============================================================
+\partieslide{4. La validation native et ses limites}
+
+\begin{frame}{Ce que le navigateur fait tout seul}
+  Un champ \texttt{required} vide ou un \texttt{type="email"} mal formé \textbf{bloquent l'envoi} et déclenchent une bulle d'avertissement --- sans une ligne de JavaScript.
+  \vspace{0.3cm}
+  \begin{block}{Ce qu'elle apporte}
+    \begin{itemize}
+      \item Un retour \textbf{immédiat}, avant tout aller-retour avec le serveur
+      \item Des messages traduits dans la langue du navigateur, sans effort
+      \item Un premier filtre contre les saisies manifestement erronées
+    \end{itemize}
+  \end{block}
+  \vspace{0.2cm}
+  \begin{exampleblock}{Le test à faire sur chaque formulaire du TP}
+    Laisse un champ \texttt{required} vide et clique sur le bouton d'envoi. Le navigateur doit refuser, placer le curseur dans le champ fautif et afficher un message.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Une validation côté navigateur ne protège rien}
+  \begin{alertblock}{C'est une aide à la saisie, pas une sécurité}
+    Elle s'exécute sur la machine du \textbf{visiteur}, qui garde la main dessus.
+    \vspace{0.15cm}
+
+    \begin{itemize}
+      \item Ouvrir les outils de développement et supprimer l'attribut \texttt{required} suffit à envoyer un formulaire vide.
+      \item On peut même ne pas utiliser de navigateur du tout : un outil en ligne de commande envoie une requête directement au serveur, sans jamais avoir vu le formulaire.
+    \end{itemize}
+  \end{alertblock}
+  \vspace{0.25cm}
+  \begin{block}{Conséquence, valable pour toute l'année}
+    Tout contrôle effectué dans le navigateur doit être \textbf{refait sur le serveur}. Mise en \oe uvre en semaine 15 ; en semaine 19, on verra ce qu'un attaquant fait d'un serveur qui a fait confiance au navigateur.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Les quatre niveaux de contrôle}
+  \vspace{0.2cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{lXl}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Niveau} & \hdr{Ce qu'il assure} & \hdr{Vu en} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    Navigateur (HTML5) & Confort de saisie, erreurs évidentes & semaine 3 \\
+    JavaScript (client) & Messages sur mesure, règles combinées & semaine 7 \\
+    \rowcolor{cfptGrey}
+    Serveur (Express) & \textbf{La seule barrière fiable} & semaine 15 \\
+    Base de données & Intégrité des données stockées & semaine 8 \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.4cm}
+  \begin{center}
+    \small\itshape Les trois premiers niveaux se complètent. Un seul est obligatoire.
+  \end{center}
+\end{frame}
+
+% ===============================================================
+\section{Structurer un formulaire}
+% ===============================================================
+\partieslide{5. Structurer un formulaire}
+
+\begin{frame}[fragile]{\texttt{<fieldset>} et \texttt{<legend>}}
+\begin{lstlisting}[language=HTML5]
+<fieldset>
+  <legend>Votre message</legend>
+
+  <label for="titre">Titre du sujet</label>
+  <input type="text" id="titre" name="titre" maxlength="80" required>
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" rows="6" required></textarea>
+</fieldset>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.95\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Balise} & \hdr{Rôle} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{<fieldset>} & Regroupe des champs qui vont ensemble \\
+    \texttt{<legend>} & Le titre du groupe ; \textbf{première balise} à l'intérieur du \texttt{<fieldset>} \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Indispensable pour un groupe de boutons radio}
+  \begin{alertblock}{Ce qu'entend une personne sans écran}
+    Un lecteur d'écran annonce l'étiquette de chaque bouton radio --- « Public », « Réservé aux membres » --- mais \textbf{rien ne dit de quoi il s'agit}.
+  \end{alertblock}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Avec un \texttt{<legend>}}
+    La personne entend « \textbf{Visibilité} : Public ». L'information manquante est fournie par le titre du groupe.
+  \end{exampleblock}
+  \vspace{0.25cm}
+  \begin{center}
+    \small Pour un champ isolé, le \texttt{<label>} suffit. Pour un \textbf{groupe}, il faut les deux.
+  \end{center}
+\end{frame}
+
+% ===============================================================
+\section{Accessibilité}
+% ===============================================================
+\partieslide{6. Accessibilité}
+
+\begin{frame}{De quoi parle-t-on ?}
+  \begin{block}{Définition --- Accessibilité (a11y)}
+    Rendre un site utilisable \textbf{par tous}, y compris les personnes en situation de handicap : malvoyance, cécité, daltonisme, difficultés motrices empêchant l'usage d'une souris, troubles cognitifs.
+    \vspace{0.1cm}
+
+    Ce n'est pas une couche que l'on ajoute à la fin : elle se joue à \textbf{80\,\%} dans le choix des balises HTML --- donc maintenant.
+  \end{block}
+  \vspace{0.1cm}
+  \begin{exampleblock}{Trois raisons de s'en préoccuper dès la troisième semaine}
+    \begin{itemize}
+      \item \textbf{Des gens.} Une page inaccessible exclut des utilisateurs réels, souvent sans que personne s'en aperçoive.
+      \item \textbf{La loi.} Les sites publics suisses sont soumis à des exigences d'accessibilité, et la plupart des appels d'offres publics les imposent.
+      \item \textbf{La qualité.} Un HTML accessible est un HTML bien structuré : mieux référencé, plus facile à maintenir.
+    \end{itemize}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{<label>} --- le point le plus important de la semaine}
+\begin{lstlisting}[language=HTML5]
+<!-- Ecriture explicite : for = id (la plus courante) -->
+<label for="pseudo">Votre pseudo</label>
+<input type="text" id="pseudo" name="pseudo">
+
+<!-- Ecriture implicite : le label enveloppe le champ -->
+<label>
+  Votre pseudo
+  <input type="text" name="pseudo">
+</label>
+\end{lstlisting}
+  \vspace{0.15cm}
+  \begin{alertblock}{Le test d'une seconde}
+    \texttt{for} reprend l'\texttt{id}, jamais le \texttt{name}. Pour vérifier : \textbf{clique sur l'étiquette}. Si le curseur se place dans le champ (ou si la case se coche), la liaison fonctionne.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Un \texttt{placeholder} n'est pas un \texttt{<label>}}
+  \begin{alertblock}{Quatre raisons de ne pas supprimer les étiquettes}
+    \begin{itemize}
+      \item le texte \textbf{disparaît} dès la première frappe --- l'utilisateur ne sait plus ce qu'il remplit ;
+      \item son contraste est volontairement faible, donc difficile à lire ;
+      \item plusieurs lecteurs d'écran ne l'annoncent pas ;
+      \item il n'y a plus de zone cliquable pour atteindre le champ.
+    \end{itemize}
+  \end{alertblock}
+  \vspace{0.3cm}
+  \begin{block}{La bonne répartition}
+    Le \texttt{placeholder} donne un \textbf{exemple} de saisie (\texttt{ex : alice}).\\
+    Le \texttt{<label>} dit \textbf{ce qu'est} le champ.
+    \vspace{0.1cm}
+
+    Les deux, pas l'un à la place de l'autre.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Le texte alternatif dépend du rôle de l'image}
+  \vspace{0.15cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Rôle de l'image} & \hdr{Que mettre dans \texttt{alt}} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    Elle porte une information & Ce que l'image \textbf{dit} : \texttt{alt="Trois sujets sans réponse depuis lundi"} \\
+    Elle est un lien ou un bouton & La \textbf{destination} ou l'action : \texttt{alt="Retour à l'accueil"} \\
+    \rowcolor{cfptGrey}
+    Elle est décorative & Un \texttt{alt} \textbf{vide} : \texttt{alt=""}, pour que le lecteur d'écran l'ignore \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{exampleblock}{Le test du téléphone}
+    Imagine que tu décrives la page à quelqu'un au téléphone. Ce que tu dirais de l'image, c'est le \texttt{alt}. Ce que tu passerais sous silence parce que c'est un simple élément de décor, c'est un \texttt{alt=""}.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Le contraste des couleurs}
+  \begin{block}{Définition --- Rapport de contraste}
+    Il compare la luminosité d'un texte et de son fond. Il va de \textbf{1:1} (invisible) à \textbf{21:1} (noir sur blanc).
+    \vspace{0.1cm}
+
+    Seuil de référence, niveau \textbf{AA} des règles WCAG : \textbf{4{,}5:1} pour le texte courant, \textbf{3:1} pour les grands titres.
+  \end{block}
+  \vspace{0.25cm}
+  \begin{alertblock}{La couleur ne doit jamais être la seule information}
+    Un champ en erreur signalé \textbf{uniquement} par une bordure rouge est invisible pour une personne daltonienne --- environ 8\,\% des hommes.
+    \vspace{0.15cm}
+
+    Double systématiquement la couleur d'un second signal : un texte (« Ce champ est obligatoire »), une icône, ou un soulignement. Vaut aussi pour les liens dans un paragraphe.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{La navigation au clavier}
+  \vspace{0.1cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{0.95\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Touche} & \hdr{Action} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    \texttt{Tab} & Passer à l'élément interactif suivant \\
+    \texttt{Maj + Tab} & Revenir au précédent \\
+    \rowcolor{cfptGrey}
+    \texttt{Entrée} & Activer un lien ou envoyer un formulaire \\
+    \texttt{Espace} & Cocher une case, activer un bouton \\
+    \rowcolor{cfptGrey}
+    Flèches & Se déplacer dans un groupe de radios ou une liste déroulante \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Le test des trente secondes}
+    Clique dans la barre d'adresse, puis parcours toute la page avec \texttt{Tab} sans jamais toucher la souris. Trois choses doivent être vraies : tu \textbf{vois toujours} où tu te trouves ; l'ordre suit la \textbf{lecture naturelle} ; tu peux atteindre \textbf{tous} les liens, champs et boutons.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Deux règles à retenir pour la suite}
+  \begin{block}{L'ordre de tabulation suit l'ordre du \textbf{code}}
+    Pas l'ordre visuel. Si le CSS déplace un élément (semaines 4 et 5), la navigation clavier continuera de suivre le HTML.
+    \vspace{0.1cm}
+
+    Une raison de plus d'écrire le HTML dans un ordre logique dès maintenant.
+  \end{block}
+  \vspace{0.2cm}
+\begin{lstlisting}[language=CSS]
+/* A ne jamais ecrire */
+button:focus { outline: none; }
+\end{lstlisting}
+  \vspace{0.1cm}
+  \begin{alertblock}{Ne supprime jamais le cadre de focus}
+    On trouve souvent cette ligne dans du CSS repris en ligne : à elle seule, elle rend un site inutilisable au clavier. Si le cadre par défaut ne plaît pas, on le \textbf{remplace} par un autre style visible --- on ne l'efface pas.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Vérifier son travail}
+  \vspace{0.1cm}
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \rowcolor{accentBlue}
+    \hdr{Outil} & \hdr{Ce qu'il apporte} \\
+    \midrule
+    \rowcolor{cfptGrey}
+    Onglet \textit{Accessibilité} des DevTools & L'arbre tel que le perçoit un lecteur d'écran, et les contrastes insuffisants \\
+    Lighthouse (Chrome) & Un rapport noté, avec la liste des problèmes détectés \\
+    \rowcolor{cfptGrey}
+    \texttt{validator.w3.org} & Les \texttt{alt} manquants, les \texttt{for} orphelins, les \texttt{id} en double \\
+    Le clavier & Le test le plus rapide, et celui qu'aucun outil ne remplace \\
+    \bottomrule
+  \end{tabularx}
+  \end{center}
+  \vspace{0.3cm}
+  \begin{alertblock}{Aucun outil automatique ne suffit}
+    Un rapport Lighthouse à 100 ne signifie pas qu'une page est accessible : une machine sait vérifier qu'un \texttt{alt} \textbf{existe}, pas qu'il \textbf{décrit correctement} l'image. Ces outils repèrent les erreurs mécaniques ; le reste relève du jugement.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Les huit réflexes de la semaine}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \begin{block}{Formulaire}
+        \begin{itemize}
+          \item Chaque \texttt{<input>} a un \texttt{<label>} relié par \texttt{for} / \texttt{id}
+          \item Chaque champ à transmettre a un \texttt{name}
+          \item Les groupes de radios sont dans un \texttt{<fieldset>} avec \texttt{<legend>}
+          \item Le \texttt{placeholder} complète le label, il ne le remplace pas
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{exampleblock}{Page}
+        \begin{itemize}
+          \item Chaque \texttt{<img>} a un \texttt{alt} adapté à son rôle
+          \item L'information n'est jamais portée par la seule couleur
+          \item La page se parcourt entièrement au clavier, focus visible
+          \item La page passe le validateur W3C sans erreur
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ===============================================================
+% Clôture
+% ===============================================================
+\begin{frame}{Résumé de la semaine}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Ce qu'on a vu}
+        \begin{itemize}
+          \item \texttt{<form>}, \texttt{<input>}, \texttt{<textarea>}, \texttt{<select>}, \texttt{<button>}
+          \item Le \texttt{type} change tout : contrôle et clavier mobile
+          \item \texttt{name} pour le serveur, \texttt{id} pour la page
+          \item La validation native n'est pas une sécurité
+          \item \texttt{<label>}, \texttt{<fieldset>}, \texttt{<legend>}
+          \item \texttt{alt}, contraste, navigation au clavier
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{alertblock}{À faire pour la semaine 4}
+        \begin{itemize}
+          \item Les \textbf{quatre formulaires} du MiniForum terminés (fiche TP)
+          \item Chaque page passe \texttt{validator.w3.org} sans erreur
+          \item Le site est entièrement parcourable au clavier
+          \item Le tout poussé sur GitHub, en plusieurs commits
+          \item Faire le quiz Moodle
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Fil rouge --- MiniForum : tous les formulaires en place}
+  \begin{block}{Où en est le projet}
+    Le MiniForum contient désormais l'intégralité de ses formulaires : création de sujet, réponse à un sujet, inscription et connexion.
+  \end{block}
+  \vspace{0.25cm}
+  \begin{exampleblock}{Ce qui ne bougera plus}
+    Ils ne font encore rien --- mais leur structure ne changera plus jusqu'à la fin du cours.
+    \vspace{0.15cm}
+
+    Les \texttt{name} choisis cette semaine sont ceux que le serveur Express lira en \textbf{semaine 15}. Les \texttt{id} sont ceux que JavaScript utilisera dès la \textbf{semaine 7}.
+  \end{exampleblock}
+  \vspace{0.2cm}
+  \begin{center}
+    \small Trois semaines de HTML sont terminées. La semaine 4 ouvre le \textbf{CSS} : la structure va enfin recevoir sa mise en forme.
+  \end{center}
+\end{frame}
+
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accentBlue] (current page.north west) rectangle (current page.south east);
+    \node[text=white, font=\Huge\bfseries] at ([yshift=0.6cm]current page.center) {Des questions ?};
+    \fill[cfptYellow] ([yshift=-0.2cm]current page.center -| current page.west)
+      rectangle ([yshift=-0.32cm]current page.center -| current page.east);
+    \node[text=lightBlue, font=\large] at ([yshift=-1.3cm]current page.center)
+      {Prochaine étape : la fiche TP --- les quatre formulaires du MiniForum};
+  \end{tikzpicture}
+\end{frame}
+}
+
+\end{document}

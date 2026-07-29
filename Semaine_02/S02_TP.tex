@@ -1,0 +1,684 @@
+% ============================================================
+%  Semaine 2 — Fiche TP — Structure HTML du MiniForum  [Module B]
+%  cfpt·i | Anne Terrier
+%  Aligné sur PlanCours_Pass_Web_final et sur S02_polycop
+%  (S2 : squelette sémantique, en-tête, navigation, liste de sujets,
+%   pied de page, page de détail d'un sujet — sans formulaire ni CSS.
+%   Les formulaires sont traités en semaine 3.)
+%
+%  Images attendues dans ./images/ : cfpti.png
+%  Toute image absente est remplacée par un cadre de réservation :
+%  le document compile dans tous les cas.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+
+\colorlet{uniInk}{cfptBlack}
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniTeal}{successGreen}
+\colorlet{uniGold}{warningOrange}
+\colorlet{uniGrey}{cfptDarkGrey}
+\colorlet{uniPaper}{cfptGrey}
+\colorlet{uniRule}{cfptDarkGrey!35}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Images : insertion robuste
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% \capture[largeur]{chemin}{légende}
+\newcommand{\capture}[3][0.72\linewidth]{%
+  \begin{center}
+    \IfFileExists{#2}%
+      {\includegraphics[width=#1]{#2}}%
+      {\setlength{\fboxrule}{0.6pt}\setlength{\fboxsep}{0pt}%
+       \textcolor{cfptDarkGrey!60}{\fbox{\parbox[c][2.8cm][c]{#1}{%
+         \centering\small\color{cfptDarkGrey}%
+         [ capture à insérer ]\\[3pt]\texttt{\detokenize{#2}}}}}}\\[3pt]
+    {\small\itshape\color{cfptDarkGrey} #3}
+  \end{center}%
+}
+
+% ---------------------------------------------------------------
+% Maquettes : barre de fenêtre de navigateur
+% \browserbar{noeud}{nom du fichier}
+% ---------------------------------------------------------------
+\newcommand{\browserbar}[2]{%
+  \fill[cfptGrey] ([yshift=-0.02cm]#1.north west) rectangle ([yshift=-0.62cm]#1.north east);
+  \draw[cfptDarkGrey!45] ([yshift=-0.62cm]#1.north west) -- ([yshift=-0.62cm]#1.north east);
+  \foreach \bx in {0.28,0.5,0.72} \fill[cfptDarkGrey!35] ([xshift=\bx cm, yshift=-0.32cm]#1.north west) circle (0.055cm);
+  \fill[white, draw=cfptDarkGrey!35] ([xshift=1.05cm, yshift=-0.17cm]#1.north west) rectangle ([xshift=5cm, yshift=-0.47cm]#1.north west);
+  \node[anchor=west, font=\scriptsize\ttfamily, text=cfptDarkGrey] at ([xshift=1.15cm, yshift=-0.32cm]#1.north west) {#2};
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Fiche TP --- Semaine 2}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize Structure HTML du MiniForum}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[enumerate]{itemsep=6pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  % coltitle=white : sans cela le titre s'affichait en bleu sur le bandeau
+  % bleu de la boîte, donc invisible.
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=left, numberstyle=\tiny\color{cfptDarkGrey},
+  numbersep=8pt,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+\lstdefinelanguage{HTML5}{
+  keywords={<!DOCTYPE, html, head, body, header, nav, main, section, article,
+    aside, footer, h1, h2, h3, h4, p, a, img, figure, figcaption, ul, ol, li,
+    table, caption, thead, tbody, tr, th, td, div, span, meta, title, link,
+    script, strong, em, br, hr, time},
+  sensitive=false,
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{warningOrange},
+  commentstyle=\color{cfptDarkGrey}\itshape,
+}
+
+% ---------------------------------------------------------------
+% Correction de l'alignement des en-tetes de tableau
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+\newcommand{\hdrr}[1]{\multicolumn{1}{r}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.72\linewidth}
+    {\color{cfptYellow}\Large\bfseries Fiche TP --- Semaine 2}\\[4pt]
+    {\color{white}\Large\bfseries Structure HTML du MiniForum}\\[4pt]
+    {\color{lightBlue}\normalsize Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.24\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Durée & \color{white}\small 4h \\
+      \color{lightBlue}\small Rendu & \color{white}\small avant S3 \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={Objectif du TP}]
+Construire les \textbf{deux pages} du MiniForum en HTML pur : la page d'accueil, avec sa liste de sujets, et la page de détail d'un sujet, avec ses messages. Tout est codé en dur, et il n'y a \textbf{aucun style} --- c'est voulu.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Avant de commencer}]
+Ce TP suppose que les notions du polycopié \textit{S02\_polycop} (structure HTML5, imbrication, éléments sémantiques, liens, chemins relatifs) ont été vues en cours. Garde-le à portée de main.\\[3pt]
+Tu travailles dans le dépôt \texttt{miniforum} créé au TP de la semaine 1.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{tcolorbox}[attention, title={Comment lire cette fiche}]
+Cette fiche ne donne pas le code à recopier. Elle décrit le \textbf{rendu attendu} sous forme de maquette, et précise ce qu'il faut produire. À toi d'écrire le HTML qui y correspond, en t'appuyant sur le polycopié.\\[4pt]
+Les balises annotées sur les maquettes (\texttt{<header>}, \texttt{<article>}\dots) sont des indications, pas du texte à afficher.
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{6.4cm}Xc}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Étape} & \hdr{Ce que tu produis} & \hdrc{Temps} \\
+  \midrule
+  \rowcolor{uniPaper}
+  1--2 \quad Reprise et squelette & la charpente de \texttt{index.html} & 30 min \\
+  3--5 \quad En-tête, sujets, pied de page & la page d'accueil complète & 1h30 \\
+  \rowcolor{uniPaper}
+  6--7 \quad Page de détail et liens & \texttt{sujet.html} et la navigation & 1h15 \\
+  8 \quad\; Validation et envoi & un dépôt propre et validé & 45 min \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ============================================================
+\section{Reprendre le projet}
+% ============================================================
+
+\begin{enumerate}
+  \item Ouvrir le dossier \texttt{miniforum} dans VS Code (\textit{Fichier $\rightarrow$ Ouvrir le dossier}).
+  \item Ouvrir un terminal intégré (\textit{Terminal $\rightarrow$ Nouveau terminal}) et récupérer les éventuelles mises à jour :
+\begin{lstlisting}[language=bash, numbers=none]
+git pull
+\end{lstlisting}
+  \item Ouvrir \texttt{index.html}, créé la semaine dernière. Son contenu va être \textbf{entièrement remplacé} par la vraie structure du forum.
+\end{enumerate}
+
+\begin{tcolorbox}[astuce, title={Le réflexe Live Server}]
+Clic droit sur \texttt{index.html} $\rightarrow$ \textit{Open with Live Server} (extension installée en semaine 1). La page s'ouvre dans le navigateur et se \textbf{recharge automatiquement} à chaque sauvegarde. Garde-la ouverte pendant tout le TP, à côté de VS Code.
+\end{tcolorbox}
+
+% ============================================================
+\section{Poser le squelette sémantique}
+% ============================================================
+
+On commence par la charpente, sans contenu : découper la page en zones avant de les remplir.
+
+\begin{enumerate}
+  \item Remplacer le contenu de \texttt{index.html} par ce squelette :
+\end{enumerate}
+
+\begin{lstlisting}[language=HTML5, caption={\texttt{index.html} --- la charpente}]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum - Accueil</title>
+</head>
+<body>
+  <header>
+    <!-- Titre du site + navigation -->
+  </header>
+
+  <main>
+    <!-- Liste des sujets -->
+  </main>
+
+  <footer>
+    <!-- Pied de page -->
+  </footer>
+</body>
+</html>
+\end{lstlisting}
+
+\begin{enumerate}[resume]
+  \item Sauvegarder (\texttt{Ctrl+S}) et regarder le navigateur : la page est \textbf{vide}. Seul l'onglet affiche « MiniForum - Accueil ».
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Pourquoi une page vide ?}]
+\texttt{<header>}, \texttt{<main>} et \texttt{<footer>} ne produisent rien de visible par elles-mêmes : elles \textbf{structurent} le document. C'est le contenu qu'on va y placer qui s'affichera.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Un premier commit tout de suite}]
+Ne garde pas ton travail dans un seul commit final. Dès que la charpente est en place :
+\vspace{3pt}
+\begin{lstlisting}[language=bash, numbers=none]
+git add index.html
+git commit -m "Charpente semantique de la page d'accueil"
+\end{lstlisting}
+\vspace{-3pt}
+L'historique Git fait partie de l'évaluation du projet final.
+\end{tcolorbox}
+
+% ============================================================
+\section{Remplir l'en-tête}
+% ============================================================
+
+Dans le \texttt{<header>}, on place le titre du site et la barre de navigation. Voici le \textbf{rendu attendu} :
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small,
+  browser/.style={draw=cfptDarkGrey!50, thick, rounded corners=3pt},
+  zone/.style={draw=accentBlue!55, thin, dashed, rounded corners=2pt},
+  tag/.style={font=\ttfamily\footnotesize\color{accentBlue}, anchor=west},
+  gtag/.style={font=\ttfamily\footnotesize\color{successGreen}, anchor=west},
+  content/.style={anchor=west, text=cfptBlack}]
+  \node[browser, minimum width=12cm, minimum height=3.1cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{index.html}
+  \node[zone, minimum width=11.4cm, minimum height=1.9cm, anchor=north west] (hd) at ([xshift=0.3cm, yshift=-0.85cm]win.north west) {};
+  \node[content, font=\bfseries\Large] at ([xshift=0.25cm, yshift=-0.45cm]hd.north west) {MiniForum};
+  \node[gtag] at ([xshift=-1.5cm, yshift=0.15cm]hd.north east) {<header>};
+  \node[content, anchor=west, draw=cfptDarkGrey!30, fill=cfptGrey, rounded corners=1pt, inner sep=3pt, font=\footnotesize] (n1) at ([xshift=0.3cm, yshift=-1.35cm]hd.north west) {Accueil};
+  \node[content, anchor=west, draw=cfptDarkGrey!30, fill=cfptGrey, rounded corners=1pt, inner sep=3pt, font=\footnotesize, right=0.3cm of n1] (n2) {Sujets};
+  \node[tag, color=warningOrange] at ([xshift=0.25cm]n2.east) {<nav> --- une liste de liens};
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire}]
+Un \texttt{<header>} contenant :
+\begin{itemize}
+  \item un titre \texttt{<h1>} « MiniForum » --- \textbf{le seul \texttt{<h1>}} de la page ;
+  \item un \texttt{<nav>} contenant un \texttt{<ul>} de deux \texttt{<li>}, chacun avec un lien :
+  \begin{itemize}
+    \item « Accueil » vers \texttt{index.html}
+    \item « Sujets » vers \texttt{\#sujets} --- la section que tu créeras à l'étape suivante
+  \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Un menu est une liste --- même si ça surprend}]
+Il serait plus court d'écrire les deux liens à la suite, sans \texttt{<ul>}. Mais un menu \textbf{est} une liste de liens : c'est ce que doivent comprendre les lecteurs d'écran, et c'est ce que le CSS mettra en forme horizontalement en semaine 4.\\[4pt]
+Attention à l'imbrication : le \texttt{<a>} va \textbf{dans} le \texttt{<li>}, jamais l'inverse.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Le lien avec le \texttt{\#}}]
+\texttt{href="\#sujets"} est un \textbf{lien interne} : il pointe vers l'élément de la page dont l'\texttt{id} vaut \texttt{sujets}. Tant que cet élément n'existe pas, cliquer dessus ne fait rien --- c'est normal. Reviens le tester une fois l'étape 4 terminée.
+\end{tcolorbox}
+
+% ============================================================
+\section{La liste des sujets}
+% ============================================================
+
+C'est le c\oe ur de la page d'accueil. Chaque sujet du forum est un \texttt{<article>} : rappelle-toi, un article garde du sens sorti de son contexte.
+
+Dans le \texttt{<main>}, ajoute une \texttt{<section>} contenant trois sujets codés en dur. Voici le \textbf{rendu attendu} :
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small,
+  browser/.style={draw=cfptDarkGrey!50, thick, rounded corners=3pt},
+  zone/.style={draw=successGreen!60, thin, dashed, rounded corners=2pt},
+  tag/.style={font=\ttfamily\footnotesize, anchor=west},
+  content/.style={anchor=north west, text=cfptBlack}]
+  \node[browser, minimum width=12cm, minimum height=7.4cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{index.html}
+  \begin{scope}[shift={([xshift=0.35cm, yshift=-0.95cm]win.north west)}]
+    \node[content, font=\bfseries\large] (h2) at (0,0) {Sujets récents};
+    \node[tag, color=accentBlue] at (8.6,-0.15) {<h2>};
+    % article 1
+    \node[zone, minimum width=10.4cm, minimum height=1.75cm, anchor=north west] (a1) at (0,-0.6) {};
+    \node[content, font=\bfseries] at (0.2,-0.75) {Bienvenue sur le MiniForum !};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-1.25) {Posté par \textbf{Alice} --- Catégorie : Général};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-1.68) {Présentez-vous dans ce premier sujet.};
+    \node[tag, color=successGreen, anchor=east] at (10.2,-0.85) {<article>};
+    % article 2
+    \node[zone, minimum width=10.4cm, minimum height=1.75cm, anchor=north west] (a2) at (0,-2.5) {};
+    \node[content, font=\bfseries] at (0.2,-2.65) {Comment installer Node.js ?};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-3.15) {Posté par \textbf{Bob} --- Catégorie : Aide};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-3.58) {J'ai un souci avec l'installation sous Windows\dots};
+    \node[tag, color=successGreen, anchor=east] at (10.2,-2.75) {<article>};
+    % article 3 à compléter
+    \node[zone, draw=warningOrange, minimum width=10.4cm, minimum height=1.2cm, anchor=north west] (a3) at (0,-4.4) {};
+    \node[content, font=\itshape, text=warningOrange] at (0.2,-4.85) {\dots\ ton troisième sujet, à toi de le composer};
+    \node[tag, color=warningOrange, anchor=east] at (10.2,-4.65) {<article>};
+  \end{scope}
+  \node[font=\ttfamily\footnotesize\color{successGreen}, anchor=south west] at ([xshift=0.35cm, yshift=0.12cm]win.south west) {<section id="sujets"> --- englobe les trois <article>};
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire}]
+Une \texttt{<section id="sujets">} contenant :
+\begin{itemize}
+  \item un titre \texttt{<h2>} « Sujets récents » ;
+  \item \textbf{trois} \texttt{<article>}, chacun composé d'un titre \texttt{<h3>}, d'une ligne d'information (auteur en \texttt{<strong>} et catégorie) et d'un paragraphe \texttt{<p>}.
+\end{itemize}
+Le titre \texttt{<h3>} du \textbf{premier} sujet doit être un lien vers \texttt{sujet.html} --- la page que tu créeras à l'étape 6.
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Vérifie ta hiérarchie de titres}]
+La page contient maintenant un \texttt{<h1>} (le nom du site), un \texttt{<h2>} (« Sujets récents ») et trois \texttt{<h3>} (les sujets). C'est exactement la structure attendue : \textbf{un seul \texttt{<h1>}}, et \textbf{aucun saut de niveau}.\\[4pt]
+Si tu as choisi un \texttt{<h3>} plutôt qu'un \texttt{<h2>} « parce que c'était plus petit », reprends : la taille se réglera en CSS.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={« Codé en dur » --- pourquoi ?}]
+Ces trois sujets sont écrits directement dans le HTML : ils ne viennent d'aucune base de données. Quoi que tu fasses, ce sont toujours les mêmes. C'est la limite volontaire de la phase 1 --- elle rendra évident, en semaine 8, le besoin d'une vraie base de données.
+\end{tcolorbox}
+
+% ============================================================
+\section{Le pied de page}
+% ============================================================
+
+\vspace{2pt}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  \node[draw=cfptDarkGrey!50, thick, rounded corners=3pt, minimum width=12cm, minimum height=1.4cm, anchor=north] (win) at (0,0) {};
+  \node[draw=accentBlue!55, thin, dashed, rounded corners=2pt, minimum width=11.4cm, minimum height=0.95cm, anchor=north] (fz) at ([yshift=-0.25cm]win.north) {};
+  \node[anchor=center, font=\footnotesize, text=cfptDarkGrey, align=center] at (fz.center) {MiniForum --- Projet du cours de développement web\\ Classe passerelle --- cfpt$\cdot$i};
+  \node[font=\ttfamily\footnotesize\color{successGreen}, anchor=west] at ([xshift=0.15cm]fz.east) {<footer>};
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire}]
+Un \texttt{<footer>} avec deux paragraphes \texttt{<p>} : le nom du projet, et la mention de la classe.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Point d'étape}]
+La page d'accueil est terminée. Commite avant de passer à la suite :
+\vspace{3pt}
+\begin{lstlisting}[language=bash, numbers=none]
+git add index.html
+git commit -m "Page d'accueil : en-tete, liste de sujets, pied de page"
+\end{lstlisting}
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{La page de détail d'un sujet}
+% ============================================================
+
+Un forum ne se limite pas à une liste : cliquer sur un sujet doit ouvrir la discussion. C'est la seconde page du MiniForum.
+
+\begin{enumerate}
+  \item Créer un nouveau fichier \texttt{sujet.html}, \textbf{à la racine} du dossier \texttt{miniforum} (à côté de \texttt{index.html}).
+  \item Y reprendre le même squelette et le même \texttt{<header>} que dans \texttt{index.html} --- copier-coller est ici légitime : les deux pages partagent la même charpente.
+  \item Changer le \texttt{<title>} en « MiniForum - Bienvenue sur le MiniForum ».
+\end{enumerate}
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[font=\small,
+  browser/.style={draw=cfptDarkGrey!50, thick, rounded corners=3pt},
+  zone/.style={draw=successGreen!60, thin, dashed, rounded corners=2pt},
+  tag/.style={font=\ttfamily\footnotesize, anchor=west},
+  content/.style={anchor=north west, text=cfptBlack}]
+  \node[browser, minimum width=12cm, minimum height=8.4cm, anchor=north] (win) at (0,0) {};
+  \browserbar{win}{sujet.html}
+  \begin{scope}[shift={([xshift=0.35cm, yshift=-0.95cm]win.north west)}]
+    % fil d'ariane
+    \node[content, font=\footnotesize, text=accentBlue] at (0,0) {$\leftarrow$ Retour à la liste des sujets};
+    \node[tag, color=warningOrange] at (5.2,-0.17) {<a href="index.html">};
+
+    % titre du sujet
+    \node[content, font=\bfseries\large] at (0,-0.6) {Bienvenue sur le MiniForum !};
+    \node[tag, color=accentBlue] at (8.6,-0.78) {<h2>};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0,-1.15) {Ouvert par \textbf{Alice} le 15 septembre 2026 --- Catégorie : Général};
+
+    % section réponses
+    \node[content, font=\bfseries] at (0,-1.8) {Réponses};
+    \node[tag, color=accentBlue] at (8.6,-1.95) {<h3>};
+
+    % message 1
+    \node[zone, minimum width=10.4cm, minimum height=1.35cm, anchor=north west] (m1) at (0,-2.3) {};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-2.45) {\textbf{Bob} --- 16 septembre 2026};
+    \node[content, font=\footnotesize] at (0.2,-2.9) {Bonjour à tous, content d'être là !};
+    \node[tag, color=successGreen, anchor=east] at (10.2,-2.55) {<article>};
+
+    % message 2
+    \node[zone, minimum width=10.4cm, minimum height=1.35cm, anchor=north west] (m2) at (0,-3.8) {};
+    \node[content, font=\footnotesize, text=cfptDarkGrey] at (0.2,-3.95) {\textbf{Chloé} --- 16 septembre 2026};
+    \node[content, font=\footnotesize] at (0.2,-4.4) {Salut ! Quelqu'un a déjà utilisé Live Server ?};
+    \node[tag, color=successGreen, anchor=east] at (10.2,-4.05) {<article>};
+
+    % message 3 à composer
+    \node[zone, draw=warningOrange, minimum width=10.4cm, minimum height=1.35cm, anchor=north west] (m3) at (0,-5.3) {};
+    \node[content, font=\footnotesize\itshape, text=warningOrange] at (0.2,-5.75) {\dots\ ton troisième message, à toi de le composer};
+    \node[tag, color=warningOrange, anchor=east] at (10.2,-5.55) {<article>};
+  \end{scope}
+  \node[font=\ttfamily\footnotesize\color{successGreen}, anchor=south west] at ([xshift=0.35cm, yshift=0.12cm]win.south west) {<main> --- le sujet, puis <section> avec les trois messages};
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[definition, title={À produire dans le \texttt{<main>} de \texttt{sujet.html}}]
+\begin{itemize}
+  \item un lien de retour vers \texttt{index.html}, avec un intitulé explicite ;
+  \item un \texttt{<h2>} reprenant le titre du sujet, suivi d'un \texttt{<p>} d'information (auteur, date, catégorie) ;
+  \item une \texttt{<section>} intitulée par un \texttt{<h3>} « Réponses », contenant \textbf{trois} \texttt{<article>} ;
+  \item dans chaque \texttt{<article>} : un \texttt{<p>} avec l'auteur en \texttt{<strong>} et la date, puis un \texttt{<p>} avec le texte du message.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[attention, title={Un message est bien un \texttt{<article>}}]
+La question revient chaque année : pourquoi \texttt{<article>} pour un simple message ? Applique le test du polycopié --- ce message garderait-il du sens, cité ailleurs ? Oui. C'est donc un contenu autonome, et le \texttt{<article>} est le bon choix.\\[4pt]
+La \texttt{<section>} « Réponses », elle, n'a de sens que dans cette page : elle regroupe par thème.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Pour aller un cran plus loin sur les dates}]
+La balise \texttt{<time>} permet d'indiquer une date sous une forme lisible par une machine, tout en affichant le texte de ton choix :
+\vspace{3pt}
+\begin{lstlisting}[language=HTML5, numbers=none]
+<time datetime="2026-09-16">16 septembre 2026</time>
+\end{lstlisting}
+\vspace{-3pt}
+Ce n'est pas obligatoire ici, mais c'est exactement le genre de détail qui distingue un HTML sémantique d'un HTML approximatif.
+\end{tcolorbox}
+
+% ============================================================
+\section{Relier les deux pages}
+% ============================================================
+
+Les deux fichiers existent ; il reste à pouvoir circuler de l'un à l'autre.
+
+\begin{enumerate}
+  \item Dans \texttt{index.html}, vérifier que le titre du premier sujet est bien un lien vers \texttt{sujet.html}.
+  \item Dans \texttt{sujet.html}, vérifier que le lien de retour pointe vers \texttt{index.html}.
+  \item Tester l'aller-retour dans le navigateur : accueil $\rightarrow$ sujet $\rightarrow$ accueil.
+  \item Tester aussi le lien \texttt{\#sujets} du menu : la page doit défiler jusqu'à la liste des sujets.
+\end{enumerate}
+
+\begin{tcolorbox}[attention, title={Si un lien ne fonctionne pas}]
+Dans neuf cas sur dix, le chemin est en cause. Vérifie dans l'ordre :
+\begin{itemize}
+  \item le nom du fichier est exact, \textbf{casse comprise} (\texttt{sujet.html}, pas \texttt{Sujet.html}) ;
+  \item les deux fichiers sont bien dans le \textbf{même dossier} ;
+  \item le chemin est \textbf{relatif} (\texttt{sujet.html}) et non absolu (\texttt{C:/Users/\dots}) ;
+  \item pour le lien interne, l'\texttt{id} visé existe et s'écrit \textbf{sans} le \texttt{\#} dans l'attribut \texttt{id}.
+\end{itemize}
+\end{tcolorbox}
+
+% ============================================================
+\section{Valider et sauvegarder}
+% ============================================================
+
+\subsection{Valider les deux pages}
+
+\begin{enumerate}
+  \item Aller sur \texttt{validator.w3.org}, onglet \textit{Validate by Direct Input}.
+  \item Copier-coller tout le contenu de \texttt{index.html}, puis cliquer sur \textit{Check}.
+  \item Corriger les erreurs signalées, en commençant par \textbf{la première de la liste}, et relancer la validation.
+  \item Recommencer l'opération avec \texttt{sujet.html}.
+\end{enumerate}
+
+\begin{tcolorbox}[astuce, title={Rappel de méthode}]
+Une seule balise oubliée peut produire dix messages en cascade : corrige la première erreur, revalide, et le compteur chute souvent d'un coup. Les \textbf{Errors} doivent toutes disparaître ; les \textbf{Warnings} signalent une maladresse sans invalider la page.
+\end{tcolorbox}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{p{5.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Message} & \hdr{Correction} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{Unclosed element X} & Fermer la balise \texttt{X} \\
+  \texttt{Stray end tag X} & Supprimer la fermante en trop, ou ajouter l'ouvrante \\
+  \rowcolor{uniPaper}
+  \texttt{Duplicate ID "sujets"} & Deux éléments portent le même \texttt{id} : en renommer un \\
+  \texttt{Element p not allowed as child of element ul} & Le \texttt{<p>} doit être \textit{dans} le \texttt{<li>} \\
+  \rowcolor{uniPaper}
+  \texttt{Consider adding a lang attribute} & Ajouter \texttt{lang="fr"} sur la balise \texttt{<html>} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Envoyer sur GitHub}
+
+\begin{lstlisting}[language=bash, numbers=none]
+git add .
+git commit -m "Page de detail d'un sujet et navigation entre les pages"
+git push
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Vérifier que c'est bien parti}]
+Rafraîchis la page de ton dépôt sur \texttt{github.com} : \texttt{index.html} et \texttt{sujet.html} doivent y apparaître, et l'onglet \textit{Commits} doit montrer \textbf{plusieurs} commits pour cette séance --- pas un seul.
+\end{tcolorbox}
+
+% ============================================================
+\section{Pour aller plus loin (optionnel)}
+% ============================================================
+
+Si tu as terminé en avance :
+
+\begin{itemize}
+  \item Ajouter une image de logo dans le \texttt{<header>} des deux pages, avec un \texttt{alt} correct, rangée dans un sous-dossier \texttt{images/}.
+  \item Transformer les titres des deux autres sujets en liens vers \texttt{sujet.html} également.
+  \item Ajouter dans \texttt{index.html} un tableau récapitulatif des sujets (titre, auteur, nombre de réponses) avec \texttt{<caption>}, \texttt{<thead>} et \texttt{<tbody>}.
+  \item Utiliser la balise \texttt{<time>} avec son attribut \texttt{datetime} pour toutes les dates.
+  \item Ajouter un \texttt{<aside>} dans \texttt{sujet.html} : « Sujets similaires », avec une liste de deux liens.
+\end{itemize}
+
+\begin{tcolorbox}[attention, title={Toujours pas de CSS}]
+La tentation est grande d'ajouter quelques couleurs. Résiste : une page sans style force à juger la \textbf{structure}, et c'est précisément ce qui est évalué cette semaine. Le CSS commence en semaine 4, et il s'appliquera sans que tu aies à retoucher ce HTML.
+\end{tcolorbox}
+
+% ============================================================
+\section{Points de contrôle}
+% ============================================================
+
+\begin{tcolorbox}[definition, title={Auto-évaluation}]
+\begin{itemize}
+  \item[$\square$] \texttt{index.html} et \texttt{sujet.html} existent, à la racine de \texttt{miniforum}
+  \item[$\square$] Les deux pages ont un \texttt{<!DOCTYPE html>}, un \texttt{lang="fr"} et un \texttt{<meta charset="UTF-8">}
+  \item[$\square$] Chaque page a une structure sémantique : \texttt{<header>}, \texttt{<main>}, \texttt{<footer>}
+  \item[$\square$] L'en-tête contient un \texttt{<h1>} et un \texttt{<nav>} avec une liste de liens
+  \item[$\square$] La page d'accueil affiche \textbf{trois} sujets, chacun dans un \texttt{<article>}
+  \item[$\square$] La page de détail affiche \textbf{trois} messages, chacun dans un \texttt{<article>}
+  \item[$\square$] Il y a \textbf{un seul \texttt{<h1>}} par page, et aucun saut de niveau de titre
+  \item[$\square$] Le code est \textbf{indenté} : un niveau par niveau d'imbrication
+  \item[$\square$] L'aller-retour accueil $\leftrightarrow$ sujet fonctionne, ainsi que le lien \texttt{\#sujets}
+  \item[$\square$] Toute image éventuelle a un attribut \texttt{alt} qui décrit quelque chose
+  \item[$\square$] Les deux pages passent \texttt{validator.w3.org} \textbf{sans erreur}
+  \item[$\square$] Le travail est poussé sur GitHub, en \textbf{plusieurs} commits au message clair
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[attention, title={À rendre avant la semaine 3}]
+Le dépôt GitHub \texttt{miniforum} à jour, avec les deux pages validées. La semaine 3 ajoutera les \textbf{formulaires} et les bases de l'\textbf{accessibilité} --- ce sera la dernière séance de HTML avant le CSS.
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[astuce, title={Bloqué ?}]
+Si une étape résiste plus de dix minutes, demande. Le polycopié \textit{S02\_polycop} contient la réponse à la quasi-totalité des questions de ce TP --- commence par y chercher, puis appelle.
+\end{tcolorbox}
+
+\end{document}

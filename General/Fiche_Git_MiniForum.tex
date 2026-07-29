@@ -1,0 +1,537 @@
+% ============================================================
+%  Fiche de synthèse — Git au quotidien sur MiniForum
+%  cfpt·i | Anne Terrier
+%  Référence à garder toute l'année. Aligné sur S01_TP (mise en
+%  place du dépôt) et sur le rythme de commits imposé dès S02.
+%
+%  Image attendue dans ./images/ : cfpti.png
+%  Si elle est absente, le document compile quand même.
+% ============================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=2.2cm, bottom=2.2cm, left=2.2cm, right=2.2cm, headheight=40pt]{geometry}
+\usepackage{microtype}
+
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------
+% Palette cfpt·i
+% ---------------------------------------------------------------
+\definecolor{cfptYellow}{HTML}{F5C400}
+\definecolor{cfptBlack}{HTML}{1A1A1A}
+\definecolor{cfptDarkGrey}{HTML}{555555}
+\definecolor{cfptGrey}{HTML}{F2F2F2}
+\definecolor{accentBlue}{HTML}{1D4E89}
+\definecolor{lightBlue}{HTML}{D6E4F0}
+\definecolor{codeGrey}{HTML}{F5F5F5}
+\definecolor{successGreen}{HTML}{1E7145}
+\definecolor{warningOrange}{HTML}{C55A11}
+\definecolor{alertRed}{HTML}{A32020}
+\definecolor{alertBg}{HTML}{FBEDED}
+
+\colorlet{uniNavy}{accentBlue}
+\colorlet{uniPaper}{cfptGrey}
+
+\color{cfptBlack}
+
+% ---------------------------------------------------------------
+% Logo
+% ---------------------------------------------------------------
+\newcommand{\logocfpt}{%
+  \IfFileExists{images/cfpti.png}%
+    {\includegraphics[height=18pt]{images/cfpti.png}}%
+    {\IfFileExists{cfpti.png}{\includegraphics[height=18pt]{cfpti.png}}{}}%
+}
+
+% ---------------------------------------------------------------
+% En-tête / pied de page
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\logocfpt}
+\fancyhead[C]{\color{cfptDarkGrey}\small\textit{Développement Web --- Classe passerelle}}
+\fancyhead[R]{\color{cfptDarkGrey}\small\textit{Fiche de synthèse --- Git}}
+\fancyfoot[L]{\color{cfptDarkGrey}\footnotesize Anne Terrier}
+\fancyfoot[C]{\color{cfptDarkGrey}\footnotesize Git au quotidien sur MiniForum}
+\fancyfoot[R]{\color{cfptDarkGrey}\footnotesize Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------
+% Titres de section
+% ---------------------------------------------------------------
+\newcommand{\sectionbox}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}\arabic{section}\qquad #1}}}
+
+\newcommand{\sectionboxstar}[1]{%
+  \colorbox{accentBlue}{%
+    \parbox[c][1.6em][c]{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \color{white}\large\bfseries\hspace{4pt}#1}}}
+
+\titleformat{\section}{\normalfont}{}{0pt}{\sectionbox}
+\titleformat{name=\section,numberless}{\normalfont}{}{0pt}{\sectionboxstar}
+\titleformat{\subsection}{\color{accentBlue}\normalsize\bfseries}{\rule[-.3ex]{3pt}{1.3em}}{6pt}{}
+\titlespacing{\section}{0pt}{16pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------
+% Listes
+% ---------------------------------------------------------------
+\setlist[itemize]{itemsep=3pt, topsep=4pt, parsep=0pt,
+  leftmargin=1.4em, label={\color{cfptYellow}\textbullet}}
+\setlist[enumerate]{itemsep=5pt, topsep=4pt, leftmargin=1.6em}
+
+% ---------------------------------------------------------------
+% Boîtes
+% ---------------------------------------------------------------
+\tcbset{
+  definition/.style={
+    colback=lightBlue!30, colframe=accentBlue,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  attention/.style={
+    colback=cfptYellow!20, colframe=cfptYellow!80!black,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  astuce/.style={
+    colback=successGreen!8, colframe=successGreen,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=0.8pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt},
+  interdit/.style={
+    colback=alertBg, colframe=alertRed,
+    fonttitle=\bfseries\small, coltitle=white,
+    boxrule=1pt, arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    toptitle=2pt, bottomtitle=2pt}
+}
+
+% ---------------------------------------------------------------
+% Listings
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codeGrey},
+  frame=single, framerule=0.4pt,
+  rulecolor=\color{cfptDarkGrey!40},
+  breaklines=true,
+  keywordstyle=\color{accentBlue}\bfseries,
+  commentstyle=\color{cfptDarkGrey}\itshape,
+  stringstyle=\color{successGreen},
+  showstringspaces=false,
+  numbers=none,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1
+    {à}{{\`a}}1 {â}{{\^a}}1 {À}{{\`A}}1
+    {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1
+    {û}{{\^u}}1 {ù}{{\`u}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+}
+\renewcommand{\lstlistingname}{Extrait}
+
+% ---------------------------------------------------------------
+% Tableaux
+% ---------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\newcommand{\hdr}[1]{\multicolumn{1}{l}{\color{white}\bfseries #1}}
+\newcommand{\hdrc}[1]{\multicolumn{1}{c}{\color{white}\bfseries #1}}
+
+\renewcommand{\arraystretch}{1.3}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% --- Bandeau titre ---
+\begin{tcolorbox}[
+  colback=accentBlue, colframe=accentBlue,
+  arc=4pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+  \begin{minipage}{0.66\linewidth}
+    {\color{cfptYellow}\Large\bfseries Fiche de synthèse}\\[4pt]
+    {\color{white}\Large\bfseries Git au quotidien sur MiniForum}\\[4pt]
+    {\color{lightBlue}\normalsize Développement web, classe passerelle}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.30\linewidth}
+    \raggedleft
+    \begin{tabular}{rl}
+      \color{lightBlue}\small Usage & \color{white}\small toute l'année \\
+      \color{lightBlue}\small Prérequis & \color{white}\small TP semaine 1 \\
+    \end{tabular}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[definition, title={À quoi sert cette fiche}]
+Le dépôt \texttt{miniforum} a été créé en semaine 1. Cette fiche décrit ce qui se fait \textbf{une seule fois}, ce qui se fait \textbf{à chaque changement}, et comment se sortir des situations qui bloquent le plus souvent. Garde-la ouverte pendant les TP : les commandes sont toujours les mêmes, tu les connaîtras par cœur d'ici la semaine 5.
+\end{tcolorbox}
+
+\begin{tcolorbox}[astuce, title={Où taper ces commandes}]
+Dans \textbf{Git Bash} (clic droit dans le dossier \texttt{miniforum} $\rightarrow$ \textit{Open Git Bash here}) ou dans le terminal intégré de VS Code (\textit{Terminal} $\rightarrow$ \textit{Nouveau terminal}), à condition que le dossier ouvert soit bien \texttt{miniforum}.
+\end{tcolorbox}
+
+% ============================================================
+\section{Le principe en une image}
+% ============================================================
+
+Ton travail passe par quatre endroits. Chaque commande Git fait passer les fichiers de l'un à l'autre.
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  zone/.style={draw=accentBlue, thin, rounded corners=3pt, fill=accentBlue!8,
+    text width=2.3cm, align=center, inner sep=5pt, minimum height=1.5cm},
+  arr/.style={-{Stealth[length=5pt]}, accentBlue, thick},
+  arrback/.style={-{Stealth[length=5pt]}, successGreen, thick},
+  lbl/.style={font=\scriptsize\ttfamily\bfseries, text=accentBlue},
+  lblback/.style={font=\scriptsize\ttfamily\bfseries, text=successGreen}]
+
+\node[zone] (work) {\textbf{Dossier de travail}\\[2pt] tes fichiers dans VS Code};
+\node[zone, right=1.5cm of work] (index) {\textbf{Index}\\[2pt] ce qui ira dans le prochain commit};
+\node[zone, right=1.5cm of index] (local) {\textbf{Dépôt local}\\[2pt] l'historique, dans \texttt{.git}};
+\node[zone, right=1.5cm of local] (remote) {\textbf{GitHub}\\[2pt] le dépôt distant};
+
+\draw[arr] (work) -- node[lbl, above] {git add} (index);
+\draw[arr] (index) -- node[lbl, above] {git commit} (local);
+\draw[arr] (local) -- node[lbl, above] {git push} (remote);
+
+\draw[arrback] (remote.south) .. controls +(0,-1.1) and +(0,-1.1) .. node[lblback, below] {git pull} (work.south);
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[attention, title={Trois erreurs de débutant que ce schéma évite}]
+\begin{itemize}
+  \item Un \texttt{git commit} \textbf{n'envoie rien} sur GitHub. Tant qu'il n'y a pas eu de \texttt{git push}, ton travail n'existe que sur ta machine.
+  \item Un \texttt{git add} \textbf{ne sauvegarde rien}. Il prépare seulement le contenu du prochain commit.
+  \item Un fichier modifié après un \texttt{git add} doit être \textbf{ré-ajouté} avant le commit, sinon c'est l'ancienne version qui part.
+\end{itemize}
+\end{tcolorbox}
+
+% ============================================================
+\section{Une seule fois, au tout début}
+% ============================================================
+
+Ces étapes ont été faites en semaine 1. Elles ne sont à refaire que sur une \textbf{nouvelle machine}, ou pour un \textbf{nouveau projet}.
+
+\subsection{Une fois par machine --- ton identité}
+
+\begin{lstlisting}[language=bash]
+git config --global user.name "Prenom Nom"
+git config --global user.email "ton.email@exemple.com"
+\end{lstlisting}
+
+\subsection{Une fois par projet --- créer le dépôt}
+
+Le \texttt{.gitignore} se crée \textbf{avant} le premier \texttt{git add} : un fichier entré dans l'historique y reste, même ajouté au \texttt{.gitignore} ensuite.
+
+\begin{lstlisting}[language=bash]
+cd ~/Documents/Passerelle/Web/miniforum
+git init
+git branch -M main
+git add .
+git commit -m "Structure de base du MiniForum"
+git remote add origin https://github.com/ton-login/miniforum.git
+git push -u origin main
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={Le \texttt{-u} du premier push}]
+Il ne sert qu'une fois : il associe ta branche locale \texttt{main} à celle de GitHub. Ensuite, un simple \texttt{git push} suffit pour le reste de l'année.
+\end{tcolorbox}
+
+% ============================================================
+\section{Le rythme d'une séance}
+% ============================================================
+
+\subsection{En arrivant --- récupérer}
+
+Première commande de chaque séance, avant d'écrire la moindre ligne :
+
+\begin{lstlisting}[language=bash]
+git pull
+\end{lstlisting}
+
+Elle rapatrie ce qui a été poussé depuis une autre machine (celle de la maison, par exemple). Si tu travailles toujours sur le même poste, elle ne fera rien --- ce n'est pas une raison pour l'oublier, c'est justement l'oubli qui crée les conflits.
+
+\subsection{À chaque changement --- le cycle de base}
+
+C'est le cœur de cette fiche. Dès qu'une chose \textbf{fonctionne} ou qu'une étape est \textbf{terminée}, tu commites. Pas plus tard, pas « quand tout sera fini ».
+
+\begin{lstlisting}[language=bash]
+git status              # qu'ai-je change depuis le dernier commit ?
+git add index.html      # je choisis ce qui entre dans ce commit
+git commit -m "Formulaire de creation de sujet"
+\end{lstlisting}
+
+Puis on recommence : on code, on teste, on commite. Trois à six commits par séance de TP est un rythme normal.
+
+\begin{tcolorbox}[definition, title={Qu'est-ce qu'un « changement » qui mérite un commit ?}]
+Un ensemble cohérent, qui laisse le projet dans un état qui \textbf{fonctionne} et qui se résume en une phrase. Par exemple :
+\begin{itemize}
+  \item « le \texttt{<header>} et la navigation sont en place » $\rightarrow$ un commit
+  \item « la liste des sujets s'affiche depuis le tableau JavaScript » $\rightarrow$ un commit
+  \item « j'ai corrigé la faute de frappe dans le titre » $\rightarrow$ un commit
+\end{itemize}
+À l'inverse, « le TP de la semaine 4 » n'est pas un changement : c'est une séance entière, donc plusieurs commits.
+\end{tcolorbox}
+
+\subsection{\texttt{git add} : nommer ses fichiers ou tout prendre ?}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{p{4.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Commande} & \hdr{Quand l'utiliser} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{git add index.html} & Le cas normal. Tu sais exactement ce que tu commites. \\
+  \texttt{git add index.html style.css} & Plusieurs fichiers d'un même changement. \\
+  \rowcolor{uniPaper}
+  \texttt{git add .} & Tout ce qui a changé. Pratique, mais seulement \textbf{après} avoir lu \texttt{git status}. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{En partant --- envoyer}
+
+\begin{lstlisting}[language=bash]
+git push
+\end{lstlisting}
+
+Puis rafraîchis la page de ton dépôt sur \texttt{github.com}. Si tes fichiers y sont et que l'onglet \textit{Commits} montre bien ceux de la séance, ton travail est en sécurité.
+
+\begin{tcolorbox}[attention, title={Ne quitte jamais la salle sans avoir poussé}]
+Un commit non poussé n'existe que sur le disque de la machine que tu es en train d'éteindre. Le \texttt{git push} de fin de séance est ce qui te permet de reprendre chez toi --- et ce qui rend ton travail visible.
+\end{tcolorbox}
+
+% ============================================================
+\section{Écrire un message de commit}
+% ============================================================
+
+Un bon message dit \textbf{ce que fait} le commit, pas ce que tu as touché. Il se lit comme une entrée de journal, à l'infinitif ou au participe, court, sans point final.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{XX}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{À écrire} & \hdr{À éviter} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{Charpente sémantique de la page d'accueil} & \texttt{modifs} \\
+  \texttt{Ajout du formulaire de réponse} & \texttt{index.html} \\
+  \rowcolor{uniPaper}
+  \texttt{Correction du lien vers sujet.html} & \texttt{ça marche} \\
+  \texttt{Passage de la liste de sujets en Flexbox} & \texttt{TP semaine 4} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[astuce, title={Test rapide}]
+Relis ton message dans six semaines. S'il ne te dit pas ce que contenait le commit, il est trop vague. « \texttt{modifs} » ne passe jamais ce test.
+\end{tcolorbox}
+
+% ============================================================
+\section{Savoir où j'en suis}
+% ============================================================
+
+Trois commandes qui ne modifient rien et qu'on peut lancer sans risque, aussi souvent qu'on veut.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{p{4.4cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Commande} & \hdr{Ce qu'elle montre} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{git status} & Les fichiers modifiés, ceux qui sont prêts à être commités, et si tu es en avance ou en retard sur GitHub. \\
+  \texttt{git log -{}-oneline} & L'historique, un commit par ligne. Quitter avec la touche \texttt{q}. \\
+  \rowcolor{uniPaper}
+  \texttt{git diff} & Ligne par ligne, ce que tu as changé depuis le dernier commit. Quitter avec \texttt{q}. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[definition, title={\texttt{git status} se lit, il ne se subit pas}]
+La sortie de \texttt{git status} contient presque toujours la commande à taper ensuite : Git suggère lui-même \texttt{git add}, \texttt{git restore} ou \texttt{git push} selon la situation. Prends le réflexe de la lire en entier avant de chercher ailleurs.
+\end{tcolorbox}
+
+% ============================================================
+\section{Dépannage}
+% ============================================================
+
+\subsection{« J'ai oublié de committer pendant deux heures »}
+
+Ce n'est pas rattrapable : le passé n'a pas été enregistré. Commite maintenant, en séparant si possible en deux ou trois commits (\texttt{git add} fichier par fichier), et reprends le rythme. Un historique fait d'un commit géant par séance est signalé à l'évaluation.
+
+\subsection{Mon \texttt{push} est refusé (\textit{rejected})}
+
+Le dépôt distant contient des commits que tu n'as pas en local --- typiquement, tu as poussé depuis une autre machine. La réponse est presque toujours la même :
+
+\begin{lstlisting}[language=bash]
+git pull
+git push
+\end{lstlisting}
+
+\subsection{Git annonce un conflit}
+
+Cela arrive quand la même ligne a été modifiée des deux côtés. Git place les deux versions dans le fichier, entourées de marqueurs :
+
+\begin{lstlisting}
+<<<<<<< HEAD
+  <h1>Bienvenue sur MiniForum</h1>
+=======
+  <h1>MiniForum</h1>
+>>>>>>> origin/main
+\end{lstlisting}
+
+\begin{enumerate}
+  \item Ouvrir le fichier concerné dans VS Code (il est signalé en couleur dans l'explorateur).
+  \item Garder la version que tu veux, supprimer l'autre \textbf{et les trois lignes de marqueurs}.
+  \item Enregistrer, puis :
+\end{enumerate}
+
+\begin{lstlisting}[language=bash]
+git add le-fichier-concerne.html
+git commit -m "Resolution du conflit sur le titre"
+git push
+\end{lstlisting}
+
+\begin{tcolorbox}[astuce, title={VS Code fait le travail à ta place}]
+Au-dessus de chaque conflit, VS Code affiche les boutons \textit{Accept Current Change} / \textit{Accept Incoming Change} / \textit{Accept Both Changes}. Un clic supprime les marqueurs proprement. Vérifie quand même le résultat avant de committer.
+\end{tcolorbox}
+
+\subsection{J'ai modifié un fichier et je veux revenir en arrière}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{p{6.1cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Situation} & \hdr{Commande} \\
+  \midrule
+  \rowcolor{uniPaper}
+  Annuler mes modifications non commitées & \texttt{git restore fichier.html} \\
+  Retirer un fichier de l'index (avant commit) & \texttt{git restore -{}-staged fichier.html} \\
+  \rowcolor{uniPaper}
+  Corriger le message du dernier commit (non poussé) & \texttt{git commit -{}-amend -m "Nouveau message"} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{tcolorbox}[interdit, title={\texttt{git restore} détruit du travail}]
+Cette commande écrase tes modifications par la dernière version commitée, sans confirmation et sans corbeille. Ne l'utilise que si tu es certain·e de vouloir jeter ce que tu viens d'écrire.
+\end{tcolorbox}
+
+\subsection{J'ai committé un fichier qui n'aurait pas dû l'être}
+
+Cas classique : \texttt{node\_modules/} ajouté avant que le \texttt{.gitignore} soit en place. On le sort du suivi tout en le gardant sur le disque :
+
+\begin{lstlisting}[language=bash]
+git rm -r --cached node_modules
+git commit -m "Retrait de node_modules du suivi Git"
+git push
+\end{lstlisting}
+
+Vérifie ensuite que \texttt{node\_modules/} figure bien dans le \texttt{.gitignore}, sinon il reviendra au prochain \texttt{git add .}
+
+\subsection{Je travaille sur deux machines (école et maison)}
+
+La règle tient en une ligne : \textbf{\texttt{git pull} en arrivant, \texttt{git push} en partant}, des deux côtés. Si tu oublies le push d'un côté, tu retrouveras l'autre machine en retard et tu risques un conflit.
+
+\begin{tcolorbox}[attention, title={Google Drive n'est pas Git}]
+Le dossier \texttt{Passerelle} est synchronisé sur Drive : c'est une sauvegarde contre la panne de disque. Ce n'est \textbf{pas} le canal de transfert entre deux machines. Pour passer d'un poste à l'autre, on passe par GitHub. Laisser Drive et Git écrire en même temps sur le même dossier depuis deux ordinateurs est le meilleur moyen d'abîmer l'historique.
+\end{tcolorbox}
+
+\subsection{Je suis perdu·e et je veux repartir propre}
+
+Un dépôt de référence est publié à la fin des semaines 7, 11 et 17. Pour repartir de celui-ci sans perdre ton travail actuel :
+
+\begin{lstlisting}[language=bash]
+cd ~/Documents/Passerelle/Web
+git clone https://github.com/.../miniforum-reference.git miniforum-s7
+\end{lstlisting}
+
+Ton ancien dossier reste intact à côté. Aucune pénalité n'est appliquée : c'est prévu par le cours.
+
+\begin{tcolorbox}[interdit, title={Ne supprime jamais le dossier \texttt{.git}}]
+Il est caché à la racine de \texttt{miniforum} et contient \textbf{tout} l'historique du projet. Le supprimer efface l'intégralité de tes commits, définitivement. Aucun problème rencontré dans ce cours ne se règle en effaçant \texttt{.git} --- viens me voir à la place.
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Mémo}
+% ============================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{p{5.2cm}X}
+  \toprule
+  \rowcolor{uniNavy}
+  \hdr{Commande} & \hdr{Effet} \\
+  \midrule
+  \rowcolor{uniPaper}
+  \texttt{git pull} & Récupérer ce qui est sur GitHub. En arrivant. \\
+  \texttt{git status} & Faire le point. Aussi souvent que nécessaire. \\
+  \rowcolor{uniPaper}
+  \texttt{git add fichier} & Préparer un fichier pour le prochain commit. \\
+  \texttt{git commit -m "..."} & Enregistrer un point d'étape en local. \\
+  \rowcolor{uniPaper}
+  \texttt{git push} & Envoyer les commits sur GitHub. En partant. \\
+  \texttt{git log -{}-oneline} & Relire l'historique. \\
+  \rowcolor{uniPaper}
+  \texttt{git diff} & Voir ce qui a changé depuis le dernier commit. \\
+  \texttt{git restore fichier} & Jeter les modifications non commitées. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+\begin{tcolorbox}[definition, title={Réflexe de fin de séance}]
+\begin{itemize}
+  \item[$\square$] \texttt{git status} ne signale plus de fichier modifié oublié
+  \item[$\square$] La séance a produit \textbf{plusieurs} commits, aux messages lisibles
+  \item[$\square$] \texttt{git push} a été fait
+  \item[$\square$] Le dépôt sur \texttt{github.com} affiche bien les commits du jour
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[attention, title={L'historique compte dans la note}]
+La qualité du code et de l'historique Git représente 10\% de la note du projet final, et l'historique est examiné à chaque jalon. Un projet qui apparaît en un seul commit massif donne lieu à un entretien. Committer régulièrement n'est donc pas une coquetterie d'enseignante : c'est la trace de ton travail.
+\end{tcolorbox}
+
+\end{document}

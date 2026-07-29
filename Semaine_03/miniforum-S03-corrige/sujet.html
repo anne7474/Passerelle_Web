@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniForum - Bienvenue sur le MiniForum !</title>
+</head>
+<body>
+
+  <header>
+    <h1>MiniForum</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#sujets">Sujets</a></li>
+        <li><a href="inscription.html">Inscription</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Intitulé explicite : « Retour à la liste des sujets » se comprend
+         hors contexte, contrairement à « Retour » ou « Cliquez ici ». -->
+    <p><a href="index.html">Retour à la liste des sujets</a></p>
+
+    <h2>Bienvenue sur le MiniForum !</h2>
+    <p>Ouvert par <strong>Alice</strong> le
+      <time datetime="2026-09-15">15 septembre 2026</time>
+      — Catégorie : Général</p>
+
+    <section id="reponses">
+      <h3>Réponses</h3>
+
+      <article>
+        <p><strong>Bob</strong> —
+          <time datetime="2026-09-16">16 septembre 2026</time></p>
+        <p>Bonjour à tous, content d'être là !</p>
+      </article>
+
+      <article>
+        <p><strong>Chloé</strong> —
+          <time datetime="2026-09-16">16 septembre 2026</time></p>
+        <p>Salut ! Quelqu'un a déjà utilisé Live Server ?</p>
+      </article>
+
+      <article>
+        <p><strong>Alice</strong> —
+          <time datetime="2026-09-17">17 septembre 2026</time></p>
+        <p>Oui, c'est l'extension qui recharge la page à chaque sauvegarde.
+          Clic droit sur le fichier, puis « Open with Live Server ».</p>
+      </article>
+    </section>
+
+    <section id="repondre">
+      <h3>Répondre à ce sujet</h3>
+
+      <form action="/posts" method="post">
+
+        <fieldset>
+          <legend>Votre réponse</legend>
+
+          <!-- Les name sont les mêmes que dans le formulaire de index.html :
+               ce sont les mêmes données. Les id peuvent l'être aussi, car
+               les deux formulaires sont dans DEUX PAGES différentes. -->
+          <p>
+            <label for="pseudo">Pseudo</label>
+            <input type="text" id="pseudo" name="pseudo"
+                   placeholder="ex : alice" required>
+          </p>
+
+          <p>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="6" maxlength="500"
+                      required></textarea>
+          </p>
+        </fieldset>
+
+        <p>
+          <button type="submit">Envoyer la réponse</button>
+        </p>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>MiniForum — Projet du cours de développement web</p>
+    <p>Classe passerelle — cfpt·i</p>
+  </footer>
+
+</body>
+</html>
